@@ -61,6 +61,7 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .roomitem{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--tile)}
 .code{font-family:var(--f-mono);font-weight:700;letter-spacing:.08em}
 .pill{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--cobalt-soft);color:var(--cobalt);text-transform:uppercase;letter-spacing:.06em}
+.pill.end{background:var(--tile);color:var(--muted)}
 .pill.live{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
 
 /* JOGO */
@@ -112,6 +113,8 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .dice.rolling .die{animation:tumble .32s linear infinite}
 .dice.rolling .die:nth-child(2){animation-direction:reverse}
 @keyframes tumble{0%{transform:rotate(0) translateY(0)}25%{transform:rotate(-18deg) translateY(-12%)}50%{transform:rotate(12deg) translateY(4%)}75%{transform:rotate(-8deg) translateY(-6%)}100%{transform:rotate(0) translateY(0)}}
+.rollbtn{font-size:clamp(14px,2.2cqw,20px);padding:.6em 1.4em;border-radius:12px;box-shadow:0 4px 0 color-mix(in srgb,var(--cobalt) 55%,#000)}
+.rollbtn:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--cobalt) 55%,#000)}
 .cardnote{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;max-width:min(92%,380px);text-align:center;font-size:clamp(11px,1.5cqw,14.5px)}
 .cardnote b{display:block;font-family:var(--f-display);color:var(--gold);font-size:.85em;letter-spacing:.08em;text-transform:uppercase}
 @media (prefers-reduced-motion:reduce){.dice.rolling .die,.pawn.hop{animation:none}}
@@ -437,6 +440,25 @@ function bankrupt(st,pi,why){
   if(a.length<=1){ st.status='ended'; st.winner=a[0]??null; st.phase='over'; log(st,`${pname(st,a[0])} ganhou o jogo!`); return }
   if(st.turn===pi) advanceTurn(st);
 }
+function canStillAct(st,pi){
+  const p=st.players[pi];
+  if(p.money<0) return true;
+  if(inv(p).extra&&!p.inJail) return true;
+  for(const [k,pr] of Object.entries(st.props)){
+    if(pr.o!==pi) continue; const s=SQ[k];
+    if(pr.m && p.money>=Math.ceil(s.p*0.55)) return true;
+    if(s.t==='prop'&&!pr.m&&pr.h<5&&ownsGroup(st,pi,s.g)){
+      const grp=groupOf(s.g);
+      if(grp.every(j=>!st.props[j].m) && pr.h<=Math.min(...grp.map(j=>st.props[j].h)) && p.money>=G[s.g].hc) return true;
+    }
+  }
+  return false;
+}
+function autoEnd(st,pi){
+  if(st.status!=='playing'||st.phase!=='end'||st.turn!==pi||canStillAct(st,pi)) return;
+  log(st,`${st.players[pi].name} não tinha mais nada para fazer: a vez passou automaticamente.`);
+  advanceTurn(st);
+}
 function tradeable(st,i){ const s=SQ[i]; if(s.t!=='prop') return true; return groupOf(s.g).every(j=>!st.props[j]||!st.props[j].h) }
 function myIdx(st){ return st.players.findIndex(p=>p.id===me.id) }
 function myTurn(st){ const i=st.turn; return st.status==='playing'&&st.players[i]&&st.players[i].id===me.id ? i : -1 }
@@ -462,17 +484,18 @@ const A = {
     if(st.players.length>=MAXP) return `A sala está cheia (máx. ${MAXP}).`;
     const used=st.players.map(p=>p.color);
     st.players.push({id:me.id,name:name.slice(0,18),color:COLORS.find(c=>!used.includes(c))});
+    st.pids=[...new Set([...(st.pids||[]),me.id])];
     log(st,`${name} entrou na sala.`);
   },
   leave(st){
     if(st.status!=='lobby') return 'Não podes sair a meio do jogo; declara falência.';
     const i=myIdx(st); if(i<0) return false;
-    log(st,`${st.players[i].name} saiu da sala.`); st.players.splice(i,1);
+    log(st,`${st.players[i].name} saiu da sala.`); st.players.splice(i,1); st.pids=(st.pids||[]).filter(x=>x!==me.id);
     if(st.host===me.id && st.players[0]) st.host=st.players[0].id;
   },
   kick(st,{idx}){
     if(st.host!==me.id) return 'Só o anfitrião pode retirar jogadores.';
-    if(st.status==='lobby'){ log(st,`${st.players[idx].name} foi retirado.`); st.players.splice(idx,1); return }
+    if(st.status==='lobby'){ const kid=st.players[idx].id; log(st,`${st.players[idx].name} foi retirado.`); st.players.splice(idx,1); st.pids=(st.pids||[]).filter(x=>x!==kid); return }
     if(st.status==='playing') bankrupt(st,idx,`${st.players[idx].name} foi retirado pelo anfitrião.`);
   },
   start(st){
@@ -493,12 +516,13 @@ const A = {
       if(doubles){ p.inJail=false; p.jailTurns=0; log(st,`${p.name} saiu da Prisão com duplos.`); st.again=false; moveBy(st,pi,sum); land(st,pi,sum) }
       else { p.jailTurns++;
         if(p.jailTurns>=3){ pay(st,pi,null,JAIL_FEE,'fiança'); p.inJail=false; p.jailTurns=0; log(st,`${p.name} pagou ${fmt(JAIL_FEE)} e saiu da Prisão.`); st.again=false; moveBy(st,pi,sum); land(st,pi,sum) }
-        else { st.phase='end'; return } }
+        else { st.phase='end'; autoEnd(st,pi); return } }
     } else {
-      if(doubles){ st.dbl=(st.dbl||0)+1; if(st.dbl>=3){ log(st,`Três duplos seguidos!`); sendJail(st,pi); st.phase='end'; return } }
+      if(doubles){ st.dbl=(st.dbl||0)+1; if(st.dbl>=3){ log(st,`Três duplos seguidos!`); sendJail(st,pi); st.phase='end'; autoEnd(st,pi); return } }
       st.again=doubles; moveBy(st,pi,sum); land(st,pi,sum);
     }
     if(st.phase!=='buy') nextPhase(st,pi);
+    autoEnd(st,pi);
   },
   payJail(st){
     const pi=myTurn(st), p=st.players[pi]; if(pi<0||!p.inJail||st.phase!=='roll') return false;
@@ -519,11 +543,11 @@ const A = {
     const i=st.pendingBuy, s=SQ[i], p=st.players[pi];
     if(p.money<s.p) return 'Não tens dinheiro suficiente.';
     pay(st,pi,null,s.p,`compra de ${s.s}`); st.props[i]={o:pi,h:0,m:false}; st.pendingBuy=null;
-    log(st,`${p.name} comprou ${s.n} por ${fmt(s.p)}.`); nextPhase(st,pi);
+    log(st,`${p.name} comprou ${s.n} por ${fmt(s.p)}.`); nextPhase(st,pi); autoEnd(st,pi);
   },
   pass(st){
     const pi=myTurn(st); if(pi<0||st.phase!=='buy') return false;
-    log(st,`${st.players[pi].name} não comprou ${SQ[st.pendingBuy].n}.`); st.pendingBuy=null; nextPhase(st,pi);
+    log(st,`${st.players[pi].name} não comprou ${SQ[st.pendingBuy].n}.`); st.pendingBuy=null; nextPhase(st,pi); autoEnd(st,pi);
   },
   end(st){
     const pi=myTurn(st); if(pi<0||st.phase!=='end') return false;
@@ -565,6 +589,13 @@ const A = {
     const pi=myIdx(st); if(pi<0||st.status!=='playing') return false;
     bankrupt(st,pi);
   },
+  abandon(st){
+    if(st.status==='lobby') return A.leave(st);
+    const pi=myIdx(st);
+    if(pi>=0&&st.status==='playing'&&!st.players[pi].out) bankrupt(st,pi,`${st.players[pi].name} abandonou o jogo. As propriedades voltaram ao banco.`);
+    st.pids=(st.pids||[]).filter(x=>x!==me.id);
+  },
+  forget(st){ st.pids=(st.pids||[]).filter(x=>x!==me.id) },
   donate(st,{to,amt}){
     const pi=myIdx(st); if(pi<0||st.status!=='playing'||st.players[pi].out) return false;
     amt=Math.floor(+amt||0); if(amt<=0) return 'Escolhe um valor maior que zero.';
@@ -612,7 +643,7 @@ const FIREBASE_CONFIG = {
   appId: "1:438301157880:web:c2fffeb85f0522b914ce0d"
 };
 const me={id:null};
-let db=null, unsub=null, unsubList=null, code=null, state=null, sel=null, rooms=[];
+let db=null, unsub=null, unsubList=null, unsubMine=null, myRooms=[], code=null, state=null, sel=null, rooms=[];
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 function esc(s){ return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
 const $=s=>document.querySelector(s);
@@ -637,9 +668,9 @@ function route(){
   resetAnim();
   if(/^[A-Z]{5}$/.test(h)){ code=h; openRoom() } else { code=null; state=null; listRooms(); renderHome() }
 }
-async function mutate(fn,arg){
-  if(!code||!db) return;
-  const ref=db.doc('rooms/'+code); let msg=null, out=null;
+async function mutate(fn,arg,room=code){
+  if(!room||!db) return;
+  const ref=db.doc('rooms/'+room); let msg=null, out=null;
   try{
     await db.runTransaction(async tx=>{
       msg=null; out=null;
@@ -653,7 +684,7 @@ async function mutate(fn,arg){
       tx.set(ref,st); out=st;
     });
     if(msg) toast(msg);
-    if(out) applyState(out);
+    if(out&&room===code) applyState(out);
   }catch(e){
     toast(e&&e.code==='permission-denied'?'Sem permissão para guardar. Confirma as regras do Firestore.':'Não consegui guardar a jogada. Tenta de novo.');
   }
@@ -666,7 +697,7 @@ function resetAnim(){ disp={}; lastRoll=null; lastEv=null; noteQ=[]; rolling=fal
 function applyState(ns){
   if(state&&state.code===ns.code&&(ns.rev||0)<(state.rev||0)) return;
   const fresh=!state||state.code!==ns.code||lastRoll===null;
-  state=ns;
+  const prev=state; state=ns;
   if(fresh){
     lastRoll=ns.rollId||0; lastEv=ns.evN||0; dispDice=ns.dice||[1,1];
     disp={}; (ns.players||[]).forEach(p=>{ if(p.pos!==undefined) disp[p.id]=p.pos });
@@ -674,14 +705,16 @@ function applyState(ns){
   }
   (ns.ev||[]).forEach(e=>{ if(e.n>lastEv) noteQ.push(e) }); lastEv=Math.max(lastEv,ns.evN||0);
   const rolled=(ns.rollId||0)!==lastRoll; lastRoll=ns.rollId||0;
+  const turnChanged=prev&&prev.turn!==ns.turn;
   render();
+  if(turnChanged&&!rolled) setTimeout(followActive,80);
   if(rolled) rollDice(ns.dice,startWalk); else if(!rolling) startWalk();
 }
 function rollDice(final,cb){
   clearInterval(diceTimer); rolling=true; drawDice();
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let t=0;
-  diceTimer=setInterval(()=>{ dispDice=[roll6(),roll6()]; drawDice(); if((t+=70)>=(reduce?140:840)){ clearInterval(diceTimer); dispDice=final; rolling=false; drawDice(); cb() } },70);
+  diceTimer=setInterval(()=>{ dispDice=[roll6(),roll6()]; drawDice(); if((t+=70)>=(reduce?140:840)){ clearInterval(diceTimer); dispDice=final; rolling=false; drawDice(); render(); cb() } },70);
 }
 function drawDice(){ const el=$('#dice'); if(!el) return; el.className='dice'+(rolling?' rolling':''); el.innerHTML=dieHTML(dispDice[0])+dieHTML(dispDice[1]) }
 function startWalk(){
@@ -722,6 +755,7 @@ function placeTokens(){
 function followActive(){
   const wrap=$('#boardwrap'); if(!wrap||wrap.scrollWidth<=wrap.clientWidth+4||!state) return;
   const p=state.players[state.turn]; if(!p) return;
+  if(myTurn(state)>=0&&state.phase==='roll'){ wrap.scrollTo({left:(wrap.scrollWidth-wrap.clientWidth)/2,behavior:'smooth'}); return }
   const cell=document.querySelector(`.cell[data-i="${disp[p.id]??p.pos}"]`); if(!cell) return;
   wrap.scrollTo({left:Math.max(0,cell.offsetLeft-wrap.clientWidth/2+cell.offsetWidth/2),behavior:'smooth'});
 }
@@ -747,6 +781,7 @@ function flushNotes(){
 
 /* ---------- HOME ---------- */
 function listRooms(){
+  if(db&&!unsubMine) unsubMine=db.collection('rooms').where('pids','array-contains',me.id).onSnapshot(s=>{ myRooms=s.docs.map(d=>d.data()); if(!code) renderHome() },()=>{});
   if(!db||unsubList) return;
   unsubList=db.collection('rooms').orderBy('createdAt','desc').limit(40).onSnapshot(s=>{
     rooms=s.docs.map(d=>d.data()); if(!code) renderHome();
@@ -755,10 +790,23 @@ function listRooms(){
 function renderHome(){
   if(code) return;
   const nick=ls.get('mv-nick')||'';
-  const mine=rooms.filter(r=>r.players?.some(p=>p.id===me.id)&&r.status!=='ended');
+  const byCode={};
+  [...rooms.filter(r=>!r.pids&&r.players?.some(p=>p.id===me.id)), ...myRooms].forEach(r=>byCode[r.code]=r);
+  const ord={playing:0,lobby:1,ended:2};
+  const mine=Object.values(byCode).sort((a,b)=>(ord[a.status]-ord[b.status])||((b.updatedAt||0)-(a.updatedAt||0)));
   const open=rooms.filter(r=>r.status==='lobby'&&!r.players?.some(p=>p.id===me.id));
+  const pill=r=>`<span class="pill ${r.status==='playing'?'live':r.status==='ended'?'end':''}">${r.status==='playing'?'a jogar':r.status==='ended'?'terminada':'à espera'}</span>`;
   const item=r=>`<div class="roomitem"><div><span class="code">${esc(r.code)}</span> <span class="note">· ${r.players?.length||0}/${MAXP} · ${esc(r.players?.[0]?.name||'')}</span></div>
-     <div class="row"><span class="pill ${r.status==='playing'?'live':''}">${r.status==='playing'?'a jogar':'à espera'}</span><button class="btn small" data-go="${esc(r.code)}">Abrir</button></div></div>`;
+     <div class="row">${pill(r)}<button class="btn small" data-go="${esc(r.code)}">Abrir</button></div></div>`;
+  const mineItem=r=>{
+    const host=r.host===me.id, meP=r.players?.find(p=>p.id===me.id);
+    const sub=[`${r.players?.length||0} jogador${(r.players?.length||0)===1?'':'es'}`, host?'és o anfitrião':'', meP?.out?'faliste':'', r.status==='ended'&&r.winner!=null?`ganhou ${r.players?.[r.winner]?.name||'?'}`:''].filter(Boolean).join(' · ');
+    const action = host ? `<button class="btn small danger" data-close="${esc(r.code)}">Encerrar</button>`
+      : r.status==='ended'||meP?.out ? `<button class="btn small" data-forget="${esc(r.code)}">Remover</button>`
+      : `<button class="btn small danger" data-leave="${esc(r.code)}">${r.status==='lobby'?'Sair':'Abandonar'}</button>`;
+    return `<div class="roomitem"><div style="min-width:0"><span class="code">${esc(r.code)}</span> ${pill(r)}<div class="note">${esc(sub)}</div></div>
+      <div class="row" style="justify-content:flex-end"><button class="btn small" data-go="${esc(r.code)}">Abrir</button>${action}</div></div>`;
+  };
   app.innerHTML=`
   <section class="hero">
     <div>
@@ -779,7 +827,8 @@ function renderHome(){
     </div>
     <div class="panel">
       <h2>Salas</h2>
-      ${mine.length?`<div class="eyebrow">As tuas</div><div class="roomlist">${mine.map(item).join('')}</div>`:''}
+      <div class="eyebrow">As tuas salas</div>
+      <div class="roomlist">${mine.length?mine.map(mineItem).join(''):'<div class="note">Ainda não estás em nenhuma sala.</div>'}</div>
       <div class="eyebrow">Abertas para entrar</div>
       <div class="roomlist">${open.length?open.map(item).join(''):`<div class="note">Ainda não há salas abertas. Cria uma e manda o link aos teus amigos.</div>`}</div>
     </div>
@@ -787,6 +836,14 @@ function renderHome(){
   $('#create').onclick=createRoom;
   $('#joinbtn').onclick=()=>{ const c=$('#joincode').value.trim().toUpperCase(); if(!/^[A-Z]{5}$/.test(c)) return toast('O código tem 5 letras.'); saveNick(); location.hash=c };
   app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{saveNick();location.hash=b.dataset.go});
+  app.querySelectorAll('[data-close]').forEach(b=>confirmBtn(b,'Encerrar para todos?',()=>closeRoom(b.dataset.close)));
+  app.querySelectorAll('[data-leave]').forEach(b=>confirmBtn(b,b.textContent==='Sair'?'Confirmar saída?':'Abandonar o jogo?',()=>mutate(A.abandon,{},b.dataset.leave)));
+  app.querySelectorAll('[data-forget]').forEach(b=>b.onclick=()=>mutate(A.forget,{},b.dataset.forget));
+}
+function confirmBtn(b,ask,fn){ b.onclick=()=>{ if(b.dataset.sure){ b.disabled=true; fn() } else { b.dataset.sure=1; b.textContent=ask; setTimeout(()=>{ if(b.isConnected&&!b.disabled){ delete b.dataset.sure; code?render():renderHome() } },4000) } } }
+async function closeRoom(c){
+  try{ await db.doc('rooms/'+c).delete(); toast('Sala '+c+' encerrada.'); if(code===c) location.hash='' }
+  catch(e){ toast('Não consegui encerrar a sala. Só o anfitrião pode encerrá-la.') }
 }
 function saveNick(){ const n=$('#nick')?.value.trim(); if(n) ls.set('mv-nick',n) }
 async function createRoom(){
@@ -795,7 +852,7 @@ async function createRoom(){
   if(!db) return;
   const L='ABCDEFGHJKLMNPQRSTUVWXYZ'; let c=''; for(let i=0;i<5;i++) c+=L[Math.floor(Math.random()*L.length)];
   const st={code:c,host:me.id,status:'lobby',createdAt:Date.now(),updatedAt:Date.now(),rev:1,
-    players:[{id:me.id,name:name.slice(0,18),color:COLORS[0]}],props:{},log:[`${name} criou a sala.`]};
+    players:[{id:me.id,name:name.slice(0,18),color:COLORS[0]}],pids:[me.id],props:{},log:[`${name} criou a sala.`]};
   try{ await db.doc('rooms/'+c).set(st); location.hash=c }
   catch(e){ toast(e&&e.code==='permission-denied'?'Sem permissão para criar salas. Confirma as regras do Firestore.':'Não consegui criar a sala.') }
 }
@@ -808,7 +865,7 @@ function openRoom(){
   const timer=setTimeout(()=>{ if(!state) app.innerHTML=`<div class="banner warn">Ainda não consegui ligar à sala ${esc(code)}. Verifica a ligação.</div>` },10000);
   unsub=ref.onSnapshot(s=>{
     clearTimeout(timer);
-    if(!s.exists){ if(!s.metadata.fromCache) app.innerHTML=`<div class="banner warn">Não existe nenhuma sala com o código <span class="code">${esc(code)}</span>. <a href="#">Voltar</a></div>`; return }
+    if(!s.exists){ if(!s.metadata.fromCache) app.innerHTML=`<div class="banner warn">A sala <span class="code">${esc(code)}</span> não existe ou foi encerrada pelo anfitrião. <a href="#">Voltar às salas</a></div>`; return }
     applyState(structuredClone(s.data())); autoJoin();
   },()=>{ clearTimeout(timer); app.innerHTML=`<div class="banner warn">Perdi a ligação à sala. Recarrega a página.</div>` });
 }
@@ -842,17 +899,17 @@ function render(){
       ${meIdx>=0?`<div class="panel"><h2>As tuas cartas especiais</h2><div id="mycards" class="players"></div></div>
       <div class="panel"><h2>As tuas propriedades</h2><div class="chips" id="myprops"></div></div>`:''}
       <div class="panel"><h2>Registo</h2><div class="log">${(st.log||[]).map(l=>`<div>${esc(l)}</div>`).join('')}</div></div>
-      ${st.host===me.id&&st.status==='ended'?`<button class="btn danger" id="delroom">Apagar sala</button>`:''}
+      ${st.host===me.id?`<button class="btn danger" id="delroom">Encerrar sala</button>`:''}
     </div>
   </div>`;
   const w=$('#boardwrap'); if(w) w.scrollLeft=keep;
   placeTokens(); renderActions(meIdx); renderPlayers(meIdx); renderDetail(meIdx); renderMyProps(meIdx); renderMyCards(meIdx);
   $('#copylink').onclick=()=>copy(location.href);
+  $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
   app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&innerWidth<=980) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
-  $('#delroom')&&($('#delroom').onclick=delRoom);
+  $('#delroom')&&confirmBtn($('#delroom'),'Encerrar a sala para todos?',()=>closeRoom(code));
 }
 function copy(t){ navigator.clipboard.writeText(t).then(()=>toast('Copiado!')).catch(()=>toast(t)) }
-async function delRoom(){ try{ await db.doc('rooms/'+code).delete(); location.hash='' }catch(e){ toast('Não consegui apagar a sala.') } }
 
 function renderLobby(meIdx){
   const st=state, isHost=st.host===me.id, nick=ls.get('mv-nick')||'';
@@ -876,7 +933,7 @@ function renderLobby(meIdx){
         <p class="note" style="margin:0">Cada jogador começa com 1500 €. A ordem de jogo é sorteada.</p>
         <button class="btn primary" id="startbtn" ${st.players.length<2?'disabled':''}>Começar jogo</button>
         ${st.players.length<2?'<p class="note">À espera de pelo menos mais um jogador.</p>':''}
-        <button class="btn danger" id="delroom">Apagar sala</button>`
+        <button class="btn danger" id="delroom">Encerrar sala</button>`
       : `<h2>À espera do anfitrião</h2><p class="note" style="margin:0">O jogo começa quando ${esc(st.players.find(p=>p.id===st.host)?.name||'o anfitrião')} carregar em Começar.</p><button class="btn" id="leavebtn">Sair da sala</button>`}
       <details><summary class="note">Regras rápidas</summary><ul class="note">
         <li>Na primeira volta ninguém compra. Só depois de passares pela Partida.</li>
@@ -895,7 +952,7 @@ function renderLobby(meIdx){
   $('#joinroom')&&($('#joinroom').onclick=()=>{ const n=$('#nick').value.trim(); if(!n) return toast('Escreve o teu nome.'); ls.set('mv-nick',n); act('join',{name:n}) });
   $('#startbtn')&&($('#startbtn').onclick=()=>act('start'));
   $('#leavebtn')&&($('#leavebtn').onclick=async()=>{ await act('leave'); location.hash='' });
-  $('#delroom')&&($('#delroom').onclick=delRoom);
+  $('#delroom')&&confirmBtn($('#delroom'),'Encerrar a sala para todos?',()=>closeRoom(code));
 }
 
 function cellPos(i){
@@ -926,10 +983,17 @@ function boardHTML(st){
   const cur=st.players[st.turn];
   h+=`<div class="center"><div class="logo">DEMopólio<small>edição Coimbra</small></div>
     <div class="dice${rolling?' rolling':''}" id="dice">${dieHTML(dispDice[0])}${dieHTML(dispDice[1])}</div>
+    ${centerRollBtn(st)}
     ${st.status==='playing'&&cur?`<div class="now">${pawnSVG(cur.color,cur.name)}Vez de ${esc(cur.name)}</div>`:''}
     ${st.card?`<div class="cardnote"><b>${esc(st.card.deck)}</b>${esc(st.card.x)}</div>`:''}
     ${st.status==='ended'?`<div class="cardnote"><b>Fim de jogo</b>${esc(pname(st,st.winner))} ganhou!</div>`:''}</div>`;
   return h+'</div>';
+}
+function centerRollBtn(st){
+  const pi=myTurn(st); if(pi<0||st.phase!=='roll'||rolling) return '';
+  const p=st.players[pi];
+  if(p.money<0) return `<div class="note" style="background:var(--surface);padding:4px 10px;border-radius:8px">Resolve o saldo negativo para lançar</div>`;
+  return `<button class="btn primary rollbtn" id="centerRoll">${p.inJail?'Tentar duplos':st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
 }
 function dieHTML(n){
   const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[n]||[];
