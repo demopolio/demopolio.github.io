@@ -93,8 +93,27 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .cell.corner .sub{font-size:clamp(6.5px,1.05cqw,10.5px);color:var(--muted);font-weight:600}
 .cell .mort{position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 6px,color-mix(in srgb,var(--danger) 20%,transparent) 6px 8px);pointer-events:none;z-index:2}
 .cell .ownflag{position:absolute;z-index:2;width:clamp(8px,1.4cqw,14px);height:clamp(8px,1.4cqw,14px);border-radius:50%;border:2px solid var(--surface);right:3px;bottom:3px}
-.tokens{position:absolute;inset:auto 0 4% 0;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;pointer-events:none;z-index:4;padding:0 2px}
-.cell.corner .tokens{bottom:6%}
+.pawnlayer{position:absolute;inset:0;pointer-events:none;z-index:5}
+.pwn{position:absolute;width:3.1cqw;min-width:15px;transform:translate(-50%,-100%);transition:left .3s ease-in-out,top .3s ease-in-out}
+.pwn .pawn{width:100%;margin:0}
+.pwn.active .pawn{filter:drop-shadow(0 0 .5cqw var(--pc)) drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+.pwarrow{position:absolute;transform:translate(-50%,-100%);transition:left .3s ease-in-out,top .3s ease-in-out;display:flex;flex-direction:column;align-items:center;animation:bob 1s ease-in-out infinite}
+.pwarrow span{background:var(--pc);color:#fff;font-family:var(--f-body);font-weight:800;font-size:max(9px,1.25cqw);letter-spacing:.06em;padding:.2em .55em;border-radius:6px;border:1.5px solid var(--pawn-edge);white-space:nowrap}
+.pwarrow i{width:0;height:0;border-left:max(5px,.7cqw) solid transparent;border-right:max(5px,.7cqw) solid transparent;border-top:max(7px,1cqw) solid var(--pc);margin-top:-1px}
+@keyframes bob{0%,100%{margin-top:0}50%{margin-top:-.8cqw}}
+.landing{position:absolute;inset:9%;z-index:6;background:color-mix(in srgb,var(--surface) 97%,transparent);border:2px solid var(--line);border-radius:2.4cqw;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.3cqw;padding:3cqw 3.4cqw;text-align:center;animation:pop .25s ease-out;overflow:auto}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.landing .lx{position:absolute;top:1.2cqw;right:1.2cqw;border:0;background:var(--tile);color:var(--ink);width:max(28px,3.4cqw);height:max(28px,3.4cqw);border-radius:50%;font-size:max(16px,2cqw);line-height:1}
+.landing .lwho{font-size:max(11px,1.6cqw);font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.landing .lsq{display:flex;flex-direction:column;align-items:center;gap:.8cqw;min-width:min(60%,32cqw);border:2px solid var(--line);border-radius:1.6cqw;overflow:hidden;background:var(--tile)}
+.landing .lsq .lband{align-self:stretch;height:2.2cqw}
+.landing .lsq svg{width:6cqw;max-width:56px;color:var(--ink);opacity:.8}
+.landing .lsq b{font-family:var(--f-display);font-size:max(20px,4cqw);line-height:1.05;padding:0 1.6cqw 1.4cqw;text-wrap:balance}
+.landing ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6cqw;font-size:max(13px,1.75cqw);max-width:44cqw}
+.landing ul li{background:var(--tile);border-radius:1cqw;padding:.5cqw 1.2cqw}
+.landing .lact{display:flex;gap:1cqw;flex-wrap:wrap;justify-content:center}
+.landing .lact .btn{font-size:max(13px,1.7cqw)}
+.landing .lhint{font-size:max(12px,1.5cqw);color:var(--muted)}
 .pawn{width:clamp(15px,2.9cqw,30px);height:auto;margin:0 -2px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
 .pawn.hop{animation:hop .17s ease-out}
 @keyframes hop{0%{transform:translateY(0)}50%{transform:translateY(-35%)}100%{transform:translateY(0)}}
@@ -144,7 +163,14 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .detail td:last-child{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
 .detail .head{border-radius:10px;padding:12px;color:#fff;font-family:var(--f-display);font-weight:700;font-size:18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .detail .head svg{width:34px;flex:none;opacity:.9}
-.log{max-height:240px;overflow:auto;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.log{max-height:300px;overflow:auto;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.log .pe{display:flex;gap:10px;justify-content:space-between;align-items:baseline}
+.log .pe .amt{font-family:var(--f-mono);font-weight:700;white-space:nowrap}
+.log .gain{color:var(--ok)}.log .loss{color:var(--danger)}
+.log .cd b{color:var(--gold);font-family:var(--f-display);font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-right:4px}
+.tabs{display:flex;gap:4px;background:var(--tile);border:1px solid var(--line);border-radius:10px;padding:3px}
+.tabs button{border:0;background:none;color:var(--muted);font-weight:600;font-size:13px;padding:5px 10px;border-radius:7px}
+.tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.15)}
 .log div{padding:3px 0;border-bottom:1px dashed var(--line)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;z-index:70;max-width:90vw}
 .notes{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:8px;z-index:60;width:min(360px,calc(100vw - 24px));pointer-events:none}
@@ -162,13 +188,34 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .tcols .cardin{display:grid;grid-template-columns:1fr 64px;gap:6px;align-items:center;font-size:13px}
 .lobbylist{display:flex;flex-direction:column;gap:8px}
 .tok{display:inline-block}
-@media (max-width:980px){
+@media (max-width:1099px){
   .game{display:flex;flex-direction:column;align-items:stretch;gap:14px}
-  .game>*,.side>*{width:100%;min-width:0}
-  .side{display:contents}
-  #actions{order:-1}
+  .game>*,.side>*,.col>*{width:100%;min-width:0}
+  .side,.col{display:contents}
+  #actions{order:-2}
+  .boardcol{order:-1}
   .hero{grid-template-columns:minmax(0,1fr)}
   .hero .azulejo{display:none}
+}
+/* Computador: tudo cabe no ecrã, sem deslizar a página */
+@media (min-width:1100px){
+  body{padding-block:12px}
+  .wrap.gv{max-width:none;height:calc(100dvh - 24px);display:flex;flex-direction:column}
+  .gv .topbar{margin-bottom:10px;flex:none}
+  .gv .topbar h1{font-size:22px}
+  .gv .game{flex:1;min-height:0;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:14px;align-items:stretch}
+  .gv .boardcol{height:100%;aspect-ratio:1;max-width:calc(100vw - 32px - 620px);min-width:0;align-self:start}
+  .gv .boardwrap{overflow:hidden}
+  .gv .side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-height:0;height:100%}
+  .gv .col{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0}
+  .gv .col>.panel{flex:0 1 auto;min-height:0;padding:14px;gap:10px;overflow:auto}
+  .gv .panel h2{font-size:17px}
+  .gv #actions{flex:none;max-height:70%}
+  .gv .col>.grow{flex:1 1 0;min-height:130px;overflow:hidden}
+  .gv .scroll{flex:1;min-height:0;overflow:auto}
+  .gv .log{max-height:none}
+  .gv .pl{padding:6px 8px}
+  .gv .spcard{padding:8px}
 }
 @media (max-width:780px){
   .board{width:780px}
@@ -295,7 +342,7 @@ const SQ = [
 ];
 const BUYABLE = t => t==='prop'||t==='rail'||t==='util';
 const COLORS = ['#E4572E','#2E86DE','#17A589','#E0B000','#8E44AD','#EC6FA2','#00B8D9','#A0632B'];
-const MAXP = 8, START_MONEY = 1500, GO_MONEY = 200, JAIL_FEE = 50;
+const MAXP = 8, START_MONEY = 1000, GO_MONEY = 200, JAIL_FEE = 50;
 const SPECIAL = {
   jail:{n:'Sai da Prisão',d:'Usa quando estiveres na Prisão para saíres sem pagar.',ic:'key'},
   borla:{n:'Borla',d:'Usa na tua vez: não pagas rendas até ao fim dessa vez.',ic:'ticket'},
@@ -362,16 +409,26 @@ function rentFor(st,i,dice){
   return 0;
 }
 function event(st,e){ st.evN=(st.evN||0)+1; e.n=st.evN; st.ev=[...(st.ev||[]),e].slice(-20) }
-function pay(st,from,to,amt,why){
+function note(st,t){ if(st.landing&&st.landing.notes) st.landing.notes.push(t) }
+function plog(st,pi,t,v=null){
+  if(pi===null||pi===undefined||!st.players[pi]) return;
+  st.plog=st.plog||{}; const k=String(pi);
+  st.plog[k]=[{t,v},...(st.plog[k]||[])].slice(0,60);
+}
+function pay(st,from,to,amt,why,quiet){
   if(!amt) return;
   if(from!==null) st.players[from].money-=amt;
   if(to!==null) st.players[to].money+=amt;
-  if(why!==null&&why!==undefined) event(st,{a:from,b:to,v:amt,w:why});
+  if(why!==null&&why!==undefined&&!quiet) event(st,{a:from,b:to,v:amt,w:why});
+  const lbl=why?` · ${why}`:'';
+  if(from!==null) plog(st,from,`Pagaste ${to===null?'ao banco':'a '+pname(st,to)}${lbl}`,-amt);
+  if(to!==null) plog(st,to,`Recebeste ${from===null?'do banco':'de '+pname(st,from)}${lbl}`,amt);
 }
 function passGo(st,pi){
   const p=st.players[pi]; p.money+=GO_MONEY; p.laps=(p.laps||0)+1;
   log(st,`${p.name} passou pela Partida e recebeu a mesada dos pais (${fmt(GO_MONEY)}).`);
   event(st,{a:null,b:pi,v:GO_MONEY,w:'mesada dos pais',go:true});
+  plog(st,pi,'Passaste pela Partida · mesada dos pais',GO_MONEY); note(st,`Passagem pela Partida: +${fmt(GO_MONEY)} de mesada dos pais`);
 }
 function moveBy(st,pi,steps){
   const p=st.players[pi], np=((p.pos+steps)%40+40)%40;
@@ -385,26 +442,29 @@ function moveTo(st,pi,target){
 }
 function sendJail(st,pi){
   const p=st.players[pi]; p.pos=10; p.inJail=true; p.jailTurns=0; st.again=false;
-  log(st,`${p.name} foi para a Prisão.`);
+  log(st,`${p.name} foi para a Prisão.`); plog(st,pi,'Foste para a Prisão'); note(st,'Vai direto para a Prisão');
 }
 function land(st,pi,dice,depth=0){
   const p=st.players[pi], i=p.pos, s=SQ[i];
   if(BUYABLE(s.t)){
     const pr=st.props[i];
     if(!pr){
-      if((p.laps||0)<1){ log(st,`${p.name} ainda está na primeira volta e não pode comprar ${s.n}.`); return }
-      st.phase='buy'; st.pendingBuy=i; return
+      if((p.laps||0)<1){ log(st,`${p.name} ainda está na primeira volta e não pode comprar ${s.n}.`); note(st,`À venda por ${fmt(s.p)}, mas na primeira volta ainda não dá para comprar`); return }
+      st.phase='buy'; st.pendingBuy=i; note(st,`À venda por ${fmt(s.p)}`); return
     }
-    if(pr.o===pi) return;
-    if(pr.m){ log(st,`${s.n} está hipotecada: ${p.name} não paga renda.`); return }
-    if(p.shield){ log(st,`${p.name} usou a Borla e não pagou renda em ${s.s}.`); return }
+    if(pr.o===pi){ note(st,'Esta propriedade já é tua'); return }
+    if(pr.m){ log(st,`${s.n} está hipotecada: ${p.name} não paga renda.`); plog(st,pr.o,`${p.name} caiu em ${s.s}, mas está hipotecada: não recebeste renda`); note(st,`De ${pname(st,pr.o)}, mas está hipotecada: não há renda a pagar`); return }
+    if(p.shield){ log(st,`${p.name} usou a Borla e não pagou renda em ${s.s}.`); plog(st,pr.o,`${p.name} caiu em ${s.s} com a carta Borla: não recebeste renda`); note(st,`De ${pname(st,pr.o)}: a carta Borla evitou a renda`); return }
     const r=rentFor(st,i,dice); pay(st,pi,pr.o,r,`renda de ${s.s}`);
-    log(st,`${p.name} pagou ${fmt(r)} de renda a ${pname(st,pr.o)} (${s.s}).`);
-  } else if(s.t==='tax'){ pay(st,pi,null,s.p,s.n); log(st,`${p.name} pagou ${fmt(s.p)} de ${s.n}.`) }
+    log(st,`${p.name} pagou ${fmt(r)} de renda a ${pname(st,pr.o)} (${s.s}).`); note(st,`Renda de ${fmt(r)} paga a ${pname(st,pr.o)}`);
+  } else if(s.t==='tax'){ pay(st,pi,null,s.p,s.n); log(st,`${p.name} pagou ${fmt(s.p)} de ${s.n}.`); note(st,`Paga ${fmt(s.p)} de ${s.n} ao banco`) }
+  else if(s.t==='jail'){ note(st,'Só de visita à Prisão') }
+  else if(s.t==='free'){ note(st,'Descanso no Parque Verde: não acontece nada') }
   else if(s.t==='gotojail'){ sendJail(st,pi) }
   else if((s.t==='chance'||s.t==='chest') && depth<3){
     const deck=s.t==='chance'?CHANCE:CHEST, c=deck[Math.floor(Math.random()*deck.length)];
     st.card={deck:s.n,x:c.x,by:pi}; log(st,`${p.name} tirou ${s.n}: ${c.x}`);
+    st.cardlog=[{by:pi,deck:s.n,x:c.x},...(st.cardlog||[])].slice(0,50); plog(st,pi,`Tiraste ${s.n}: ${c.x}`); note(st,`Carta de ${s.n}: ${c.x}`);
     applyCard(st,pi,c,dice,depth);
   }
 }
@@ -434,8 +494,8 @@ function advanceTurn(st){
 function bankrupt(st,pi,why){
   const p=st.players[pi]; p.out=true; p.money=0; p.inv={jail:0,borla:0,extra:0}; p.shield=false;
   Object.keys(st.props).forEach(k=>{ if(st.props[k].o===pi) delete st.props[k] });
-  log(st,why||`${p.name} declarou falência. As propriedades voltaram ao banco.`);
-  if(st.trade && (st.trade.from===pi||st.trade.to===pi)) st.trade=null;
+  log(st,why||`${p.name} declarou falência. As propriedades voltaram ao banco.`); plog(st,pi,'Saíste do jogo. As tuas propriedades voltaram ao banco.');
+  st.trades=(st.trades||[]).filter(t=>t.from!==pi&&t.to!==pi);
   const a=alive(st);
   if(a.length<=1){ st.status='ended'; st.winner=a[0]??null; st.phase='over'; log(st,`${pname(st,a[0])} ganhou o jogo!`); return }
   if(st.turn===pi) advanceTurn(st);
@@ -503,7 +563,7 @@ const A = {
     if(st.players.length<2) return 'São precisos pelo menos 2 jogadores.';
     st.players.sort(()=>Math.random()-.5);
     st.players.forEach(p=>Object.assign(p,{pos:0,money:START_MONEY,inJail:false,jailTurns:0,laps:0,inv:{jail:0,borla:0,extra:0},shield:false,out:false}));
-    Object.assign(st,{status:'playing',turn:0,phase:'roll',dice:[1,1],rollId:0,dbl:0,again:false,props:{},card:null,trade:null,pendingBuy:null,winner:null,ev:[],evN:0,startedAt:Date.now()});
+    Object.assign(st,{status:'playing',turn:0,phase:'roll',dice:[1,1],rollId:0,dbl:0,again:false,props:{},card:null,trades:[],landing:null,pendingBuy:null,winner:null,ev:[],evN:0,startedAt:Date.now()});
     log(st,`O jogo começou! ${st.players[0].name} joga primeiro. Na primeira volta ninguém compra: só depois de passarem pela Partida.`);
   },
   roll(st){
@@ -511,18 +571,21 @@ const A = {
     const p=st.players[pi]; if(p.money<0) return 'Tens saldo negativo: vende ou hipoteca antes de lançar.';
     const d=[roll6(),roll6()], sum=d[0]+d[1], doubles=d[0]===d[1];
     st.dice=d; st.rollId=(st.rollId||0)+1; st.card=null;
+    st.landing={by:pi,n:st.rollId,d,notes:[],from:p.pos};
     log(st,`${p.name} lançou ${d[0]} + ${d[1]}${doubles?' (duplos)':''}.`);
+    const fin=()=>{ st.landing.i=p.pos };
     if(p.inJail){
-      if(doubles){ p.inJail=false; p.jailTurns=0; log(st,`${p.name} saiu da Prisão com duplos.`); st.again=false; moveBy(st,pi,sum); land(st,pi,sum) }
+      if(doubles){ p.inJail=false; p.jailTurns=0; log(st,`${p.name} saiu da Prisão com duplos.`); note(st,'Duplos: sai da Prisão'); st.again=false; moveBy(st,pi,sum); land(st,pi,sum) }
       else { p.jailTurns++;
-        if(p.jailTurns>=3){ pay(st,pi,null,JAIL_FEE,'fiança'); p.inJail=false; p.jailTurns=0; log(st,`${p.name} pagou ${fmt(JAIL_FEE)} e saiu da Prisão.`); st.again=false; moveBy(st,pi,sum); land(st,pi,sum) }
-        else { st.phase='end'; autoEnd(st,pi); return } }
+        if(p.jailTurns>=3){ pay(st,pi,null,JAIL_FEE,'fiança'); p.inJail=false; p.jailTurns=0; log(st,`${p.name} pagou ${fmt(JAIL_FEE)} e saiu da Prisão.`); note(st,`Terceira tentativa falhada: paga ${fmt(JAIL_FEE)} de fiança e sai`); st.again=false; moveBy(st,pi,sum); land(st,pi,sum) }
+        else { note(st,`Sem duplos: continua na Prisão (tentativa ${p.jailTurns} de 3)`); st.phase='end'; fin(); autoEnd(st,pi); return } }
     } else {
-      if(doubles){ st.dbl=(st.dbl||0)+1; if(st.dbl>=3){ log(st,`Três duplos seguidos!`); sendJail(st,pi); st.phase='end'; autoEnd(st,pi); return } }
+      if(doubles){ st.dbl=(st.dbl||0)+1; if(st.dbl>=3){ log(st,`Três duplos seguidos!`); note(st,'Três duplos seguidos!'); sendJail(st,pi); st.phase='end'; fin(); autoEnd(st,pi); return } }
       st.again=doubles; moveBy(st,pi,sum); land(st,pi,sum);
     }
+    if(st.again&&!p.inJail) note(st,'Saíram duplos: volta a lançar');
     if(st.phase!=='buy') nextPhase(st,pi);
-    autoEnd(st,pi);
+    fin(); autoEnd(st,pi);
   },
   payJail(st){
     const pi=myTurn(st), p=st.players[pi]; if(pi<0||!p.inJail||st.phase!=='roll') return false;
@@ -536,7 +599,7 @@ const A = {
     if(k==='jail'){ if(!p.inJail||st.phase!=='roll') return 'Só serve quando estás na Prisão, antes de lançares.'; p.inJail=false; p.jailTurns=0 }
     else if(k==='borla'){ if(p.shield) return 'A Borla já está ativa.'; p.shield=true }
     else if(k==='extra'){ if(st.phase!=='end'||p.inJail) return 'Usa depois de jogares, antes de passares a vez.'; st.phase='roll'; st.again=false; st.dbl=0 }
-    v[k]--; log(st,`${p.name} usou a carta "${SPECIAL[k].n}".`);
+    v[k]--; log(st,`${p.name} usou a carta "${SPECIAL[k].n}".`); plog(st,pi,`Usaste a carta "${SPECIAL[k].n}"`);
   },
   buy(st){
     const pi=myTurn(st); if(pi<0||st.phase!=='buy') return false;
@@ -564,26 +627,26 @@ const A = {
     if(pr.h>=5) return 'Já tem hotel.';
     if(pr.h>Math.min(...grp.map(j=>st.props[j].h))) return 'Constrói de forma equilibrada no grupo.';
     if(p.money<hc) return 'Não tens dinheiro suficiente.';
-    pay(st,pi,null,hc,null); pr.h++; log(st,`${p.name} construiu ${pr.h===5?'um hotel':'uma casa'} em ${s.s} (${fmt(hc)}).`);
+    pr.h++; pay(st,pi,null,hc,`${pr.h===5?'hotel':'casa'} em ${s.s}`,true); log(st,`${p.name} construiu ${pr.h===5?'um hotel':'uma casa'} em ${s.s} (${fmt(hc)}).`);
   },
   sell(st,{i}){
     const pi=myTurn(st); if(pi<0) return 'Só podes vender na tua vez.';
     const s=SQ[i], pr=st.props[i], grp=groupOf(s.g);
     if(!pr||pr.o!==pi||!pr.h) return false;
     if(pr.h<Math.max(...grp.map(j=>st.props[j].h))) return 'Vende de forma equilibrada no grupo.';
-    const v=G[s.g].hc/2; pr.h--; pay(st,null,pi,v,null); log(st,`${st.players[pi].name} vendeu uma construção em ${s.s} (+${fmt(v)}).`);
+    const v=G[s.g].hc/2; pr.h--; pay(st,null,pi,v,`venda de construção em ${s.s}`,true); log(st,`${st.players[pi].name} vendeu uma construção em ${s.s} (+${fmt(v)}).`);
   },
   mortgage(st,{i}){
     const pi=myTurn(st); if(pi<0) return 'Só podes hipotecar na tua vez.';
     const s=SQ[i], pr=st.props[i]; if(!pr||pr.o!==pi||pr.m) return false;
     if(s.t==='prop' && groupOf(s.g).some(j=>st.props[j]&&st.props[j].h)) return 'Vende primeiro as construções deste grupo.';
-    pr.m=true; pay(st,null,pi,s.p/2,null); log(st,`${st.players[pi].name} hipotecou ${s.s} (+${fmt(s.p/2)}).`);
+    pr.m=true; pay(st,null,pi,s.p/2,`hipoteca de ${s.s}`,true); log(st,`${st.players[pi].name} hipotecou ${s.s} (+${fmt(s.p/2)}).`);
   },
   unmortgage(st,{i}){
     const pi=myTurn(st); if(pi<0) return 'Só podes pagar a hipoteca na tua vez.';
     const s=SQ[i], pr=st.props[i]; if(!pr||pr.o!==pi||!pr.m) return false;
     const c=Math.ceil(s.p*0.55); if(st.players[pi].money<c) return 'Não tens dinheiro suficiente.';
-    pr.m=false; pay(st,pi,null,c,null); log(st,`${st.players[pi].name} recuperou ${s.s} (${fmt(c)}).`);
+    pr.m=false; pay(st,pi,null,c,`fim da hipoteca de ${s.s}`,true); log(st,`${st.players[pi].name} recuperou ${s.s} (${fmt(c)}).`);
   },
   bankrupt(st){
     const pi=myIdx(st); if(pi<0||st.status!=='playing') return false;
@@ -605,31 +668,38 @@ const A = {
   },
   propose(st,t){
     const pi=myIdx(st); if(pi<0||st.status!=='playing'||st.players[pi].out) return false;
-    if(st.trade) return 'Já há uma proposta em curso. Espera que seja respondida.';
-    const tr={from:pi,to:t.to,give:t.give,get:t.get,gm:t.gm,tm:t.tm,gc:cleanCards(t.gc),tc:cleanCards(t.tc)};
+    st.trades=st.trades||[];
+    if(st.trades.filter(x=>x.from===pi).length>=5) return 'Já tens 5 propostas à espera. Cancela alguma primeiro.';
+    const tr={id:Math.random().toString(36).slice(2,9),from:pi,to:t.to,give:t.give,get:t.get,gm:t.gm,tm:t.tm,gc:cleanCards(t.gc),tc:cleanCards(t.tc)};
     if(emptyTrade(tr)) return 'A proposta está vazia.';
     const bad=validTrade(st,tr); if(bad) return bad;
-    st.trade=tr; log(st,`${pname(st,pi)} fez uma proposta a ${pname(st,t.to)}.`);
+    st.trades.push(tr); log(st,`${pname(st,pi)} fez uma proposta a ${pname(st,t.to)}.`);
   },
   counter(st,t){
-    const pi=myIdx(st), old=st.trade; if(!old||old.to!==pi) return 'Esta proposta já não está ativa.';
-    const tr={from:pi,to:old.from,give:t.give,get:t.get,gm:t.gm,tm:t.tm,gc:cleanCards(t.gc),tc:cleanCards(t.tc)};
+    const pi=myIdx(st), list=st.trades||[], k=list.findIndex(x=>x.id===t.id);
+    const old=list[k]; if(!old||old.to!==pi) return 'Esta proposta já não está ativa.';
+    const tr={id:Math.random().toString(36).slice(2,9),from:pi,to:old.from,give:t.give,get:t.get,gm:t.gm,tm:t.tm,gc:cleanCards(t.gc),tc:cleanCards(t.tc)};
     if(emptyTrade(tr)) return 'A contraproposta está vazia.';
     const bad=validTrade(st,tr); if(bad) return bad;
-    st.trade=tr; log(st,`${pname(st,pi)} fez uma contraproposta a ${pname(st,old.from)}.`);
+    list.splice(k,1,tr); st.trades=list; log(st,`${pname(st,pi)} fez uma contraproposta a ${pname(st,old.from)}.`);
   },
-  accept(st){
-    const t=st.trade, pi=myIdx(st); if(!t||t.to!==pi) return false;
-    const bad=validTrade(st,t); if(bad){ st.trade=null; log(st,'A proposta foi anulada: '+bad); return }
+  accept(st,{id}){
+    const pi=myIdx(st), list=st.trades||[], t=list.find(x=>x.id===id); if(!t||t.to!==pi) return 'Esta proposta já não está ativa.';
+    const bad=validTrade(st,t); if(bad){ st.trades=list.filter(x=>x!==t); log(st,'A proposta foi anulada: '+bad); return }
     const f=st.players[t.from], o=st.players[t.to];
     t.give.forEach(i=>st.props[i].o=t.to); t.get.forEach(i=>st.props[i].o=t.from);
     if(t.gm) pay(st,t.from,t.to,t.gm,'negócio'); if(t.tm) pay(st,t.to,t.from,t.tm,'negócio');
     SKEYS.forEach(k=>{ inv(f)[k]+=t.tc[k]-t.gc[k]; inv(o)[k]+=t.gc[k]-t.tc[k] });
-    st.trade=null; log(st,`${o.name} aceitou o negócio com ${f.name}.`);
+    const lst=(props,cards)=>[...props.map(i=>SQ[i].s),...SKEYS.filter(k=>cards[k]).map(k=>`${cards[k]}× ${SPECIAL[k].n}`)].join(', ')||'nada';
+    plog(st,t.from,`Negócio com ${o.name}: deste ${lst(t.give,t.gc)}, recebeste ${lst(t.get,t.tc)}`);
+    plog(st,t.to,`Negócio com ${f.name}: deste ${lst(t.get,t.tc)}, recebeste ${lst(t.give,t.gc)}`);
+    log(st,`${o.name} aceitou o negócio com ${f.name}.`);
+    st.trades=list.filter(x=>x!==t).filter(x=>{ const b=validTrade(st,x); if(b) log(st,`Uma proposta de ${pname(st,x.from)} a ${pname(st,x.to)} foi anulada: ${b}`); return !b });
   },
-  reject(st){
-    const t=st.trade, pi=myIdx(st); if(!t||(t.to!==pi&&t.from!==pi)) return false;
-    log(st,t.from===pi?`${pname(st,pi)} cancelou a proposta.`:`${pname(st,pi)} recusou a proposta.`); st.trade=null;
+  reject(st,{id}){
+    const pi=myIdx(st), list=st.trades||[], t=list.find(x=>x.id===id); if(!t||(t.to!==pi&&t.from!==pi)) return false;
+    log(st,t.from===pi?`${pname(st,pi)} cancelou uma proposta a ${pname(st,t.to)}.`:`${pname(st,pi)} recusou a proposta de ${pname(st,t.from)}.`);
+    st.trades=list.filter(x=>x!==t);
   },
 };
 
@@ -693,7 +763,7 @@ const act=(name,arg)=>mutate(A[name],arg);
 
 /* ===================== ANIMAÇÕES E NOTIFICAÇÕES ===================== */
 let disp={}, dispDice=[1,1], rolling=false, walking=false, lastRoll=null, lastEv=null, noteQ=[], diceTimer=null, walkTimer=null, hopped=new Set();
-function resetAnim(){ disp={}; lastRoll=null; lastEv=null; noteQ=[]; rolling=false; walking=false; clearInterval(diceTimer); clearInterval(walkTimer) }
+function resetAnim(){ showLanding=null; holdUntil=0; disp={}; lastRoll=null; lastEv=null; noteQ=[]; rolling=false; walking=false; clearInterval(diceTimer); clearInterval(walkTimer) }
 function applyState(ns){
   if(state&&state.code===ns.code&&(ns.rev||0)<(state.rev||0)) return;
   const fresh=!state||state.code!==ns.code||lastRoll===null;
@@ -701,14 +771,14 @@ function applyState(ns){
   if(fresh){
     lastRoll=ns.rollId||0; lastEv=ns.evN||0; dispDice=ns.dice||[1,1];
     disp={}; (ns.players||[]).forEach(p=>{ if(p.pos!==undefined) disp[p.id]=p.pos });
-    render(); setTimeout(followActive,60); return;
+    showLanding=null; holdUntil=0; render(); setTimeout(followActive,60); return;
   }
   (ns.ev||[]).forEach(e=>{ if(e.n>lastEv) noteQ.push(e) }); lastEv=Math.max(lastEv,ns.evN||0);
   const rolled=(ns.rollId||0)!==lastRoll; lastRoll=ns.rollId||0;
   const turnChanged=prev&&prev.turn!==ns.turn;
   render();
   if(turnChanged&&!rolled) setTimeout(followActive,80);
-  if(rolled) rollDice(ns.dice,startWalk); else if(!rolling) startWalk();
+  if(rolled){ showLanding=null; clearTimeout(landTimer); landTimer=null; rollDice(ns.dice,()=>startWalk(true)) } else if(!rolling&&!walking) startWalk(false);
 }
 function rollDice(final,cb){
   clearInterval(diceTimer); rolling=true; drawDice();
@@ -717,7 +787,7 @@ function rollDice(final,cb){
   diceTimer=setInterval(()=>{ dispDice=[roll6(),roll6()]; drawDice(); if((t+=70)>=(reduce?140:840)){ clearInterval(diceTimer); dispDice=final; rolling=false; drawDice(); render(); cb() } },70);
 }
 function drawDice(){ const el=$('#dice'); if(!el) return; el.className='dice'+(rolling?' rolling':''); el.innerHTML=dieHTML(dispDice[0])+dieHTML(dispDice[1]) }
-function startWalk(){
+function startWalk(fromRoll){
   if(!state||!state.players) return;
   clearInterval(walkTimer);
   const paths={};
@@ -731,26 +801,91 @@ function startWalk(){
     paths[p.id]=path;
   });
   const ids=Object.keys(paths);
-  if(!ids.length){ walking=false; placeTokens(); flushNotes(); return }
+  if(!ids.length){ walking=false; placeTokens(); afterMove(fromRoll); return }
   walking=true;
-  const max=Math.max(...ids.map(i=>paths[i].length)), step=Math.max(70,Math.min(190,2600/max));
+  const max=Math.max(...ids.map(i=>paths[i].length)), step=Math.max(240,Math.min(420,6500/max));
   let k=0;
   walkTimer=setInterval(()=>{
     hopped=new Set();
     ids.forEach(id=>{ if(k<paths[id].length){ disp[id]=paths[id][k]; hopped.add(id) } });
     placeTokens(); k++;
-    if(k>=max){ clearInterval(walkTimer); walking=false; hopped=new Set(); placeTokens(); flushNotes(); followActive() }
+    if(k>=max){ clearInterval(walkTimer); walking=false; hopped=new Set(); placeTokens(); afterMove(fromRoll) }
   },step);
+}
+let showLanding=null, holdUntil=0, landTimer=null;
+const inHold=()=>Date.now()<holdUntil;
+function afterMove(fromRoll){
+  flushNotes();
+  if(fromRoll&&state&&state.landing&&state.landing.n===state.rollId){
+    showLanding=state.landing.n; clearTimeout(landTimer); landTimer=null;
+    holdUntil=Date.now()+3000; setTimeout(()=>{ if(state) render() },3050);
+    render(); centerBoard(); if(innerWidth<1100) setTimeout(()=>$('.landing')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),120); return;
+  }
+  followActive();
+}
+function centerBoard(){ const w=$('#boardwrap'); if(w&&w.scrollWidth>w.clientWidth+4) w.scrollTo({left:(w.scrollWidth-w.clientWidth)/2,behavior:'smooth'}) }
+const BC=1.6/12.2, BR=1/12.2, PW=.031, PH=PW*34/26, PE=.008;
+const lineC=k=>(k===1?0:BC+(k-2)*BR)+((k===1||k===11)?BC:BR)/2;
+function sqPoint(i,k,n){
+  const [r,c,side]=cellPos(i), sp=(k-(n-1)/2)*.024, inw=k*.027;
+  if(i===0) return [1-BC-PE-PW/2-inw,1-BC-PE];
+  if(i===10) return [BC+PE+PW/2+inw,1-BC-PE];
+  if(i===20) return [BC+PE+PW/2+inw,BC+PE+PH];
+  if(i===30) return [1-BC-PE-PW/2-inw,BC+PE+PH];
+  if(side==='b') return [lineC(c)+sp,1-BC-PE];
+  if(side==='t') return [lineC(c)+sp,BC+PE+PH];
+  if(side==='l') return [BC+PE+PW/2+inw,lineC(r)+PH/2];
+  return [1-BC-PE-PW/2-inw,lineC(r)+PH/2];
 }
 function placeTokens(){
   if(!state) return;
-  document.querySelectorAll('.tokens').forEach(t=>t.innerHTML='');
-  state.players.forEach(p=>{
-    if(p.out||disp[p.id]===undefined) return;
-    const el=document.getElementById('tk'+disp[p.id]); if(!el) return;
-    el.insertAdjacentHTML('beforeend',pawnSVG(p.color,p.name,hopped.has(p.id)?'data-hop="1"':''));
-  });
-  document.querySelectorAll('.pawn[data-hop]').forEach(s=>s.classList.add('hop'));
+  const layer=$('#pawnlayer'); if(!layer) return;
+  const mi=myIdx(state), cur=state.players[state.turn];
+  const target=mi>=0&&!state.players[mi].out?state.players[mi]:cur;
+  const groups={};
+  state.players.forEach(p=>{ if(!p.out&&disp[p.id]!==undefined) (groups[disp[p.id]]=groups[disp[p.id]]||[]).push(p) });
+  const seen=new Set();
+  Object.entries(groups).forEach(([sq,list])=>list.forEach((p,k)=>{
+    const [x,y]=sqPoint(+sq,k,list.length); seen.add(p.id);
+    let el=layer.querySelector(`.pwn[data-id="${p.id}"]`);
+    if(!el){ el=document.createElement('div'); el.className='pwn'; el.dataset.id=p.id; el.innerHTML=pawnSVG(p.color,p.name); el.style.setProperty('--pc',p.color); layer.appendChild(el) }
+    el.style.left=(x*100)+'%'; el.style.top=(y*100)+'%';
+    el.classList.toggle('active',state.status==='playing'&&cur&&cur.id===p.id);
+    if(hopped.has(p.id)){ const sv=el.querySelector('svg'); sv.classList.remove('hop'); void sv.offsetWidth; sv.classList.add('hop') }
+    if(target&&target.id===p.id){
+      let a=layer.querySelector('.pwarrow');
+      if(!a){ a=document.createElement('div'); a.className='pwarrow'; layer.appendChild(a) }
+      a.style.setProperty('--pc',p.color); a.innerHTML=`<span>${mi>=0&&target===state.players[mi]?'TU':esc(p.name)}</span><i></i>`;
+      a.style.left=(x*100)+'%'; a.style.top=((y-PH-.006)*100)+'%';
+    }
+  }));
+  layer.querySelectorAll('.pwn').forEach(el=>{ if(!seen.has(el.dataset.id)) el.remove() });
+}
+function landingHTML(st){
+  const L=st.landing; if(showLanding===null||!L||L.n!==showLanding||L.i===undefined||st.status!=='playing') return '';
+  const s=SQ[L.i], by=st.players[L.by], mi=myIdx(st), mine=mi===L.by, col=s.t==='prop'?G[s.g].c:'var(--cobalt)';
+  let act='';
+  if(mine&&st.turn===L.by){
+    const p=st.players[mi];
+    if(st.phase==='buy'){ const b=SQ[st.pendingBuy];
+      act=`<div class="lact"><button class="btn primary" data-la="buy" ${p.money<b.p?'disabled':''}>Comprar por ${fmt(b.p)}</button><button class="btn" data-la="pass">Não comprar</button></div>
+        <div class="lhint">${p.money<b.p?'Não tens dinheiro suficiente. Podes hipotecar algo no painel ao lado.':`Ficas com ${fmt(p.money-b.p)} se comprares.`}</div>`;
+    } else if(st.phase==='roll'){
+      act=`<div class="lact"><button class="btn primary" data-la="roll" ${inHold()||p.money<0?'disabled':''}>${p.inJail?'Tentar duplos':'Lançar outra vez'}</button></div>`;
+    } else if(st.phase==='end'){
+      act=`${p.money<0?`<div class="lhint" style="color:var(--danger)">Estás com ${fmt(p.money)}. Vende ou hipoteca no painel ao lado, ou declara falência.</div>`:'<div class="lhint">Ainda podes construir, hipotecar ou negociar antes de passar a vez.</div>'}
+        <div class="lact"><button class="btn primary" data-la="end" ${p.money<0?'disabled':''}>Terminar vez</button>${inv(p).extra&&!p.inJail?'<button class="btn" data-la="extra">Usar "Mais uma rodada"</button>':''}</div>`;
+    }
+  } else if(st.turn!==L.by){
+    act=`<div class="lhint">Agora é a vez de <b>${esc(pname(st,st.turn))}</b>.</div>`;
+  } else {
+    act=`<div class="lhint">${{buy:`${esc(by.name)} está a decidir se compra.`,end:`${esc(by.name)} está a gerir as propriedades.`,roll:`${esc(by.name)} vai lançar outra vez.`}[st.phase]||''}</div>`;
+  }
+  return `<div class="landing" role="dialog" aria-label="Resultado da jogada"><button class="lx" data-la="close" aria-label="Fechar">×</button>
+    <div class="lwho">${mine?'Calhaste em':esc(by.name)+' calhou em'} · saiu ${L.d[0]} + ${L.d[1]}</div>
+    <div class="lsq"><span class="lband" style="background:${col}"></span>${icon(s.ic)}<b>${esc(s.n)}</b></div>
+    ${L.notes.length?`<ul>${L.notes.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
+    ${act}</div>`;
 }
 function followActive(){
   const wrap=$('#boardwrap'); if(!wrap||wrap.scrollWidth<=wrap.clientWidth+4||!state) return;
@@ -789,6 +924,7 @@ function listRooms(){
 }
 function renderHome(){
   if(code) return;
+  app.classList.remove('gv');
   const nick=ls.get('mv-nick')||'';
   const byCode={};
   [...rooms.filter(r=>!r.pids&&r.players?.some(p=>p.id===me.id)), ...myRooms].forEach(r=>byCode[r.code]=r);
@@ -882,36 +1018,53 @@ function render(){
   const st=state, meIdx=myIdx(st);
   if(st.status==='lobby') return renderLobby(meIdx);
   const keep=$('#boardwrap')?.scrollLeft||0;
+  app.classList.add('gv');
   app.innerHTML=`
   <div class="topbar">
     <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>DEMopólio</h1></div>
     <div class="row"><span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button></div>
   </div>
   <div class="game">
-    <div>
+    <div class="boardcol">
       <div class="boardwrap" id="boardwrap">${boardHTML(st)}</div>
       <p class="note swipe">Desliza o tabuleiro para os lados para veres todas as casas. Toca numa casa para ver os detalhes.</p>
     </div>
     <div class="side">
-      <div class="panel actions" id="actions"></div>
-      <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
-      <div class="panel"><h2>Jogadores</h2><p class="note" style="margin:0">Toca num jogador para negociar ou doar dinheiro.</p><div class="players" id="players"></div></div>
-      ${meIdx>=0?`<div class="panel"><h2>As tuas cartas especiais</h2><div id="mycards" class="players"></div></div>
-      <div class="panel"><h2>As tuas propriedades</h2><div class="chips" id="myprops"></div></div>`:''}
-      <div class="panel"><h2>Registo</h2><div class="log">${(st.log||[]).map(l=>`<div>${esc(l)}</div>`).join('')}</div></div>
-      ${st.host===me.id?`<button class="btn danger" id="delroom">Encerrar sala</button>`:''}
+      <div class="col">
+        <div class="panel actions" id="actions"></div>
+        <div class="panel grow pplayers"><h2>Jogadores</h2><p class="note" style="margin:0">Toca num jogador para negociar ou doar dinheiro.</p><div class="players scroll" id="players"></div></div>
+      </div>
+      <div class="col">
+        <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
+        ${meIdx>=0?`<div class="panel pcards"><h2>As tuas cartas especiais</h2><div id="mycards" class="players scroll"></div></div>
+        <div class="panel pprops"><h2>As tuas propriedades</h2><div class="chips scroll" id="myprops"></div></div>`:''}
+        <div class="panel grow plog"><div class="row" style="justify-content:space-between"><h2>Registo</h2><div class="tabs" role="tablist">
+          <button data-tab="all" class="${logTab==='all'?'on':''}">Todos</button>${meIdx>=0?`<button data-tab="me" class="${logTab==='me'?'on':''}">O meu</button>`:''}<button data-tab="cards" class="${logTab==='cards'?'on':''}">Cartas</button></div></div>
+          <div class="log scroll" id="logbox"></div></div>
+      </div>
     </div>
   </div>`;
   const w=$('#boardwrap'); if(w) w.scrollLeft=keep;
-  placeTokens(); renderActions(meIdx); renderPlayers(meIdx); renderDetail(meIdx); renderMyProps(meIdx); renderMyCards(meIdx);
+  placeTokens(); renderActions(meIdx); renderPlayers(meIdx); renderDetail(meIdx); renderMyProps(meIdx); renderMyCards(meIdx); renderLog(meIdx);
+  app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ logTab=b.dataset.tab; ls.set('mv-logtab',logTab); render() });
   $('#copylink').onclick=()=>copy(location.href);
   $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
-  app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&innerWidth<=980) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
+  app.querySelectorAll('[data-la]').forEach(b=>b.onclick=()=>{
+    const a=b.dataset.la;
+    if(a==='close'){ showLanding=null; render(); return }
+    b.disabled=true;
+    if(a==='roll'||a==='end'||a==='extra') showLanding=null;
+    if(a==='extra') act('useCard',{k:'extra'}); else act(a);
+  });
+  if(showLanding!==null&&state.landing&&(myIdx(state)!==state.landing.by||state.turn!==state.landing.by)&&!landTimer)
+    landTimer=setTimeout(()=>{ showLanding=null; landTimer=null; render() },6000);
+  app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&innerWidth<1100) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
   $('#delroom')&&confirmBtn($('#delroom'),'Encerrar a sala para todos?',()=>closeRoom(code));
 }
 function copy(t){ navigator.clipboard.writeText(t).then(()=>toast('Copiado!')).catch(()=>toast(t)) }
 
 function renderLobby(meIdx){
+  app.classList.remove('gv');
   const st=state, isHost=st.host===me.id, nick=ls.get('mv-nick')||'';
   app.innerHTML=`
   <div class="topbar"><div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>Sala de espera</h1></div></div>
@@ -930,7 +1083,7 @@ function renderLobby(meIdx){
         <button class="btn primary" id="joinroom">Entrar</button>`
       : isHost ? `
         <h2>Pronto?</h2>
-        <p class="note" style="margin:0">Cada jogador começa com 1500 €. A ordem de jogo é sorteada.</p>
+        <p class="note" style="margin:0">Cada jogador começa com ${fmt(START_MONEY)}. A ordem de jogo é sorteada.</p>
         <button class="btn primary" id="startbtn" ${st.players.length<2?'disabled':''}>Começar jogo</button>
         ${st.players.length<2?'<p class="note">À espera de pelo menos mais um jogador.</p>':''}
         <button class="btn danger" id="delroom">Encerrar sala</button>`
@@ -976,7 +1129,6 @@ function boardHTML(st){
     }
     if(own) inner+=`<span class="ownflag" style="background:${own.color}" title="${esc(own.name)}"></span>`;
     if(pr&&pr.m) inner+=`<div class="mort"></div>`;
-    inner+=`<div class="tokens" id="tk${i}"></div>`;
     const ownStyle=own?`box-shadow:inset 0 0 0 3px ${own.color};`:'';
     h+=`<button class="cell ${corner?'corner':side} ${sel===i?'sel':''}" style="grid-row:${r};grid-column:${c};${ownStyle}" data-i="${i}" aria-label="${esc(s.n)}">${inner}</button>`;
   });
@@ -986,11 +1138,12 @@ function boardHTML(st){
     ${centerRollBtn(st)}
     ${st.status==='playing'&&cur?`<div class="now">${pawnSVG(cur.color,cur.name)}Vez de ${esc(cur.name)}</div>`:''}
     ${st.card?`<div class="cardnote"><b>${esc(st.card.deck)}</b>${esc(st.card.x)}</div>`:''}
-    ${st.status==='ended'?`<div class="cardnote"><b>Fim de jogo</b>${esc(pname(st,st.winner))} ganhou!</div>`:''}</div>`;
+    ${st.status==='ended'?`<div class="cardnote"><b>Fim de jogo</b>${esc(pname(st,st.winner))} ganhou!</div>`:''}${landingHTML(st)}</div>
+    <div class="pawnlayer" id="pawnlayer"></div>`;
   return h+'</div>';
 }
 function centerRollBtn(st){
-  const pi=myTurn(st); if(pi<0||st.phase!=='roll'||rolling) return '';
+  const pi=myTurn(st); if(pi<0||st.phase!=='roll'||rolling||walking||inHold()||showLanding!==null) return '';
   const p=st.players[pi];
   if(p.money<0) return `<div class="note" style="background:var(--surface);padding:4px 10px;border-radius:8px">Resolve o saldo negativo para lançar</div>`;
   return `<button class="btn primary rollbtn" id="centerRoll">${p.inJail?'Tentar duplos':st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
@@ -1011,13 +1164,12 @@ function tradeSummary(st,t){
 function renderActions(meIdx){
   const st=state, el=$('#actions'), cur=st.players[st.turn], mine=meIdx>=0&&st.turn===meIdx;
   let h='';
-  if(st.status==='ended'){ el.innerHTML=`<div class="turn">${esc(pname(st,st.winner))} ganhou!</div><p class="note" style="margin:0">Volta às salas para começar outro jogo.</p>`; return }
-  const t=st.trade;
-  if(t&&(t.to===meIdx||t.from===meIdx)){
-    h+=`<div class="banner"><div class="eyebrow">${t.to===meIdx?'Proposta para ti':'A tua proposta'}</div>
+  if(st.status==='ended'){ el.innerHTML=`<div class="turn">${esc(pname(st,st.winner))} ganhou!</div><p class="note" style="margin:0">Volta às salas para começar outro jogo.</p>${st.host===me.id?'<button class="btn small danger" id="delroom">Encerrar sala</button>':''}`; return }
+  (st.trades||[]).filter(t=>t.to===meIdx||t.from===meIdx).sort((a,b)=>(a.to===meIdx?0:1)-(b.to===meIdx?0:1)).forEach(t=>{
+    h+=`<div class="banner"><div class="eyebrow">${t.to===meIdx?'Proposta de '+esc(pname(st,t.from)):'A tua proposta a '+esc(pname(st,t.to))}</div>
       <p style="margin:6px 0">${tradeSummary(st,t)}</p>
-      <div class="row">${t.to===meIdx?`<button class="btn primary small" data-a="accept">Aceitar</button><button class="btn small" id="counterbtn">Contraproposta</button><button class="btn small" data-a="reject">Recusar</button>`:`<span class="note">À espera de resposta.</span><button class="btn small" data-a="reject">Cancelar</button>`}</div></div>`;
-  }
+      <div class="row">${t.to===meIdx?`<button class="btn primary small" data-tacc="${t.id}">Aceitar</button><button class="btn small" data-tcnt="${t.id}">Contraproposta</button><button class="btn small" data-trej="${t.id}">Recusar</button>`:`<span class="note">À espera de resposta.</span><button class="btn small" data-trej="${t.id}">Cancelar</button>`}</div></div>`;
+  });
   h+=`<div class="turn">${pawnSVG(cur.color,cur.name)} ${mine?'É a tua vez':'Vez de '+esc(cur.name)}</div>`;
   if(!mine){
     h+=`<p class="note" style="margin:0">${{roll:'A lançar os dados…',buy:`A decidir se compra ${esc(SQ[st.pendingBuy]?.n||'')}.`,end:'A gerir propriedades antes de passar a vez.'}[st.phase]||''}</p>`;
@@ -1030,10 +1182,10 @@ function renderActions(meIdx){
     if(st.phase==='roll'){
       if(p.inJail){
         h+=`<p class="note" style="margin:0">Estás na Prisão (tentativa ${p.jailTurns+1} de 3).</p><div class="row">
-          <button class="btn primary" data-a="roll" ${p.money<0?'disabled':''}>Tentar duplos</button>
+          <button class="btn primary" data-a="roll" ${p.money<0||inHold()?'disabled':''}>Tentar duplos</button>
           <button class="btn" data-a="payJail" ${p.money<JAIL_FEE?'disabled':''}>Pagar ${fmt(JAIL_FEE)}</button>
           ${inv(p).jail?`<button class="btn" data-use="jail">Usar "Sai da Prisão"</button>`:''}</div>`;
-      } else h+=`<button class="btn primary" data-a="roll" ${p.money<0?'disabled':''}>${st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
+      } else h+=`<button class="btn primary" data-a="roll" ${p.money<0||inHold()?'disabled':''}>${st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
     } else if(st.phase==='buy'){
       const s=SQ[st.pendingBuy];
       h+=`<p style="margin:0">Caíste em <b>${esc(s.n)}</b>, que está à venda por <span class="money">${fmt(s.p)}</span>.</p>
@@ -1046,7 +1198,7 @@ function renderActions(meIdx){
     h+=`<p class="note" style="margin:0">Toca numa propriedade tua para construir, vender ou hipotecar.</p>`;
   }
   if(meIdx>=0&&!st.players[meIdx].out&&st.players[meIdx].money<0) h+=`<button class="btn danger small" data-a="bankrupt">Declarar falência</button>`;
-  if(st.host===me.id) h+=`<details><summary class="note">Anfitrião</summary><p class="note">Se alguém abandonar o jogo, podes retirá-lo (as propriedades voltam ao banco).</p><div class="row">${st.players.map((p,i)=>!p.out&&p.id!==me.id?`<button class="btn small danger" data-kickg="${i}">Retirar ${esc(p.name)}</button>`:'').join('')}</div></details>`;
+  if(st.host===me.id) h+=`<details><summary class="note">Anfitrião</summary><p class="note">Se alguém abandonar o jogo, podes retirá-lo (as propriedades voltam ao banco).</p><div class="row">${st.players.map((p,i)=>!p.out&&p.id!==me.id?`<button class="btn small danger" data-kickg="${i}">Retirar ${esc(p.name)}</button>`:'').join('')}<button class="btn small danger" id="delroom">Encerrar sala</button></div></details>`;
   el.innerHTML=h;
   el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{
     if(b.dataset.a==='bankrupt'){ if(b.dataset.sure) act('bankrupt'); else { b.dataset.sure=1; b.textContent='Confirmar falência?' } return }
@@ -1054,7 +1206,9 @@ function renderActions(meIdx){
   });
   el.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>act('useCard',{k:b.dataset.use}));
   el.querySelectorAll('[data-kickg]').forEach(b=>b.onclick=()=>{ if(b.dataset.sure) act('kick',{idx:+b.dataset.kickg}); else { b.dataset.sure=1; b.textContent='Confirmar?' } });
-  $('#counterbtn')&&($('#counterbtn').onclick=()=>{ const t=st.trade; openTrade(meIdx,t.from,{give:t.get,get:t.give,gm:t.tm,tm:t.gm,gc:t.tc,tc:t.gc,counter:true}) });
+  el.querySelectorAll('[data-tacc]').forEach(b=>b.onclick=()=>act('accept',{id:b.dataset.tacc}));
+  el.querySelectorAll('[data-trej]').forEach(b=>b.onclick=()=>act('reject',{id:b.dataset.trej}));
+  el.querySelectorAll('[data-tcnt]').forEach(b=>b.onclick=()=>{ const t=(st.trades||[]).find(x=>x.id===b.dataset.tcnt); if(t) openTrade(meIdx,t.from,{give:t.get,get:t.give,gm:t.tm,tm:t.gm,gc:t.tc,tc:t.gc,counter:t.id}) });
 }
 function worth(st,i){ let w=st.players[i].money; Object.entries(st.props||{}).forEach(([k,pr])=>{ if(pr.o===i){ const s=SQ[k]; w+=pr.m?s.p/2:s.p+(pr.h?pr.h*G[s.g].hc:0) } }); return w }
 function cardCount(p){ return SKEYS.reduce((n,k)=>n+(inv(p)[k]||0),0) }
@@ -1065,6 +1219,18 @@ function renderPlayers(meIdx){
     <div class="who">${esc(p.name)}${i===meIdx?' <small>(tu)</small>':''}<br><small>${p.out?'falido':`${p.inJail?'na Prisão · ':''}${esc(SQ[p.pos]?.s||'')}${cardCount(p)?` · ${cardCount(p)} carta${cardCount(p)>1?'s':''}`:''}${(p.laps||0)<1?' · 1.ª volta':''}`}</small></div>
     <div style="text-align:right"><div class="money ${p.money<0?'neg':''}">${fmt(p.money)}</div><small class="note">património ${fmt(worth(st,i))}</small></div></button>`).join('');
   el.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>openPlayer(meIdx,+b.dataset.pl));
+}
+let logTab=ls.get('mv-logtab')||'all';
+function renderLog(meIdx){
+  const el=$('#logbox'); if(!el) return; const st=state;
+  if(logTab==='me'&&meIdx<0) logTab='all';
+  if(logTab==='me'){
+    const a=(st.plog||{})[String(meIdx)]||[];
+    el.innerHTML=a.length?a.map(e=>`<div class="pe"><span>${esc(e.t)}</span>${e.v?`<span class="amt ${e.v>0?'gain':'loss'}">${e.v>0?'+':'−'}${fmt(Math.abs(e.v))}</span>`:''}</div>`).join(''):'<span class="note">Ainda não te aconteceu nada. Aqui aparece o teu dinheiro, as tuas propriedades e as cartas que tiras.</span>';
+  } else if(logTab==='cards'){
+    const a=st.cardlog||[];
+    el.innerHTML=a.length?a.map(e=>`<div class="cd"><b>${esc(e.deck)}</b>${esc(pname(st,e.by))}: ${esc(e.x)}</div>`).join(''):'<span class="note">Ainda ninguém tirou cartas de Sorte ou Caixa Comum.</span>';
+  } else el.innerHTML=(st.log||[]).map(l=>`<div>${esc(l)}</div>`).join('');
 }
 function renderMyCards(meIdx){
   const el=$('#mycards'); if(!el) return;
@@ -1135,7 +1301,6 @@ function openPlayer(meIdx,i){
 }
 function openTrade(meIdx,to,pre){
   const st=state, m=$('#modal');
-  if(st.trade&&!pre.counter) return toast('Já há uma proposta em curso. Espera que seja respondida.');
   const propsOf=pi=>Object.keys(st.props).map(Number).filter(i=>st.props[i].o===pi&&tradeable(st,i)).sort((a,b)=>a-b);
   const box=(pi,name,picked)=>propsOf(pi).map(i=>`<label class="pk"><input type="checkbox" name="${name}" value="${i}" ${picked.includes(i)?'checked':''}><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${SQ[i].t==='prop'?G[SQ[i].g].c:'var(--muted)'}"></span>${esc(SQ[i].s)}${st.props[i].m?' (hipotecada)':''}</label>`).join('')||'<span class="note">Sem propriedades negociáveis.</span>';
   const cards=(pi,name,picked)=>{ const p=st.players[pi]; const ks=SKEYS.filter(k=>inv(p)[k]); return ks.length?ks.map(k=>`<div class="cardin"><label for="${name}-${k}">${SPECIAL[k].n} (tem ${inv(p)[k]})</label><input id="${name}-${k}" type="number" min="0" max="${inv(p)[k]}" value="${(picked||{})[k]||0}"></div>`).join(''):'' };
@@ -1158,7 +1323,7 @@ function openTrade(meIdx,to,pre){
     const t={to,give:v('give'),get:v('get'),gm:Math.max(0,Math.floor(+$('#tgm').value||0)),tm:Math.max(0,Math.floor(+$('#ttm').value||0)),gc:rc('gc'),tc:rc('tc')};
     if(t.gm>st.players[meIdx].money) return toast('Não tens esse dinheiro.');
     if(t.tm>o.money) return toast(`${o.name} não tem esse dinheiro.`);
-    closeModal(); act(pre.counter?'counter':'propose',t);
+    closeModal(); if(pre.counter) t.id=pre.counter; act(pre.counter?'counter':'propose',t);
   };
 }
 
