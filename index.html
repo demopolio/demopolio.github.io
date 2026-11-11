@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Mais-Valias Coimbra</title>
+<title>DEMopólio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
@@ -160,7 +160,8 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .lobbylist{display:flex;flex-direction:column;gap:8px}
 .tok{display:inline-block}
 @media (max-width:980px){
-  .game{display:flex;flex-direction:column;gap:14px}
+  .game{display:flex;flex-direction:column;align-items:stretch;gap:14px}
+  .game>*,.side>*{width:100%;min-width:0}
   .side{display:contents}
   #actions{order:-1}
   .hero{grid-template-columns:minmax(0,1fr)}
@@ -207,6 +208,7 @@ const IC = {
  books:'<path d="M4 4h4v16H4zM9 4h4v16H9z"/><path d="M14.5 5l3.8-1 3.7 15.5-3.8 1z"/>',
  bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21a2 2 0 0 0 4 0"/><path d="M12 3V2"/>',
  library:'<path d="M4 20V8l8-5 8 5v12"/><path d="M8 20v-8h8v8"/><path d="M8 15h8M12 12v8"/><path d="M2 20h20"/>',
+ sign:'<path d="M12 22V3"/><path d="M5 5h12l3 3-3 3H5z"/><path d="M19 13H7l-3 3 3 3h12z"/>',
  train:'<rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 10h14"/><circle cx="9" cy="13.5" r="1"/><circle cx="15" cy="13.5" r="1"/><path d="M8 21l2-4M16 21l-2-4"/>',
  lift:'<rect x="6" y="2" width="12" height="20" rx="1"/><path d="M10 9l2-2 2 2M10 15l2 2 2-2"/>',
  food:'<path d="M7 2v20M4 2v6a3 3 0 0 0 6 0V2"/><path d="M17 2c-2 2-3 5-3 9h3v11"/>',
@@ -252,7 +254,7 @@ const SQ = [
  {t:'chest',n:'Caixa Comum',s:'Caixa Comum',ic:'mail'},
  P('Departamento de Bioquímica (BIOQ)','BIOQ','castanho',60,[4,20,60,180,320,450],'flask'),
  {t:'tax',n:'Propinas',s:'Propinas',p:200,ic:'cap'},
- {t:'rail',n:'Estação Coimbra-B',s:'Coimbra-B',p:200,ic:'train'},
+ {t:'rail',n:'Rua Mendes dos Remédios',s:'Mendes dos Remédios',p:200,ic:'sign'},
  P('Moelas','Moelas','celeste',100,[6,30,90,270,400,550],'beer'),
  {t:'chance',n:'Sorte',s:'Sorte',ic:'q'},
  P('Pintos','Pintos','celeste',100,[6,30,90,270,400,550],'beer'),
@@ -262,7 +264,7 @@ const SQ = [
  {t:'util',n:'Cantinas da Universidade',s:'Cantinas',p:150,ic:'food'},
  P('NB','NB','rosa',140,[10,50,150,450,625,750],'note'),
  P('RS','RS','rosa',160,[12,60,180,500,700,900],'cocktail'),
- {t:'rail',n:'Estação Coimbra (Estação Nova)',s:'Estação Nova',p:200,ic:'train'},
+ {t:'rail',n:'Rua Teófilo de Braga',s:'Teófilo de Braga',p:200,ic:'sign'},
  P('In Club','In Club','laranja',180,[14,70,200,550,750,950],'disco'),
  {t:'chest',n:'Caixa Comum',s:'Caixa Comum',ic:'mail'},
  P('Praça da Canção','Praça da Canção','laranja',180,[14,70,200,550,750,950],'mic'),
@@ -272,7 +274,7 @@ const SQ = [
  {t:'chance',n:'Sorte',s:'Sorte',ic:'q'},
  P('Sé Nova','Sé Nova','vermelho',220,[18,90,250,700,875,1050],'church'),
  P('Sé Velha','Sé Velha','vermelho',240,[20,100,300,750,925,1100],'church'),
- {t:'rail',n:'Elevador do Mercado',s:'Elevador',p:200,ic:'lift'},
+ {t:'rail',n:'Rua Guerra Junqueiro',s:'Guerra Junqueiro',p:200,ic:'sign'},
  P('República dos Fantasmas','Rep. Fantasmas','amarelo',260,[22,110,330,800,975,1150],'house'),
  P('República Ay-o-Linda','Rep. Ay-o-Linda','amarelo',260,[22,110,330,800,975,1150],'house'),
  {t:'util',n:'Águas de Coimbra',s:'Águas',p:150,ic:'drop'},
@@ -282,7 +284,7 @@ const SQ = [
  P('Sala Multibanco do DEM','Multibanco do DEM','verde',300,[26,130,390,900,1100,1275],'atm'),
  P('Biblioteca do DEM','Biblioteca do DEM','verde',320,[28,150,450,1000,1200,1400],'books'),
  P('NEEMAAC','NEEMAAC','verde',320,[28,150,450,1000,1200,1400],'gear'),
- {t:'rail',n:'Metro Mondego',s:'Metro',p:200,ic:'train'},
+ {t:'rail',n:'Praça Mestre Pêro',s:'Praça Mestre Pêro',p:200,ic:'sign'},
  {t:'chance',n:'Sorte',s:'Sorte',ic:'q'},
  P('A Cabra','Cabra','azul',350,[35,175,500,1100,1300,1500],'bell'),
  {t:'tax',n:'Traje Académico',s:'Traje',p:100,ic:'cape'},
@@ -303,7 +305,7 @@ const CHANCE = [
  {x:'Visita guiada: avança até à Biblioteca Joanina.',a:'moveTo',v:39},
  {x:'Serenata Monumental: avança até à Sé Velha.',a:'moveTo',v:24},
  {x:'Saída à noite: avança até ao RS.',a:'moveTo',v:14},
- {x:'Perdeste o autocarro: avança até ao transporte mais próximo.',a:'rail'},
+ {x:'Ficaste sem bateria na trotinete: avança até à rua mais próxima (Mendes dos Remédios, Teófilo de Braga, Guerra Junqueiro ou Mestre Pêro).',a:'rail'},
  {x:'Esqueceste a capa na esplanada: recua três casas.',a:'back',v:3},
  {x:'Exageraste na Queima das Fitas: vai diretamente para a Prisão.',a:'jail'},
  {x:'Foste apanhado com álcool no sangue: paga 200 € de multa.',a:'money',v:-200,w:'álcool no sangue'},
@@ -761,7 +763,7 @@ function renderHome(){
   <section class="hero">
     <div>
       <div class="eyebrow">Edição Coimbra · jogo de tabuleiro online</div>
-      <h1>Mais-<span>Valias</span></h1>
+      <h1><span>DEM</span>opólio</h1>
       <p>Compra a cidade dos estudantes, dos bares e repúblicas ao DEM e à Biblioteca Joanina, constrói casas e hotéis e deixa os teus amigos sem um cêntimo. Cria uma sala, partilha o link e joguem cada um no seu dispositivo, de 2 a ${MAXP} jogadores.</p>
     </div>
     <div class="azulejo"><div class="seal">${pawnSVG(COLORS[0],'M')}${pawnSVG(COLORS[1],'V')}${pawnSVG(COLORS[2],'C')}</div></div>
@@ -825,7 +827,7 @@ function render(){
   const keep=$('#boardwrap')?.scrollLeft||0;
   app.innerHTML=`
   <div class="topbar">
-    <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>Mais-Valias Coimbra</h1></div>
+    <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>DEMopólio</h1></div>
     <div class="row"><span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button></div>
   </div>
   <div class="game">
@@ -880,7 +882,7 @@ function renderLobby(meIdx){
         <li>Na primeira volta ninguém compra. Só depois de passares pela Partida.</li>
         <li>Passar pela Partida dá 200 € de mesada.</li><li>Cai numa propriedade livre: compras ou deixas.</li>
         <li>Com a cor completa a renda duplica e podes construir (até 4 casas e um hotel), de forma equilibrada.</li>
-        <li>Transportes: 25/50/100/200 €. Cantinas e Águas: 4× ou 10× os dados.</li>
+        <li>Ruas (Mendes dos Remédios, Teófilo de Braga, Guerra Junqueiro e Praça Mestre Pêro): 25/50/100/200 € conforme tenhas 1 a 4. Cantinas e Águas: 4× ou 10× os dados.</li>
         <li>Três duplos seguidos levam-te à Prisão. Para sair: duplos, 50 € ou carta.</li>
         <li>Cartas especiais ficam guardadas e podem ser negociadas.</li>
         <li>Toca num jogador para negociar propriedades, dinheiro e cartas, ou para lhe doar dinheiro.</li>
@@ -922,7 +924,7 @@ function boardHTML(st){
     h+=`<button class="cell ${corner?'corner':side} ${sel===i?'sel':''}" style="grid-row:${r};grid-column:${c};${ownStyle}" data-i="${i}" aria-label="${esc(s.n)}">${inner}</button>`;
   });
   const cur=st.players[st.turn];
-  h+=`<div class="center"><div class="logo">Mais-Valias<small>edição Coimbra</small></div>
+  h+=`<div class="center"><div class="logo">DEMopólio<small>edição Coimbra</small></div>
     <div class="dice${rolling?' rolling':''}" id="dice">${dieHTML(dispDice[0])}${dieHTML(dispDice[1])}</div>
     ${st.status==='playing'&&cur?`<div class="now">${pawnSVG(cur.color,cur.name)}Vez de ${esc(cur.name)}</div>`:''}
     ${st.card?`<div class="cardnote"><b>${esc(st.card.deck)}</b>${esc(st.card.x)}</div>`:''}
@@ -1024,7 +1026,7 @@ function renderDetail(meIdx){
     h+=`<table><tr><td>Renda</td><td>${fmt(s.r[0])}</td></tr><tr><td>Com a cor completa</td><td>${fmt(s.r[0]*2)}</td></tr>
       ${[1,2,3,4].map(k=>`<tr><td>Com ${k} casa${k>1?'s':''}</td><td>${fmt(s.r[k])}</td></tr>`).join('')}<tr><td>Com hotel</td><td>${fmt(s.r[5])}</td></tr>
       <tr><td>Preço · construção</td><td>${fmt(s.p)} · ${fmt(G[s.g].hc)}</td></tr><tr><td>Hipoteca</td><td>${fmt(s.p/2)}</td></tr></table>`;
-  } else if(s.t==='rail'){ h+=`<table><tr><td>1 transporte</td><td>25 €</td></tr><tr><td>2 transportes</td><td>50 €</td></tr><tr><td>3 transportes</td><td>100 €</td></tr><tr><td>4 transportes</td><td>200 €</td></tr><tr><td>Preço</td><td>${fmt(s.p)}</td></tr></table>` }
+  } else if(s.t==='rail'){ h+=`<table><tr><td>Com 1 destas ruas</td><td>25 €</td></tr><tr><td>Com 2</td><td>50 €</td></tr><tr><td>Com 3</td><td>100 €</td></tr><tr><td>Com as 4</td><td>200 €</td></tr><tr><td>Preço</td><td>${fmt(s.p)}</td></tr></table>` }
   else if(s.t==='util'){ h+=`<p class="note" style="margin:0">Renda: 4× o valor dos dados com uma companhia, 10× com as duas. Preço ${fmt(s.p)}.</p>` }
   else if(s.t==='tax'){ h+=`<p style="margin:0">Paga ${fmt(s.p)} ao banco.</p>` }
   else { h+=`<p class="note" style="margin:0">${{go:'Recebes 200 € de mesada sempre que passares aqui.',jail:'Se estás só de visita, não acontece nada.',free:'Descansa. Não acontece nada.',gotojail:'Vais direto para a Prisão.',chance:'Tira uma carta de Sorte.',chest:'Tira uma carta da Caixa Comum.'}[s.t]}</p>` }
