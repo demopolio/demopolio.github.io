@@ -134,6 +134,7 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .endscreen .rank svg{width:100%}
 .endscreen .hls{display:grid;grid-template-columns:1fr 1fr;gap:.8cqw;width:min(100%,52cqw);text-align:left;font-size:max(11px,1.4cqw)}
 .endscreen .hls>div{background:var(--tile);border-radius:1cqw;padding:.6cqw 1cqw}
+.btn.arming{background:var(--danger);border-color:var(--danger);color:#fff}
 .pawnlayer{position:absolute;inset:0;pointer-events:none;z-index:5}
 .pwn{position:absolute;width:3.1cqw;min-width:15px;transform:translate(-50%,-100%);transition:left .3s ease-in-out,top .3s ease-in-out}
 .pwn .pawn{width:100%;margin:0}
@@ -1319,14 +1320,29 @@ function renderHome(){
   $('#createsolo').onclick=()=>createRoom(true);
   $('#joinbtn').onclick=()=>{ const c=$('#joincode').value.trim().toUpperCase(); if(!/^[A-Z]{5}$/.test(c)) return toast('O código tem 5 letras.'); saveNick(); location.hash=c };
   app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{saveNick();location.hash=b.dataset.go});
-  app.querySelectorAll('[data-close]').forEach(b=>confirmBtn(b,'Encerrar para todos?',()=>closeRoom(b.dataset.close)));
-  app.querySelectorAll('[data-leave]').forEach(b=>confirmBtn(b,b.textContent==='Sair'?'Confirmar saída?':'Abandonar o jogo?',()=>mutate(A.abandon,{},b.dataset.leave)));
+  app.querySelectorAll('[data-close]').forEach(b=>confirmBtn(b,'Confirmar?',()=>closeRoom(b.dataset.close),'close:'+b.dataset.close));
+  app.querySelectorAll('[data-leave]').forEach(b=>confirmBtn(b,'Confirmar?',()=>mutate(A.abandon,{},b.dataset.leave),'leave:'+b.dataset.leave));
   app.querySelectorAll('[data-forget]').forEach(b=>b.onclick=()=>mutate(A.forget,{},b.dataset.forget));
 }
-function confirmBtn(b,ask,fn){ b.onclick=()=>{ if(b.dataset.sure){ b.disabled=true; fn() } else { b.dataset.sure=1; b.textContent=ask; setTimeout(()=>{ if(b.isConnected&&!b.disabled){ delete b.dataset.sure; code?render():renderHome() } },4000) } } }
+// a confirmação sobrevive a atualizações do ecrã (a lista de salas atualiza-se sozinha a toda a hora)
+const pending={};
+function confirmBtn(b,ask,fn,key){
+  key=key||b.id||b.textContent;
+  const arm=()=>{ b.dataset.sure=1; b.textContent=ask; b.classList.add('arming') };
+  if(pending[key]>Date.now()) arm();
+  b.onclick=()=>{
+    if(b.dataset.sure){ delete pending[key]; b.disabled=true; fn(); return }
+    pending[key]=Date.now()+6000; arm();
+    setTimeout(()=>{ if(pending[key]&&pending[key]<=Date.now()){ delete pending[key]; code?render():renderHome() } },6100);
+  };
+}
 async function closeRoom(c){
-  try{ await db.doc('rooms/'+c).delete(); toast('Sala '+c+' encerrada.'); if(code===c) location.hash='' }
-  catch(e){ toast('Não consegui encerrar a sala. Só o anfitrião pode encerrá-la.') }
+  try{ await db.doc('rooms/'+c).delete(); myRooms=myRooms.filter(r=>r.code!==c); rooms=rooms.filter(r=>r.code!==c); toast('Sala '+c+' encerrada.'); if(code===c) location.hash=''; else renderHome() }
+  catch(e){
+    // sem permissão para apagar (por exemplo, a sala foi criada noutro browser): pelo menos tira-a da tua lista
+    await mutate(A.forget,{},c); myRooms=myRooms.filter(r=>r.code!==c);
+    toast('Não foi possível apagar a sala para todos, mas foi removida da tua lista.'); if(code===c) location.hash=''; else renderHome();
+  }
 }
 function saveNick(){ const n=$('#nick')?.value.trim(); if(n) ls.set('mv-nick',n) }
 async function createRoom(solo){
@@ -1412,7 +1428,7 @@ function render(){
   if(showLanding!==null&&state.landing&&(myIdx(state)!==state.landing.by||state.turn!==state.landing.by)&&!landTimer)
     landTimer=setTimeout(()=>{ showLanding=null; landTimer=null; render() },6000);
   app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&innerWidth<1100) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
-  $('#delroom')&&confirmBtn($('#delroom'),'Encerrar a sala para todos?',()=>closeRoom(code));
+  $('#delroom')&&confirmBtn($('#delroom'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'del:'+code);
 }
 function copy(t){ navigator.clipboard.writeText(t).then(()=>toast('Copiado!')).catch(()=>toast(t)) }
 
@@ -1481,7 +1497,7 @@ function renderLobby(meIdx){
   $('#joinroom')&&($('#joinroom').onclick=()=>{ const n=$('#nick').value.trim(); if(!n) return toast('Escreve o teu nome.'); ls.set('mv-nick',n); act('join',{name:n}) });
   $('#startbtn')&&($('#startbtn').onclick=()=>act('start'));
   $('#leavebtn')&&($('#leavebtn').onclick=async()=>{ await act('leave'); location.hash='' });
-  $('#delroom')&&confirmBtn($('#delroom'),'Encerrar a sala para todos?',()=>closeRoom(code));
+  $('#delroom')&&confirmBtn($('#delroom'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'del:'+code);
   if($('#chatlist')) renderChat(cs.val,cs.focus,cs.sel,cs.atBottom,cs.scroll);
 }
 
@@ -1588,7 +1604,7 @@ function renderActions(meIdx){
   });
   el.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>act('useCard',{k:b.dataset.use}));
   el.querySelectorAll('[data-kickg]').forEach(b=>b.onclick=()=>{ if(b.dataset.sure) act('kick',{idx:+b.dataset.kickg}); else { b.dataset.sure=1; b.textContent='Confirmar?' } });
-  $('#finishbtn')&&confirmBtn($('#finishbtn'),'Terminar e ver vencedor?',()=>act('finish'));
+  $('#finishbtn')&&confirmBtn($('#finishbtn'),'Confirmar: terminar jogo?',()=>act('finish'),'finish:'+code);
   $('#reclaimform')&&($('#reclaimform').onsubmit=e=>{ e.preventDefault(); act('reclaim',{rc:$('#rcin').value}) });
   el.querySelectorAll('[data-tacc]').forEach(b=>b.onclick=()=>act('accept',{id:b.dataset.tacc}));
   el.querySelectorAll('[data-trej]').forEach(b=>b.onclick=()=>act('reject',{id:b.dataset.trej}));
