@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>DEMopólio</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#1F47C2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DEMopólio">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
@@ -136,6 +144,69 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .endscreen .rank svg{width:100%}
 .endscreen .hls{display:grid;grid-template-columns:1fr 1fr;gap:.8cqw;width:min(100%,52cqw);text-align:left;font-size:max(11px,1.4cqw)}
 .endscreen .hls>div{background:var(--tile);border-radius:1cqw;padding:.6cqw 1cqw}
+.pl .brk{grid-column:2 / -1;font-size:11.5px;color:var(--muted);margin-top:-2px}
+.pl .brk b{font-family:var(--f-mono);font-weight:700;color:var(--ink)}
+.pl .brk b.neg{color:var(--danger)}
+.modepick{max-width:760px;margin:6vh auto 0;display:flex;flex-direction:column;gap:12px;text-align:center;align-items:center}
+.modepick h1{font-size:clamp(40px,9vw,72px);color:var(--cobalt);font-weight:800;line-height:1}
+.modecards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;margin-top:10px}
+.modecard{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 18px;border:2px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);text-align:center}
+.modecard:hover{border-color:var(--cobalt)}
+.modecard .mic{font-size:44px}
+.modecard b{font-family:var(--f-display);font-size:20px}
+.modecard span{color:var(--muted);font-size:14px}
+@media (max-width:560px){.modecards{grid-template-columns:1fr}}
+/* ---------- versão telemóvel ---------- */
+body.m{padding-block:0 calc(70px + env(safe-area-inset-bottom,0px))}
+.mvw .mhead{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:8px;background:var(--bg);padding:10px 0 8px;border-bottom:1px solid var(--line);margin-bottom:10px}
+body.m::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+.mvw .mhinfo{display:flex;flex-direction:column;line-height:1.1;min-width:0;margin-right:auto}
+.mvw .mhinfo b{font-family:var(--f-display);font-size:18px}
+.mvw .mhinfo .code{font-size:12px;color:var(--muted)}
+.mvw .mmoney{font-family:var(--f-mono);font-weight:700;font-size:15px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+.mvw .mmoney.neg{color:var(--danger);border-color:var(--danger)}
+.mvw .mmenu{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.mvw .mpane{display:none;flex-direction:column;gap:12px}
+.mvw .mpane.on{display:flex}
+.mvw .mpane{padding-bottom:64px}
+.mvw #actions{order:0}
+.mvw #actions .turn,.mvw #actions [data-a="roll"],.mvw .rollbtn{display:none}
+.mvw #actions:empty{display:none}
+.mvw .mturn{display:flex;align-items:center;gap:8px;font-size:15px}
+.mvw .mturn svg{width:24px}
+.mvw .mturn .btn{margin-left:auto}
+.mvw .boardwrap{margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));border-radius:0}
+.mvw .board{width:max(760px,100%)}
+.mvw .boardwrap.fit .board{width:100%}
+.mvw .boardwrap.fit .board .nm{font-size:clamp(5px,1.35cqw,12px)}
+.mvw .chatlist{max-height:55vh;overflow:auto}
+.mvw .log{max-height:none}
+.mvw .msheet{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:30;padding:0 max(10px,env(safe-area-inset-left,0px));container-type:inline-size;pointer-events:none}
+.mvw .msheet .landing{position:relative;inset:auto;max-height:68vh;pointer-events:auto;border-radius:20px;padding:18px 16px;gap:10px;box-shadow:0 -8px 30px rgba(10,16,34,.25)}
+.mvw .msheet .landing .lsq b{font-size:24px}
+.mvw .msheet .landing ul{max-width:none;font-size:14px}
+.mvw .msheet .landing .lact .btn{font-size:15px}
+.mvw .msheet .endscreen .rank,.mvw .msheet .endscreen .hls{width:100%}
+.mvw .mprim{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:25;padding:8px max(16px,env(safe-area-inset-left,0px));display:flex}
+.mvw .mprim .btn{flex:1;padding:12px;font-size:16px;box-shadow:var(--shadow)}
+.mvw .mtabs{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);background:var(--surface);border-top:1px solid var(--line);padding:4px max(6px,env(safe-area-inset-left,0px)) calc(4px + env(safe-area-inset-bottom,0px))}
+.mvw .mtab{position:relative;border:0;background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11px;font-weight:600;padding:6px 0;border-radius:10px}
+.mvw .mtab .mti{font-size:20px;line-height:1.1}
+.mvw .mtab.on{color:var(--cobalt);background:var(--cobalt-soft)}
+.mvw .mbadge{position:absolute;top:2px;right:calc(50% - 22px);min-width:17px;height:17px;border-radius:9px;background:var(--danger);color:#fff;font-style:normal;font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 4px}
+body.m .notes{top:calc(64px + env(safe-area-inset-top,0px))}
+body.m .modal{max-height:82vh}
+.evnote{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface);border:2px solid var(--gold);border-radius:12px;padding:.5cqw 1.4cqw;font-size:max(11px,1.35cqw);text-align:center;max-width:80%}
+.evnote b{font-family:var(--f-display);font-size:1.15em}
+.updbar{position:fixed;left:50%;transform:translateX(-50%);top:calc(10px + env(safe-area-inset-top,0px));z-index:90;background:var(--cobalt);color:var(--bg);border:0;border-radius:12px;padding:10px 16px;box-shadow:var(--shadow);font-size:14px;max-width:92vw}
+.hall{grid-column:1 / -1}
+.hallt{display:flex;flex-direction:column;gap:4px;overflow-x:auto}
+.hallt .hh,.hallt .hr{display:grid;grid-template-columns:28px minmax(110px,1.6fr) repeat(3,minmax(60px,.8fr)) minmax(110px,1fr);gap:8px;align-items:center;padding:6px 8px;border-radius:8px;min-width:480px}
+.hallt .hh{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.hallt .hr:nth-child(2){background:color-mix(in srgb,var(--gold) 14%,var(--surface));border:1px solid var(--gold)}
+.hallt .hr{background:var(--tile)}
+.installcard{margin-bottom:16px;border-color:var(--cobalt);background:color-mix(in srgb,var(--cobalt) 6%,var(--surface))}
+.installcard h2{font-size:18px}
 .skyline{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
 .center .now,.center .dice,.center .logo{position:relative}
 .photoctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -342,6 +413,69 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
+const APP_VER='2026-11-12.4';
+let newVer=false;
+async function checkVersion(){
+  if(newVer||location.protocol==='file:') return;
+  try{
+    const r=await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'}); if(!r.ok) return;
+    const t=await r.text(), m=t.match(/const APP_VER='([^']+)'/);
+    if(m&&m[1]!==APP_VER){ newVer=true; showUpdate() }
+  }catch(e){}
+}
+function showUpdate(){
+  if($('#updbar')) return;
+  const b=document.createElement('button'); b.id='updbar'; b.className='updbar';
+  b.innerHTML='<b>Há uma versão nova do DEMopólio.</b> <span>Toca aqui para atualizar.</span>';
+  b.onclick=()=>location.reload(); document.body.appendChild(b);
+}
+setInterval(checkVersion,90000); addEventListener('visibilitychange',()=>{ if(!document.hidden) checkVersion() });
+/* ---------- instalar como app ---------- */
+let installEvt=null;
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const isIOS=()=>/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEvt=e; if(!code) renderHome?.() });
+addEventListener('appinstalled',()=>{ installEvt=null; try{ localStorage.setItem('mv-install-x','1') }catch(e){} toast('DEMopólio instalado. Já o tens no ecrã principal.'); if(!code) renderHome() });
+if('serviceWorker' in navigator&&location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+function installHTML(){
+  if(isStandalone()) return '';
+  let dismissed=false, played=false; try{ dismissed=localStorage.getItem('mv-install-x')==='1'; played=localStorage.getItem('mv-played')==='1' }catch(e){}
+  if(dismissed||!played) return '';
+  if(!installEvt&&!isMob()) return '';
+  const how= installEvt ? `<button class="btn primary" id="installbtn">Instalar o DEMopólio</button>`
+    : isIOS() ? `<ol class="note" style="margin:0;padding-left:18px"><li>Abre este site no <b>Safari</b>.</li><li>Toca no botão <b>Partilhar</b> (o quadrado com a seta para cima).</li><li>Escolhe <b>Adicionar ao ecrã principal</b> e toca em <b>Adicionar</b>.</li></ol>`
+    : `<p class="note" style="margin:0">No menu do browser (os três pontos ⋮), escolhe <b>Instalar app</b> ou <b>Adicionar ao ecrã principal</b>.</p>`;
+  return `<div class="panel installcard"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;align-items:flex-start">
+    <div class="row" style="flex-wrap:nowrap"><img src="icon-192.png" alt="" width="48" height="48" style="border-radius:12px;flex:none"><div><h2>Põe o DEMopólio no teu ecrã principal</h2>
+    <p class="note" style="margin:2px 0 0">Abre num toque, em ecrã inteiro, como uma app. Ideal para chamar o grupo para mais uma partida.</p></div></div>
+    <button class="btn small" id="installx" aria-label="Fechar">✕</button></div>${how}</div>`;
+}
+function bindInstall(){
+  $('#installbtn')&&($('#installbtn').onclick=async()=>{ if(!installEvt) return; installEvt.prompt(); try{ await installEvt.userChoice }catch(e){} installEvt=null; renderHome() });
+  $('#installx')&&($('#installx').onclick=()=>{ try{ localStorage.setItem('mv-install-x','1') }catch(e){} renderHome() });
+}
+let MODE=null; try{ MODE=localStorage.getItem('mv-mode') }catch(e){}
+const isMob=()=>MODE==='m';
+function applyMode(){ document.body.classList.toggle('m',MODE==='m'); document.body.classList.toggle('d',MODE==='d') }
+function setMode(m){ MODE=m; try{ localStorage.setItem('mv-mode',m) }catch(e){} applyMode(); if(code&&state) render(); else renderHome() }
+function modeBtn(){ return `<button class="btn small" id="modebtn" title="${isMob()?'Mudar para a versão de computador':'Mudar para a versão de telemóvel'}">${isMob()?'🖥️ Computador':'📱 Telemóvel'}</button>` }
+function bindMode(){ const b=$('#modebtn'); if(b) b.onclick=()=>setMode(isMob()?'d':'m') }
+function chooseMode(){
+  return new Promise(res=>{
+    const small=Math.min(innerWidth,innerHeight)<700||matchMedia('(pointer:coarse)').matches;
+    app.classList.remove('gv','mvw');
+    app.innerHTML=`<section class="modepick">
+      <div class="eyebrow">Bem-vindo ao</div><h1>DEMopólio</h1>
+      <p class="note" style="margin:0">Em que dispositivo vais jogar? Podes mudar mais tarde no menu.</p>
+      <div class="modecards">
+        <button class="modecard" data-mode="m"><span class="mic">📱</span><b>Versão para telemóvel</b><span>Ecrã simples com separadores em baixo: tabuleiro, jogadores, chat e registo.</span>${small?'<span class="pill">recomendado</span>':''}</button>
+        <button class="modecard" data-mode="d"><span class="mic">🖥️</span><b>Versão para computador</b><span>Tabuleiro e todos os painéis lado a lado, num só ecrã.</span>${!small?'<span class="pill">recomendado</span>':''}</button>
+      </div></section>`;
+    app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{ MODE=b.dataset.mode; try{ localStorage.setItem('mv-mode',MODE) }catch(e){} applyMode(); res() });
+  });
+}
+let mTab='board', mUnread=0, boardFit=false; try{ boardFit=localStorage.getItem('mv-fit')==='1' }catch(e){}
+function setTab(t){ mTab=t; if(t==='chat') mUnread=0; render(); scrollTo({top:0}) }
 let pawnN=0;
 function pawnP(p,extra=''){ return p?pawnSVG(p.color,p.name,extra,p.photo):'' }
 function pawnSVG(color,name,extra='',photo=null){
@@ -377,7 +511,7 @@ const SQ = [
  {t:'chest',n:'Caixa Comum',s:'Caixa Comum',ic:'mail'},
  P('Departamento de Bioquímica (BIOQ)','BIOQ','castanho',60,[4,20,60,180,320,450],'flask'),
  {t:'tax',n:'Propinas',s:'Propinas',p:200,ic:'cap'},
- {t:'rail',n:'Rua Mendes dos Remédios',s:'Mendes dos Remédios',p:200,ic:'sign'},
+ {t:'rail',n:'Estação Coimbra-B',s:'Coimbra-B',p:200,ic:'train'},
  P('Moelas','Moelas','celeste',100,[6,30,90,270,400,550],'beer'),
  {t:'chance',n:'Sorte',s:'Sorte',ic:'q'},
  P('Pintos','Pintos','celeste',100,[6,30,90,270,400,550],'beer'),
@@ -387,7 +521,7 @@ const SQ = [
  {t:'util',n:'Cantinas da Universidade',s:'Cantinas',p:150,ic:'food'},
  P('NB','NB','rosa',140,[10,50,150,450,625,750],'note'),
  P('RS','RS','rosa',160,[12,60,180,500,700,900],'cocktail'),
- {t:'rail',n:'Rua Teófilo de Braga',s:'Teófilo de Braga',p:200,ic:'sign'},
+ {t:'rail',n:'Estação Coimbra (Estação Nova)',s:'Estação Nova',p:200,ic:'train'},
  P('In Club','In Club','laranja',180,[14,70,200,550,750,950],'disco'),
  {t:'chest',n:'Caixa Comum',s:'Caixa Comum',ic:'mail'},
  P('Praça da Canção','Praça da Canção','laranja',180,[14,70,200,550,750,950],'mic'),
@@ -397,7 +531,7 @@ const SQ = [
  {t:'chance',n:'Sorte',s:'Sorte',ic:'q'},
  P('Sé Nova','Sé Nova','vermelho',220,[18,90,250,700,875,1050],'church'),
  P('Sé Velha','Sé Velha','vermelho',240,[20,100,300,750,925,1100],'church'),
- {t:'rail',n:'Rua Guerra Junqueiro',s:'Guerra Junqueiro',p:200,ic:'sign'},
+ {t:'rail',n:'Elevador do Mercado',s:'Elevador',p:200,ic:'lift'},
  P('República dos Fantasmas','Rep. Fantasmas','amarelo',260,[22,110,330,800,975,1150],'house'),
  P('República Ay-o-Linda','Rep. Ay-o-Linda','amarelo',260,[22,110,330,800,975,1150],'house'),
  {t:'util',n:'Águas de Coimbra',s:'Águas',p:150,ic:'drop'},
@@ -407,7 +541,7 @@ const SQ = [
  P('Sala Multibanco do DEM','Multibanco do DEM','verde',300,[26,130,390,900,1100,1275],'atm'),
  P('Biblioteca do DEM','Biblioteca do DEM','verde',320,[28,150,450,1000,1200,1400],'books'),
  P('NEEMAAC','NEEMAAC','verde',320,[28,150,450,1000,1200,1400],'gear'),
- {t:'rail',n:'Praça Mestre Pêro',s:'Praça Mestre Pêro',p:200,ic:'sign'},
+ {t:'rail',n:'Metro Mondego',s:'Metro',p:200,ic:'train'},
  {t:'chance',n:'Sorte',s:'Sorte',ic:'q'},
  P('A Cabra','Cabra','azul',350,[35,175,500,1100,1300,1500],'bell'),
  {t:'tax',n:'Traje Académico',s:'Traje',p:100,ic:'cape'},
@@ -428,7 +562,8 @@ const CHANCE = [
  {x:'Visita guiada: avança até à Biblioteca Joanina.',a:'moveTo',v:39},
  {x:'Serenata Monumental: avança até à Sé Velha.',a:'moveTo',v:24},
  {x:'Saída à noite: avança até ao RS.',a:'moveTo',v:14},
- {x:'Ficaste sem bateria na trotinete: avança até à rua mais próxima (Mendes dos Remédios, Teófilo de Braga, Guerra Junqueiro ou Mestre Pêro).',a:'rail'},
+ {x:'Perdeste o autocarro: avança até ao transporte mais próximo.',a:'rail'},
+ {x:'Uma cobra dourada chulou-te um copo: perdes 100 €.',a:'money',v:-100,w:'cobra dourada'},
  {x:'Esqueceste a capa na esplanada: recua três casas.',a:'back',v:3},
  {x:'Exageraste na Queima das Fitas: vai diretamente para a Prisão.',a:'jail'},
  {x:'Foste apanhado com álcool no sangue: paga 200 € de multa.',a:'money',v:-200,w:'álcool no sangue'},
@@ -476,13 +611,38 @@ function ownsGroup(st,pi,g){ return groupOf(g).every(i=>st.props[i]&&st.props[i]
 function countType(st,pi,t){ return SQ.reduce((n,s,i)=>n+(s.t===t&&st.props[i]&&st.props[i].o===pi?1:0),0) }
 function rentFor(st,i,dice){
   const s=SQ[i], pr=st.props[i]; if(!pr||pr.m) return 0;
-  if(s.t==='prop'){ return pr.h>0 ? s.r[pr.h] : s.r[0]*(ownsGroup(st,pr.o,s.g)?2:1) }
-  if(s.t==='rail'){ return 25*Math.pow(2,countType(st,pr.o,'rail')-1) }
+  if(s.t==='prop'){ const r=pr.h>0 ? s.r[pr.h] : s.r[0]*(ownsGroup(st,pr.o,s.g)?2:1); return evOn(st,'queima')&&['celeste','rosa','laranja'].includes(s.g)?r*2:r }
+  if(s.t==='rail'){ return evOn(st,'greve')?0:25*Math.pow(2,countType(st,pr.o,'rail')-1) }
   if(s.t==='util'){ return dice*(countType(st,pr.o,'util')===2?10:4) }
   return 0;
 }
+const EVENTS={
+  queima:{n:'Queima das Fitas',ic:'🎓',d:'As rendas dos bares, da noite e da festa estão a dobrar até ao fim da ronda.'},
+  exames:{n:'Época de exames',ic:'📚',d:'Ninguém pode construir casas nem hotéis até ao fim da ronda.'},
+  latada:{n:'Latada',ic:'🥁',d:'Todos pagaram 20 € para o prémio do Parque Verde.'},
+  greve:{n:'Greve dos transportes',ic:'🚫',d:'Os transportes não cobram renda até ao fim da ronda.'},
+  bolsas:{n:'Pagamento das bolsas',ic:'💶',d:'Todos receberam 50 € de bolsa.'},
+};
+const EV_EVERY=10;
+function evOn(st,k){ return st.event&&st.event.k===k }
+function startEvent(st){
+  const used=st.evUsed||[], pool=Object.keys(EVENTS).filter(k=>!used.includes(k));
+  const list=pool.length?pool:Object.keys(EVENTS), k=list[Math.floor(Math.random()*list.length)];
+  st.evUsed=pool.length?[...used,k]:[k];
+  st.event={k,until:(st.round||0)+1,n:(st.evCount=(st.evCount||0)+1)};
+  const E=EVENTS[k], al=alive(st);
+  if(k==='latada') al.forEach(i=>{ pay(st,i,null,20,'Latada'); st.pot=(st.pot||0)+20 });
+  if(k==='bolsas') al.forEach(i=>pay(st,null,i,50,'bolsa'));
+  log(st,`${E.ic} ${E.n}! ${E.d}`);
+}
+function roundTick(st,wrapped){
+  if(!wrapped) return;
+  st.round=(st.round||0)+1;
+  if(st.event&&st.round>=st.event.until){ log(st,`Acabou: ${EVENTS[st.event.k].n}.`); st.event=null }
+  if(cfg(st).events&&st.round%EV_EVERY===0&&!st.event) startEvent(st);
+}
 function event(st,e){ st.evN=(st.evN||0)+1; e.n=st.evN; st.ev=[...(st.ev||[]),e].slice(-20) }
-const DEFCFG={start:1000,firstLap:true,pot:false,timeLimit:0,turnTime:0,fillTo:0,botDiff:'medio',botTrade:'normal',solo:false};
+const DEFCFG={events:true,public:true,start:1000,firstLap:true,pot:false,timeLimit:0,turnTime:0,fillTo:0,botDiff:'medio',botTrade:'normal',solo:false};
 function turnLimit(st,p){ const c=cfg(st); return (p&&p.money<0?Math.max(c.turnTime*3,180):c.turnTime)*1000 }
 function cfg(st){ return Object.assign({},DEFCFG,st.cfg||{}) }
 function stat(st,k,key,v){ st.stats=st.stats||{}; const m=st.stats[k]=st.stats[k]||{}; m[String(key)]=(m[String(key)]||0)+v }
@@ -503,6 +663,38 @@ function addBot(st){
 function rankPlayers(st){
   return st.players.map((p,i)=>i).sort((a,b)=>{ const pa=st.players[a], pb=st.players[b];
     if(!!pa.out!==!!pb.out) return pa.out?1:-1; return worth(st,b)-worth(st,a) });
+}
+const HALL='rooms/HALLOFFAME';
+const nameKey=n=>String(n||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').slice(0,18);
+async function recordGame(st){
+  if(!db||!st||st.status!=='ended'||st.cfg?.solo) return;
+  const humans=st.players.filter(p=>!p.bot); if(humans.length<2) return;
+  const ref=db.doc(HALL), rr=(st.stats||{}).rr||{};
+  try{
+    await db.runTransaction(async tx=>{
+      const snap=await tx.get(ref); const h=snap.exists?snap.data():{players:{},codes:[]};
+      h.players=h.players||{}; h.codes=h.codes||[];
+      if(h.codes.includes(st.code+':'+(st.startedAt||0))) return;
+      h.codes=[...h.codes,st.code+':'+(st.startedAt||0)].slice(-300);
+      const winnerId=st.players[st.winner]?.id;
+      st.players.forEach((p,i)=>{ if(p.bot) return; const k=nameKey(p.name); if(!k) return;
+        const e=h.players[k]||{name:p.name,games:0,wins:0,bankrupt:0,best:0,rent:0};
+        e.name=p.name; e.games++; if(p.id===winnerId) e.wins++; if(p.out) e.bankrupt++;
+        e.best=Math.max(e.best||0,(st.finalWorth||[])[i]||0); e.rent=(e.rent||0)+(rr[String(i)]||0); e.last=Date.now();
+        h.players[k]=e });
+      tx.set(ref,h);
+    });
+  }catch(e){}
+}
+let hall=null, unsubHall=null;
+function listenHall(){ if(!db||unsubHall) return; unsubHall=db.doc(HALL).onSnapshot(s=>{ hall=s.exists?s.data():null; if(!code) renderHome() },()=>{}) }
+function hallHTML(){
+  const list=Object.values(hall?.players||{}).sort((a,b)=>b.wins-a.wins||(b.wins/b.games)-(a.wins/a.games)||b.best-a.best).slice(0,10);
+  return `<div class="panel hall"><h2>🏆 Hall da Fama</h2>
+    ${list.length?`<div class="hallt"><div class="hh"><span></span><span>Jogador</span><span>Vitórias</span><span>Jogos</span><span>Falências</span><span>Melhor património</span></div>
+      ${list.map((e,i)=>`<div class="hr"><span>${i+1}.</span><b>${esc(e.name)}</b><span class="money">${e.wins}</span><span>${e.games}</span><span>${e.bankrupt}</span><span class="money">${fmt(e.best||0)}</span></div>`).join('')}</div>
+      <p class="note" style="margin:0">Contam os jogos multijogador terminados com pelo menos 2 pessoas. Os jogadores são identificados pelo nome, por isso usa sempre o mesmo.</p>`
+    :'<p class="note" style="margin:0">Ainda não há jogos terminados. Quando acabar o primeiro jogo multijogador, a classificação aparece aqui.</p>'}</div>`;
 }
 function endGame(st,why){
   st.ranking=rankPlayers(st); st.status='ended'; st.phase='over'; st.winner=st.ranking[0]; st.auction=null;
@@ -571,7 +763,7 @@ function land(st,pi,dice,depth=0){
   } else if(s.t==='tax'){ toBank(st,pi,s.p,s.n); log(st,`${p.name} pagou ${fmt(s.p)} de ${s.n}.`); note(st,`Paga ${fmt(s.p)} de ${s.n} ao banco`) }
   else if(s.t==='jail'){ note(st,'Só de visita à Prisão') }
   else if(s.t==='free'){
-    if(cfg(st).pot&&(st.pot||0)>0){ const v=st.pot; st.pot=0; pay(st,null,pi,v,'prémio do Parque Verde'); log(st,`${p.name} ganhou o prémio do Parque Verde: ${fmt(v)}!`); note(st,`Prémio do Parque Verde: +${fmt(v)}`) }
+    if((st.pot||0)>0){ const v=st.pot; st.pot=0; pay(st,null,pi,v,'prémio do Parque Verde'); log(st,`${p.name} ganhou o prémio do Parque Verde: ${fmt(v)}!`); note(st,`Prémio do Parque Verde: +${fmt(v)}`) }
     else note(st,cfg(st).pot?'Parque Verde: o prémio está vazio':'Descanso no Parque Verde: não acontece nada');
   }
   else if(s.t==='gotojail'){ sendJail(st,pi) }
@@ -601,8 +793,10 @@ function alive(st){ return st.players.map((p,i)=>i).filter(i=>!st.players[i].out
 function advanceTurn(st){
   const cur=st.players[st.turn]; if(cur) cur.shield=false;
   const n=st.players.length; let t=st.turn;
+  const from=st.turn;
   for(let k=0;k<n;k++){ t=(t+1)%n; if(!st.players[t].out) break }
   st.turn=t; st.phase='roll'; st.dbl=0; st.again=false; st.pendingBuy=null;
+  roundTick(st,t<=from);
   log(st,`Vez de ${pname(st,t)}.`);
 }
 function bankrupt(st,pi,why){
@@ -888,7 +1082,7 @@ const A = {
   },
   setCfg(st,patch){
     if(st.host!==me.id||st.status!=='lobby') return false;
-    st.cfg=Object.assign(cfg(st),patch);
+    st.cfg=Object.assign(cfg(st),patch); st.pub=!!st.cfg.public&&!st.cfg.solo;
   },
   reclaim(st,{rc}){
     rc=String(rc||'').trim().toUpperCase(); if(!rc) return 'Escreve o teu código.';
@@ -912,6 +1106,7 @@ const A = {
     if(!ownsGroup(st,pi,s.g)) return 'Precisas de ter todas as propriedades desta cor.';
     if(grp.some(j=>st.props[j].m)) return 'Há propriedades hipotecadas neste grupo.';
     if(pr.h>=5) return 'Já tem hotel.';
+    if(evOn(st,'exames')) return 'Época de exames: ninguém pode construir até ao fim da ronda.';
     if(pr.h>Math.min(...grp.map(j=>st.props[j].h))) return 'Constrói de forma equilibrada no grupo.';
     if(p.money<hc) return 'Não tens dinheiro suficiente.';
     pr.h++; pay(st,pi,null,hc,`${pr.h===5?'hotel':'casa'} em ${s.s}`,true); log(st,`${p.name} construiu ${pr.h===5?'um hotel':'uma casa'} em ${s.s} (${fmt(hc)}).`);
@@ -1018,6 +1213,8 @@ const app=$('#app');
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true,3400) }
 
 async function boot(){
+  applyMode();
+  if(!MODE) await chooseMode();
   renderHome();
   try{
     firebase.initializeApp(FIREBASE_CONFIG);
@@ -1028,6 +1225,7 @@ async function boot(){
   }
   window.addEventListener('hashchange',route);
   route();
+  setTimeout(checkVersion,5000);
 }
 function route(){
   const h=location.hash.replace('#','').toUpperCase();
@@ -1037,7 +1235,7 @@ function route(){
 }
 async function mutate(fn,arg,room=code){
   if(!room||!db) return;
-  const ref=db.doc('rooms/'+room); let msg=null, out=null;
+  const ref=db.doc('rooms/'+room); let msg=null, out=null, pre0=null;
   try{
     await db.runTransaction(async tx=>{
       msg=null; out=null;
@@ -1047,11 +1245,12 @@ async function mutate(fn,arg,room=code){
       const res=fn(st,arg||{});
       if(typeof res==='string'){ msg=res; return }
       if(res===false||res===true) return;
-      const pre=snap.data(); if(st.turn!==pre.turn||st.phase!==pre.phase) st.turnAt=Date.now();
+      const pre=snap.data(); pre0=pre.status; if(st.turn!==pre.turn||st.phase!==pre.phase) st.turnAt=Date.now();
       st.rev=(st.rev||0)+1; st.updatedAt=Date.now();
       tx.set(ref,st); out=st;
     });
     if(msg) toast(msg);
+    if(out&&out.status==='ended'&&pre0!=='ended') recordGame(out);
     if(out&&room===code) applyState(out);
   }catch(e){
     toast(e&&e.code==='permission-denied'?'Sem permissão para guardar. Confirma as regras do Firestore.':'Não consegui guardar a jogada. Tenta de novo.');
@@ -1064,6 +1263,7 @@ let lastChat=0, disp={}, dispDice=[1,1], rolling=false, walking=false, lastRoll=
 function resetAnim(){ showLanding=null; holdUntil=0; disp={}; lastRoll=null; lastEv=null; noteQ=[]; rolling=false; walking=false; clearInterval(diceTimer); clearInterval(walkTimer) }
 function applyState(ns){
   if(state&&state.code===ns.code&&(ns.rev||0)<(state.rev||0)) return;
+  if(ns.status==='playing'||ns.status==='ended'){ try{ localStorage.setItem('mv-played','1') }catch(e){} }
   const fresh=!state||state.code!==ns.code||lastRoll===null;
   const prev=state; state=ns;
   if(fresh){
@@ -1073,14 +1273,15 @@ function applyState(ns){
   }
   (ns.ev||[]).forEach(e=>{ if(e.n>lastEv) noteQ.push(e) }); lastEv=Math.max(lastEv,ns.evN||0);
   const newMsgs=(ns.chat||[]).filter(m=>m.at>lastChat&&m.u!==me.id); lastChat=Math.max(lastChat,...(ns.chat||[]).map(m=>m.at),0);
-  if(newMsgs.length&&!chatVisible()) newMsgs.slice(-3).forEach(m=>chatNote(m));
+  if(newMsgs.length&&!chatVisible()){ newMsgs.slice(-3).forEach(m=>chatNote(m)); if(isMob()&&mTab!=='chat') mUnread+=newMsgs.length }
   const rolled=(ns.rollId||0)!==lastRoll; lastRoll=ns.rollId||0;
   const turnChanged=prev&&prev.turn!==ns.turn;
   if(turnChanged&&myTurn(ns)>=0) setTimeout(()=>sfx('turn'),rolled?3500:200);
   if(prev&&prev.auction&&ns.auction&&ns.auction.bid!==prev.auction.bid&&ns.auction.by!==myIdx(ns)) sfx('bid');
   if(prev&&prev.status==='playing'&&ns.status==='ended') sfx('win');
-  if(ns.phase==='auction'&&prev&&prev.phase!=='auction') setTimeout(()=>{ centerBoard(); if(innerWidth<1100) $('.landing.auction')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}) },150);
-  if(ns.status==='ended'&&prev&&prev.status!=='ended') setTimeout(()=>{ centerBoard(); if(innerWidth<1100) $('.endscreen')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}) },150);
+  if(ns.event&&ns.status==='playing'&&(!prev||!prev.event||prev.event.n!==ns.event.n)){ const E=EVENTS[ns.event.k]; pushTick(`<span>${E.ic} <b>${esc(E.n)}</b> · ${esc(E.d)}</span>`,'land'); toast(`${E.ic} ${E.n}! ${E.d}`); sfx('turn') }
+  if(ns.phase==='auction'&&prev&&prev.phase!=='auction') setTimeout(()=>{ centerBoard(); if(!isMob()&&innerWidth<1100) $('.landing.auction')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}) },150);
+  if(ns.status==='ended'&&prev&&prev.status!=='ended') setTimeout(()=>{ centerBoard(); if(!isMob()&&innerWidth<1100) $('.endscreen')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}) },150);
   if(ns.landing&&prev&&ns.landing.n!==prev.landing?.n&&ns.landing.by===myIdx(ns)&&ns.players[ns.landing.by]?.inJail) setTimeout(()=>sfx('jail'),3200);
   render();
   if(turnChanged&&!rolled) setTimeout(followActive,80);
@@ -1131,11 +1332,11 @@ function afterMove(fromRoll){
   if(fromRoll&&state&&state.landing&&state.landing.n===state.rollId){
     showLanding=state.landing.n; clearTimeout(landTimer); landTimer=null;
     holdUntil=Date.now()+3000; setTimeout(()=>{ if(state) render() },3050);
-    render(); centerBoard(); if(innerWidth<1100) setTimeout(()=>$('.landing')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),120); return;
+    render(); centerBoard(); if(!isMob()&&innerWidth<1100) setTimeout(()=>$('.landing')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}),120); return;
   }
   followActive();
 }
-function centerBoard(){ const w=$('#boardwrap'); if(w&&w.scrollWidth>w.clientWidth+4) w.scrollTo({left:(w.scrollWidth-w.clientWidth)/2,behavior:'smooth'}) }
+function centerBoard(){ if(isMob()&&mTab!=='board'&&state&&myTurn(state)>=0) mTab='board'; const w=$('#boardwrap'); if(w&&w.scrollWidth>w.clientWidth+4) w.scrollTo({left:(w.scrollWidth-w.clientWidth)/2,behavior:'smooth'}) }
 const BC=1.6/12.2, BR=1/12.2, PW=.031, PH=PW*34/26, PE=.008;
 const lineC=k=>(k===1?0:BC+(k-2)*BR)+((k===1||k===11)?BC:BR)/2;
 function sqPoint(i,k,n){
@@ -1191,8 +1392,9 @@ function auctionHTML(st){
       :'<div class="lhint">Estás a assistir ao leilão.</div>'}
   </div>`;
 }
+let endHidden=null;
 function endHTML(st){
-  if(st.status!=='ended') return '';
+  if(st.status!=='ended'||endHidden===code) return '';
   const rk=st.ranking||rankPlayers(st), fw=st.finalWorth||st.players.map((p,i)=>worth(st,i)), S=st.stats||{};
   const best=k=>{ const m=S[k]||{}; let bk=null,bv=0; Object.entries(m).forEach(([kk,v])=>{ if(v>bv){bv=v;bk=kk} }); return bk===null?null:[+bk,bv] };
   const hl=[];
@@ -1200,7 +1402,7 @@ function endHTML(st){
   const rp=best('rp'); if(rp) hl.push(['Mais rendas pagas',`${pname(st,rp[0])} · ${fmt(rp[1])}`]);
   const jl=best('jail'); if(jl) hl.push(['Cliente da Prisão',`${pname(st,jl[0])} · ${jl[1]} ${jl[1]===1?'vez':'vezes'}`]);
   const pr=best('prop'); if(pr) hl.push(['Casa mais lucrativa',`${SQ[pr[0]].n} · ${fmt(pr[1])}`]);
-  return `<div class="landing endscreen" role="dialog" aria-label="Fim de jogo">
+  return `<div class="landing endscreen" role="dialog" aria-label="Fim de jogo"><button class="lx" data-endx aria-label="Fechar">×</button>
     <div class="lwho">Fim de jogo</div>
     <div class="winner">${pawnP(st.players[rk[0]])}<b>${esc(pname(st,rk[0]))} ganhou!</b></div>
     <ol class="rank">${rk.map((i,n)=>`<li><span>${n+1}.</span>${pawnP(st.players[i])}<b>${esc(st.players[i].name)}</b><span class="money">${st.players[i].out?'falido':fmt(fw[i]||0)}</span></li>`).join('')}</ol>
@@ -1244,7 +1446,7 @@ function chatNote(m){
   const el=document.createElement('div'); el.className='nt chatnt';
   el.innerHTML=`<span class="mdot" style="background:${m.c}"></span><span></span>`;
   el.children[1].textContent=`${m.n}: ${m.t.length>90?m.t.slice(0,90)+'…':m.t}`;
-  el.onclick=()=>{ $('#chatlist')?.scrollIntoView({behavior:'smooth',block:'center'}); el.remove() };
+  el.onclick=()=>{ if(isMob()) setTab('chat'); else $('#chatlist')?.scrollIntoView({behavior:'smooth',block:'center'}); el.remove() };
   const box=$('#notes'); box.appendChild(el); while(box.children.length>4) box.firstChild.remove();
   setTimeout(()=>el.remove(),5000);
 }
@@ -1298,22 +1500,31 @@ function flushNotes(){
 }
 
 /* ---------- HOME ---------- */
+const IDLE_DAYS=7, IDLE_MS=IDLE_DAYS*864e5, LOBBY_IDLE_MS=864e5;
+const idle=(r,ms)=>Date.now()-(r.updatedAt||r.createdAt||0)>ms;
+let cleaned=false;
+async function cleanupRooms(){
+  if(cleaned||!db) return; cleaned=true;
+  const old=[...myRooms.filter(r=>r.host===me.id&&idle(r,IDLE_MS)), ...rooms.filter(r=>idle(r,IDLE_MS))];
+  for(const r of old){ try{ await db.doc('rooms/'+r.code).delete() }catch(e){} }
+}
 function listRooms(){
-  if(db&&!unsubMine) unsubMine=db.collection('rooms').where('pids','array-contains',me.id).onSnapshot(s=>{ myRooms=s.docs.map(d=>d.data()); if(!code) renderHome() },()=>{});
+  if(db&&!unsubMine) unsubMine=db.collection('rooms').where('pids','array-contains',me.id).onSnapshot(s=>{ myRooms=s.docs.map(d=>d.data()); if(!code) renderHome(); setTimeout(cleanupRooms,4000) },()=>{});
+  listenHall();
   if(!db||unsubList) return;
-  unsubList=db.collection('rooms').orderBy('createdAt','desc').limit(40).onSnapshot(s=>{
-    rooms=s.docs.map(d=>d.data()); if(!code) renderHome();
+  unsubList=db.collection('rooms').where('pub','==',true).limit(60).onSnapshot(s=>{
+    rooms=s.docs.map(d=>d.data()).filter(r=>r.code).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)); if(!code) renderHome();
   },()=>{});
 }
 function renderHome(){
-  if(code) return;
-  app.classList.remove('gv');
+  if(code||!MODE) return;
+  app.classList.remove('gv','mvw');
   const nick=ls.get('mv-nick')||'';
   const byCode={};
-  [...rooms.filter(r=>!r.pids&&r.players?.some(p=>p.id===me.id)), ...myRooms].forEach(r=>byCode[r.code]=r);
+  [...rooms.filter(r=>!r.pids&&r.players?.some(p=>p.id===me.id)), ...myRooms].filter(r=>!idle(r,IDLE_MS)).forEach(r=>byCode[r.code]=r);
   const ord={playing:0,lobby:1,ended:2};
   const mine=Object.values(byCode).sort((a,b)=>(ord[a.status]-ord[b.status])||((b.updatedAt||0)-(a.updatedAt||0)));
-  const open=rooms.filter(r=>r.status==='lobby'&&!r.cfg?.solo&&!r.players?.some(p=>p.id===me.id));
+  const open=rooms.filter(r=>r.pub&&r.status==='lobby'&&!idle(r,LOBBY_IDLE_MS)&&!r.cfg?.solo&&r.cfg?.public!==false&&!r.players?.some(p=>p.id===me.id));
   const pill=r=>`<span class="pill ${r.status==='playing'?'live':r.status==='ended'?'end':''}">${r.status==='playing'?'a jogar':r.status==='ended'?'terminada':'à espera'}</span>`;
   const item=r=>`<div class="roomitem"><div><span class="code">${esc(r.code)}</span> <span class="note">· ${r.players?.length||0}/${MAXP} · ${esc(r.players?.[0]?.name||'')}</span></div>
      <div class="row">${pill(r)}<button class="btn small" data-go="${esc(r.code)}">Abrir</button></div></div>`;
@@ -1329,19 +1540,22 @@ function renderHome(){
   app.innerHTML=`
   <section class="hero">
     <div>
-      <div class="eyebrow">Edição Coimbra · jogo de tabuleiro online</div>
+      <div class="row" style="justify-content:space-between"><div class="eyebrow">Edição Coimbra · jogo de tabuleiro online</div>${modeBtn()}</div>
       <h1><span>DEM</span>opólio</h1>
       <p>Compra a cidade dos estudantes, dos bares e repúblicas ao DEM e à Biblioteca Joanina, constrói casas e hotéis e deixa os teus amigos sem um cêntimo. Cria uma sala, partilha o link e joguem cada um no seu dispositivo, de 2 a ${MAXP} jogadores.</p>
     </div>
     <div class="azulejo"><div class="seal">${pawnSVG(COLORS[0],'M')}${pawnSVG(COLORS[1],'V')}${pawnSVG(COLORS[2],'C')}</div></div>
   </section>
+  ${installHTML()}
   <div class="cards">
     <div class="panel">
       <h2>Criar ou entrar</h2>
       <label class="eyebrow" for="nick">O teu nome no jogo</label>
       <input id="nick" maxlength="18" placeholder="Ex.: Hugo" value="${esc(nick)}">
       <div class="photoctl">${pawnSVG(COLORS[0],nick||'?','style="width:34px"',myPhoto())}<button class="btn small" data-photo="pick">${okPhoto(myPhoto())?'Mudar foto':'Pôr a minha foto (opcional)'}</button>${okPhoto(myPhoto())?'<button class="btn small" data-photo="rm">Remover</button>':''}</div>
-      <div class="row"><button class="btn primary" id="create">Criar sala multijogador</button><button class="btn" id="createsolo">Jogar sozinho contra bots</button></div>
+      <div class="row"><select id="roomvis" aria-label="Visibilidade da sala"><option value="pub" ${ls.get('mv-vis')!=='priv'?'selected':''}>Sala pública</option><option value="priv" ${ls.get('mv-vis')==='priv'?'selected':''}>Sala privada</option></select><button class="btn primary" id="create">Criar sala multijogador</button></div>
+      <p class="note" style="margin:0">Pública: aparece em "Salas abertas" para toda a gente. Privada: só entra quem tiver o código ou o link.</p>
+      <div class="row"><button class="btn" id="createsolo">Jogar sozinho contra bots</button></div>
       <label class="eyebrow" for="joincode">Código da sala</label>
       <div class="row"><input id="joincode" maxlength="5" placeholder="ABCDE" style="text-transform:uppercase;flex:1;font-family:var(--f-mono);letter-spacing:.1em"><button class="btn" id="joinbtn">Entrar</button></div>
     </div>
@@ -1349,11 +1563,12 @@ function renderHome(){
       <h2>Salas</h2>
       <div class="eyebrow">As tuas salas</div>
       <div class="roomlist">${mine.length?mine.map(mineItem).join(''):'<div class="note">Ainda não estás em nenhuma sala.</div>'}</div>
-      <div class="eyebrow">Abertas para entrar</div>
-      <div class="roomlist">${open.length?open.map(item).join(''):`<div class="note">Ainda não há salas abertas. Cria uma e manda o link aos teus amigos.</div>`}</div>
+      <div class="eyebrow">Salas abertas</div>
+      <div class="roomlist">${open.length?open.map(item).join(''):`<div class="note">Não há salas públicas à espera de jogadores. Cria uma, ou entra numa privada com o código.</div>`}</div>
     </div>
+    ${hallHTML()}
   </div>`;
-  bindPhoto();
+  bindPhoto(); bindMode(); bindInstall();
   $('#create').onclick=()=>createRoom(false);
   $('#createsolo').onclick=()=>createRoom(true);
   $('#joinbtn').onclick=()=>{ const c=$('#joincode').value.trim().toUpperCase(); if(!/^[A-Z]{5}$/.test(c)) return toast('O código tem 5 letras.'); saveNick(); location.hash=c };
@@ -1384,13 +1599,14 @@ async function closeRoom(c){
 }
 function saveNick(){ const n=$('#nick')?.value.trim(); if(n) ls.set('mv-nick',n) }
 async function createRoom(solo){
+  const pub=!solo&&($('#roomvis')?.value||'pub')==='pub'; ls.set('mv-vis',pub?'pub':'priv');
   const name=$('#nick').value.trim(); if(!name) return toast('Escreve o teu nome primeiro.');
   ls.set('mv-nick',name);
   if(!db) return;
   const L='ABCDEFGHJKLMNPQRSTUVWXYZ'; let c=''; for(let i=0;i<5;i++) c+=L[Math.floor(Math.random()*L.length)];
   const st={code:c,host:me.id,status:'lobby',createdAt:Date.now(),updatedAt:Date.now(),rev:1,
     players:[{id:me.id,name:name.slice(0,18),color:COLORS[0],rc:rcode(),...(okPhoto(myPhoto())?{photo:myPhoto()}:{})}],pids:[me.id],props:{},log:[`${name} criou a sala.`],
-    cfg:Object.assign({},DEFCFG,solo?{solo:true,fillTo:4}:{})};
+    pub, cfg:Object.assign({},DEFCFG,{public:pub},solo?{solo:true,fillTo:4}:{})};
   try{ await db.doc('rooms/'+c).set(st); location.hash=c }
   catch(e){ toast(e&&e.code==='permission-denied'?'Sem permissão para criar salas. Confirma as regras do Firestore.':'Não consegui criar a sala.') }
 }
@@ -1421,11 +1637,12 @@ function render(){
   if(st.status==='lobby') return renderLobby(meIdx);
   const keep=$('#boardwrap')?.scrollLeft||0;
   const {val:chatVal,focus:chatFocus,sel:chatSel,atBottom:chatAtBottom,scroll:chatScroll}=chatSnap();
-  app.classList.add('gv');
+  if(isMob()){ renderMobile(st,meIdx,{chatVal,chatFocus,chatSel,chatAtBottom,chatScroll,keep}); return }
+  app.classList.remove('mvw'); app.classList.add('gv');
   app.innerHTML=`
   <div class="topbar">
     <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>DEMopólio</h1></div>
-    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
+    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
   </div>
   <div class="game">
     <div class="boardcol">
@@ -1451,8 +1668,12 @@ function render(){
   const w=$('#boardwrap'); if(w) w.scrollLeft=keep;
   placeTokens(); renderActions(meIdx); renderPlayers(meIdx); renderDetail(meIdx); renderMyProps(meIdx); renderMyCards(meIdx); renderLog(meIdx); renderChat(chatVal,chatFocus,chatSel,chatAtBottom,chatScroll); bindCollapse();
   app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ logTab=b.dataset.tab; ls.set('mv-logtab',logTab); render() });
-  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound();
+  bindGame();
+}
+function bindGame(){
+  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound(); bindMode();
   $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
+  app.querySelectorAll('[data-endx]').forEach(b=>b.onclick=()=>{ endHidden=code; render() });
   app.querySelectorAll('[data-bid]').forEach(b=>b.onclick=()=>{ b.disabled=true; act('bid',{amt:+b.dataset.bid}) });
   $('#bidform')&&($('#bidform').onsubmit=e=>{ e.preventDefault(); const v=Math.floor(+$('#bidamt').value||0); if(v>0) act('bid',{amt:v}) });
   app.querySelectorAll('[data-la]').forEach(b=>b.onclick=()=>{
@@ -1466,19 +1687,86 @@ function render(){
   scheduleAutoEnd();
   if(showLanding!==null&&state.landing&&(myIdx(state)!==state.landing.by||state.turn!==state.landing.by)&&!landTimer)
     landTimer=setTimeout(()=>{ showLanding=null; landTimer=null; render() },6000);
-  app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&innerWidth<1100) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
+  app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&(isMob()||innerWidth<1100)) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
   $('#delroom')&&confirmBtn($('#delroom'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'del:'+code);
 }
 function copy(t){ navigator.clipboard.writeText(t).then(()=>toast('Copiado!')).catch(()=>toast(t)) }
 
+function renderMobile(st,meIdx,snap){
+  app.classList.remove('gv'); app.classList.add('mvw');
+  const me_=meIdx>=0?st.players[meIdx]:null, cur=st.players[st.turn];
+  const toMe=(st.trades||[]).filter(t=>t.to===meIdx).length;
+  const urgent=st.status==='playing'&&((meIdx>=0&&st.turn===meIdx)||st.phase==='auction'||toMe);
+  const tab=(k,ic,l,badge)=>`<button class="mtab ${mTab===k?'on':''}" data-mtab="${k}"><span class="mti">${ic}</span><span>${l}</span>${badge?`<i class="mbadge">${badge}</i>`:''}</button>`;
+  const prim=mobilePrimary(st,meIdx), sheet=landingHTML(st)+auctionHTML(st)+endHTML(st);
+  app.innerHTML=`
+  <header class="mhead">
+    <button class="btn small" onclick="location.hash=''" aria-label="Voltar às salas">←</button>
+    <div class="mhinfo"><b>DEMopólio</b>${cfg(st).solo?'':`<span class="code">${esc(code)}</span>`}</div>
+    ${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}
+    ${me_?`<span class="mmoney ${me_.money<0?'neg':''}">${fmt(me_.money)}</span>`:''}
+    <button class="btn small" id="mmenu" aria-label="Menu">⋯</button>
+  </header>
+  <div class="mmenu" id="mmenubox" hidden>${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}</div>
+  <section class="mpane ${mTab==='board'?'on':''}" data-pane="board">
+    ${cur&&st.status==='playing'?`<div class="mturn">${pawnP(cur)}<span>${meIdx===st.turn?'<b>É a tua vez</b>':'Vez de <b>'+esc(cur.name)+'</b>'}</span>
+      <button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></div>`:''}
+    <div class="boardwrap ${boardFit?'fit':''}" id="boardwrap">${boardHTML(st)}</div>
+    <div class="panel actions" id="actions"></div>
+    <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
+  </section>
+  <section class="mpane ${mTab==='players'?'on':''}" data-pane="players">
+    <div class="panel pplayers"><div class="phead"><h2>Jogadores</h2>${me_&&me_.rc?`<span class="note">o teu código: <b class="code">${me_.rc}</b></span>`:''}</div><div class="players compact" id="players"></div><p class="note" style="margin:0;font-size:12px">Toca num jogador para negociar ou doar.</p></div>
+  </section>
+  <section class="mpane ${mTab==='chat'?'on':''}" data-pane="chat">
+    <div class="panel pchat"><h2>Chat</h2><div class="chatlist" id="chatlist"></div>${CHATFORM}</div>
+  </section>
+  <section class="mpane ${mTab==='me'?'on':''}" data-pane="me">
+    ${me_?`<div class="panel pcards"><h2>As tuas cartas especiais</h2><div id="mycards" class="players"></div></div>
+    <div class="panel pprops"><h2>As tuas propriedades</h2><div class="chips" id="myprops"></div></div>`:'<div class="panel"><p class="note" style="margin:0">Estás a assistir a este jogo.</p></div>'}
+  </section>
+  <section class="mpane ${mTab==='log'?'on':''}" data-pane="log">
+    <div class="panel plog"><div class="phead"><h2>Registo</h2><div class="tabs" role="tablist">
+      <button data-tab="all" class="${logTab==='all'?'on':''}">Todos</button>${meIdx>=0?`<button data-tab="me" class="${logTab==='me'?'on':''}">O meu</button>`:''}<button data-tab="cards" class="${logTab==='cards'?'on':''}">Cartas</button></div></div>
+      <div class="log" id="logbox"></div></div>
+  </section>
+  <div class="msheet">${sheet}</div>
+  ${prim&&!sheet?`<div class="mprim">${prim}</div>`:''}
+  <nav class="mtabs" aria-label="Separadores">
+    ${tab('board','🎲','Jogo',urgent&&mTab!=='board'?'!':'')}${tab('players','👥','Jogadores','')}${tab('chat','💬','Chat',mUnread&&mTab!=='chat'?mUnread:'')}${tab('me','🃏','O meu','')}${tab('log','📜','Registo','')}
+  </nav>`;
+  const w=$('#boardwrap'); if(w) w.scrollLeft=snap.keep;
+  placeTokens(); renderActions(meIdx); renderPlayers(meIdx); renderDetail(meIdx); renderMyProps(meIdx); renderMyCards(meIdx); renderLog(meIdx);
+  renderChat(snap.chatVal,snap.chatFocus&&mTab==='chat',snap.chatSel,snap.chatAtBottom,snap.chatScroll);
+  app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ logTab=b.dataset.tab; ls.set('mv-logtab',logTab); render() });
+  app.querySelectorAll('[data-mtab]').forEach(b=>b.onclick=()=>setTab(b.dataset.mtab));
+  $('#mmenu').onclick=()=>{ const m=$('#mmenubox'); m.hidden=!m.hidden };
+  $('#fitbtn')&&($('#fitbtn').onclick=()=>{ boardFit=!boardFit; ls.set('mv-fit',boardFit?'1':'0'); render(); if(!boardFit) setTimeout(followActive,80) });
+  app.querySelectorAll('[data-mprim]').forEach(b=>b.onclick=()=>{ const a=b.dataset.mprim; if(a==='go'){ setTab('board'); return } if(a==='roll') mTab='board'; b.disabled=true; if(a==='roll'||a==='end') showLanding=null; act(a) });
+  bindGame();
+}
+function mobilePrimary(st,mi){
+  if(st.status!=='playing'||mi<0) return '';
+  if(st.phase==='auction') return `<button class="btn primary" data-mprim="go">Leilão a decorrer · ver</button>`;
+  if((st.trades||[]).some(t=>t.to===mi)) return `<button class="btn primary" data-mprim="go">Tens uma proposta de negócio · ver</button>`;
+  if(st.turn!==mi) return '';
+  const p=st.players[mi];
+  if(p.money<0) return `<button class="btn primary" data-mprim="go">Estás a dever · resolver</button>`;
+  if(st.phase==='roll'&&!rolling&&!walking&&!inHold()) return `<button class="btn primary" data-mprim="roll">${p.inJail?'Tentar duplos':'Lançar dados'}</button>`;
+  if(st.phase==='buy') return `<button class="btn primary" data-mprim="go">Decidir compra · ver</button>`;
+  if(st.phase==='end'&&canStillAct(st,mi)) return `<button class="btn primary" data-mprim="end">Terminar vez</button>`;
+  return '';
+}
 function renderLobby(meIdx){
   const cs=chatSnap();
-  app.classList.remove('gv');
+  app.classList.remove('gv','mvw');
   const st=state, isHost=st.host===me.id, nick=ls.get('mv-nick')||'', c=cfg(st);
   const OPT={
+    ...(c.solo?{}:{public:['Visibilidade da sala',[[true,'Pública (aparece nas salas abertas)'],[false,'Privada (só com código)']]]}),
     start:['Dinheiro inicial',[[750,'750 €'],[1000,'1000 €'],[1500,'1500 €'],[2000,'2000 €']]],
     firstLap:['Primeira volta sem compras',[[true,'Sim'],[false,'Não']]],
     pot:['Prémio no Parque Verde (impostos e multas)',[[false,'Não'],[true,'Sim']]],
+    events:['Eventos académicos (a cada 10 rondas)',[[true,'Sim'],[false,'Não']]],
     timeLimit:['Duração do jogo',[[0,'Sem limite'],[30,'30 min'],[45,'45 min'],[60,'1 hora'],[90,'1h30'],[120,'2 horas']]],
     turnTime:['Tempo por jogada',[[0,'Sem limite'],[30,'30 s'],[60,'60 s'],[90,'90 s']]],
     fillTo:['Preencher lugares vazios com bots até',[[0,'Não preencher'],...[2,3,4,5,6,7,8].map(n=>[n,n+' jogadores'])]],
@@ -1491,13 +1779,13 @@ function renderLobby(meIdx){
     : `<div class="cfgrow"><span>${OPT[k][0]}</span><b>${esc(lab(k))}</b></div>`).join('');
   const bots=st.players.filter(p=>p.bot).length, willFill=c.fillTo?Math.max(0,c.fillTo-st.players.length):0, total=st.players.length+willFill;
   app.innerHTML=`
-  <div class="topbar"><div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>${c.solo?'Jogo contra bots':'Sala de espera'}</h1></div>${soundBtn()}</div>
+  <div class="topbar"><div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>${c.solo?'Jogo contra bots':'Sala de espera'}</h1></div><div class="row">${modeBtn()}${soundBtn()}</div></div>
   <div class="cards">
     <div class="panel">
       ${c.solo?'<div class="eyebrow">Modo single player</div><p class="note" style="margin:0">Jogas sozinho contra bots. Ajusta quantos e a dificuldade e começa.</p>'
       :`<div class="eyebrow">Código da sala</div>
       <div class="row"><span class="code" style="font-size:40px">${esc(code)}</span><button class="btn small" id="copycode">Copiar código</button><button class="btn small primary" id="copylink">Copiar link da sala</button></div>
-      <p class="note" style="margin:0">Manda o link aos teus amigos: abrem, escrevem o nome e entram logo.</p>`}
+      <p class="note" style="margin:0">${c.public?'Sala pública: aparece em "Salas abertas" para toda a gente.':'Sala privada: só entra quem tiver este código ou o link.'} Manda o link aos teus amigos: abrem, escrevem o nome e entram logo.</p>`}
       <div class="eyebrow">Jogadores (${st.players.length}/${MAXP})${willFill?` · mais ${willFill} bot${willFill>1?'s':''} ao começar`:''}</div>
       <div class="lobbylist">${st.players.map((p,i)=>`<div class="roomitem"><div class="row">${pawnP(p,'style="width:26px"')}<b>${esc(p.name)}</b>${p.bot?'<span class="pill">bot</span>':''}${p.id===st.host?'<span class="pill">anfitrião</span>':''}${p.id===me.id?'<span class="note">(tu)</span>':''}</div>${isHost&&p.bot?`<button class="btn small danger" data-rmbot="${i}">Remover</button>`:isHost&&p.id!==me.id?`<button class="btn small danger" data-kick="${i}">Retirar</button>`:''}</div>`).join('')}</div>
       ${isHost?`<div class="row"><button class="btn small" id="addbot" ${st.players.length>=MAXP?'disabled':''}>+ Adicionar bot</button></div>`:''}
@@ -1520,7 +1808,7 @@ function renderLobby(meIdx){
         <li>Passar pela Partida dá 200 € de mesada.${c.firstLap?' Na primeira volta ninguém compra.':''}</li>
         <li>Cais numa propriedade livre: compras ou vai a leilão entre todos.</li>
         <li>Com a cor completa a renda duplica e podes construir (até 4 casas e um hotel), de forma equilibrada.</li>
-        <li>Ruas (Mendes dos Remédios, Teófilo de Braga, Guerra Junqueiro e Praça Mestre Pêro): 25/50/100/200 € conforme tenhas 1 a 4. Cantinas e Águas: 4× ou 10× os dados.</li>
+        <li>Transportes (Coimbra-B, Estação Nova, Elevador do Mercado e Metro Mondego): 25/50/100/200 € conforme tenhas 1 a 4. Cantinas e Águas: 4× ou 10× os dados.</li>
         <li>Três duplos seguidos levam-te à Prisão. Para sair: duplos, 50 € ou carta.</li>
         <li>Toca num jogador para negociar propriedades, dinheiro e cartas, ou para lhe doar dinheiro.</li>
         <li>Ganha o último que não falir${c.timeLimit?`, ou quem tiver mais património ao fim de ${lab('timeLimit')}`:''}.</li></ul></details>
@@ -1529,7 +1817,7 @@ function renderLobby(meIdx){
   </div>`;
   $('#copycode')&&($('#copycode').onclick=()=>copy(code));
   $('#copylink')&&($('#copylink').onclick=()=>copy(location.href));
-  bindSound(); bindPhoto();
+  bindSound(); bindPhoto(); bindMode();
   app.querySelectorAll('[data-kick]').forEach(b=>b.onclick=()=>act('kick',{idx:+b.dataset.kick}));
   app.querySelectorAll('[data-rmbot]').forEach(b=>b.onclick=()=>act('removeBot',{idx:+b.dataset.rmbot}));
   app.querySelectorAll('[data-cfg]').forEach(sel=>sel.onchange=()=>{ const k=sel.dataset.cfg, raw=sel.value; const v=raw==='true'?true:raw==='false'?false:isNaN(+raw)?raw:+raw; act('setCfg',{[k]:v}) });
@@ -1599,8 +1887,9 @@ function boardHTML(st){
     ${centerRollBtn(st)}
     ${st.status==='playing'&&cur?`<div class="now">${pawnP(cur)}Vez de ${esc(cur.name)}</div>`:''}
     ${st.card?`<div class="cardnote"><b>${esc(st.card.deck)}</b>${esc(st.card.x)}</div>`:''}
-    ${cfg(st).pot&&st.status==='playing'?`<div class="potnote">Prémio do Parque Verde: <b>${fmt(st.pot||0)}</b></div>`:''}
-    ${landingHTML(st)}${auctionHTML(st)}${endHTML(st)}</div>
+    ${st.event&&st.status==='playing'?`<div class="evnote"><b>${EVENTS[st.event.k].ic} ${EVENTS[st.event.k].n}</b><span>${EVENTS[st.event.k].d}</span></div>`:''}
+    ${(cfg(st).pot||(st.pot||0)>0)&&st.status==='playing'?`<div class="potnote">Prémio do Parque Verde: <b>${fmt(st.pot||0)}</b></div>`:''}
+    ${isMob()?'':landingHTML(st)+auctionHTML(st)+endHTML(st)}</div>
     <div class="pawnlayer" id="pawnlayer"></div>`;
   return h+'</div>';
 }
@@ -1709,7 +1998,8 @@ function renderPlayers(meIdx){
   el.innerHTML=st.players.map((p,i)=>`<button class="pl ${i===st.turn&&st.status==='playing'?'cur':''} ${p.out?'out':''}" data-pl="${i}">
     ${pawnP(p)}
     <div class="who">${esc(p.name)}${i===meIdx?' <small>(tu)</small>':''}<small class="sub">${p.out?'falido':`${p.inJail?'na Prisão · ':''}${esc(SQ[p.pos]?.s||'')}${cardCount(p)?` · ${cardCount(p)} carta${cardCount(p)>1?'s':''}`:''}${cfg(st).firstLap&&(p.laps||0)<1?' · 1.ª volta':''}${p.bot?' · bot':''}`}</small></div>
-    <div class="pm"><div class="money ${p.money<0?'neg':''}">${fmt(p.money)}</div><small class="note" title="Património">Σ ${fmt(worth(st,i))}</small></div></button>`).join('');
+    <div class="pm"><div class="money" title="Património total">${fmt(worth(st,i))}</div></div>
+    <div class="brk">propriedades: <b>${fmt(worth(st,i)-p.money)}</b> ; dinheiro: <b class="${p.money<0?'neg':''}">${fmt(p.money)}</b></div></button>`).join('');
   el.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>openPlayer(meIdx,+b.dataset.pl));
 }
 let logTab=ls.get('mv-logtab')||'all';
@@ -1789,7 +2079,7 @@ function renderDetail(meIdx){
     h+=`<table><tr><td>Renda</td><td>${fmt(s.r[0])}</td></tr><tr><td>Com a cor completa</td><td>${fmt(s.r[0]*2)}</td></tr>
       ${[1,2,3,4].map(k=>`<tr><td>Com ${k} casa${k>1?'s':''}</td><td>${fmt(s.r[k])}</td></tr>`).join('')}<tr><td>Com hotel</td><td>${fmt(s.r[5])}</td></tr>
       <tr><td>Preço · construção</td><td>${fmt(s.p)} · ${fmt(G[s.g].hc)}</td></tr><tr><td>Hipoteca</td><td>${fmt(s.p/2)}</td></tr></table>`;
-  } else if(s.t==='rail'){ h+=`<table><tr><td>Com 1 destas ruas</td><td>25 €</td></tr><tr><td>Com 2</td><td>50 €</td></tr><tr><td>Com 3</td><td>100 €</td></tr><tr><td>Com as 4</td><td>200 €</td></tr><tr><td>Preço</td><td>${fmt(s.p)}</td></tr></table>` }
+  } else if(s.t==='rail'){ h+=`<table><tr><td>1 transporte</td><td>25 €</td></tr><tr><td>2 transportes</td><td>50 €</td></tr><tr><td>3 transportes</td><td>100 €</td></tr><tr><td>4 transportes</td><td>200 €</td></tr><tr><td>Preço</td><td>${fmt(s.p)}</td></tr></table>` }
   else if(s.t==='util'){ h+=`<p class="note" style="margin:0">Renda: 4× o valor dos dados com uma companhia, 10× com as duas. Preço ${fmt(s.p)}.</p>` }
   else if(s.t==='tax'){ h+=`<p style="margin:0">Paga ${fmt(s.p)} ao banco.</p>` }
   else { h+=`<p class="note" style="margin:0">${{go:'Recebes 200 € de mesada sempre que passares aqui.',jail:'Se estás só de visita, não acontece nada.',free:'Descansa. Não acontece nada.',gotojail:'Vais direto para a Prisão.',chance:'Tira uma carta de Sorte.',chest:'Tira uma carta da Caixa Comum.'}[s.t]}</p>` }
@@ -1813,7 +2103,7 @@ function openPlayer(meIdx,i){
   const owned=Object.keys(st.props||{}).map(Number).filter(k=>st.props[k].o===i).sort((a,b)=>a-b);
   const canDeal=meIdx>=0&&i!==meIdx&&st.status==='playing'&&!p.out&&!st.players[meIdx].out;
   m.innerHTML=`<div class="modal" role="dialog" aria-label="${esc(p.name)}">
-    <div class="row">${pawnP(p,'style="width:40px"')}<div><h2>${esc(p.name)}</h2><span class="money">${fmt(p.money)}</span> <span class="note">· património ${fmt(worth(st,i))}</span></div></div>
+    <div class="row">${pawnP(p,'style="width:40px"')}<div><h2>${esc(p.name)} <span class="money">${fmt(worth(st,i))}</span></h2><span class="note">propriedades: ${fmt(worth(st,i)-p.money)} ; dinheiro: <span class="${p.money<0?'neg':''}">${fmt(p.money)}</span></span></div></div>
     <div class="eyebrow">Propriedades</div>
     <div class="chips">${owned.length?owned.map(k=>`<span class="chip ${st.props[k].m?'m':''}"><span class="sw" style="background:${SQ[k].t==='prop'?G[SQ[k].g].c:'var(--muted)'}"></span>${esc(SQ[k].s)}</span>`).join(''):'<span class="note">Nenhuma.</span>'}</div>
     <div class="eyebrow">Cartas especiais</div>
