@@ -170,7 +170,7 @@ body.m::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-ins
 .mvw .mpane.on{display:flex}
 .mvw .mpane{padding-bottom:64px}
 .mvw #actions{order:0}
-.mvw #actions .turn,.mvw #actions [data-a="roll"],.mvw .rollbtn{display:none}
+.mvw #actions .turn{display:none}
 .mvw #actions:empty{display:none}
 .mvw .mturn{display:flex;align-items:center;gap:8px;font-size:15px}
 .mvw .mturn svg{width:24px}
@@ -252,9 +252,11 @@ body.m .modal{max-height:82vh}
 .pwn .pawn{width:100%;margin:0}
 .pwn.active .pawn{filter:drop-shadow(0 0 .5cqw var(--pc)) drop-shadow(0 2px 2px rgba(0,0,0,.35))}
 .pwarrow{position:absolute;left:50%;bottom:100%;margin-bottom:2px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;animation:bob 1s ease-in-out infinite;pointer-events:none}
-.pwarrow span{background:var(--pc);color:#fff;font-family:var(--f-body);font-weight:800;font-size:max(9px,1.25cqw);letter-spacing:.06em;padding:.2em .55em;border-radius:6px;border:1.5px solid var(--pawn-edge);white-space:nowrap}
-.pwarrow i{width:0;height:0;border-left:max(5px,.7cqw) solid transparent;border-right:max(5px,.7cqw) solid transparent;border-top:max(7px,1cqw) solid var(--pc);margin-top:-1px}
-@keyframes bob{0%,100%{transform:translateX(-50%) translateZ(1px)}50%{transform:translateX(-50%) translateY(-.8cqw) translateZ(1px)}}
+.pwarrow{filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)) drop-shadow(0 0 1px #fff)}
+.pwarrow span{background:var(--pc);color:#fff;font-family:var(--f-body);font-weight:900;font-size:max(11px,1.6cqw);letter-spacing:.08em;padding:.22em .7em;border-radius:7px;border:2px solid #fff;white-space:nowrap;text-shadow:0 1px 1px rgba(0,0,0,.35)}
+.pwarrow i{width:0;height:0;border-left:max(8px,1.1cqw) solid transparent;border-right:max(8px,1.1cqw) solid transparent;border-top:max(11px,1.6cqw) solid var(--pc);margin-top:-2px}
+.pmark{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);width:0;height:0;border-left:max(4px,.55cqw) solid transparent;border-right:max(4px,.55cqw) solid transparent;border-top:max(6px,.8cqw) solid var(--pc);filter:drop-shadow(0 0 1px #fff) drop-shadow(0 1px 1px rgba(0,0,0,.4));margin-bottom:1px}
+@keyframes bob{0%,100%{transform:translateX(-50%)}50%{transform:translateX(-50%) translateY(-1.2cqw)}}
 .boardwrap{--rx:0deg;--rz:0deg;--ox:50%;perspective:1500px;perspective-origin:50% 10%;position:relative}
 .minimap{position:absolute;top:8px;right:8px;z-index:12;width:clamp(96px,24%,190px);padding:5px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--surface) 92%,transparent);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:3px;align-items:stretch;animation:pop .25s ease-out}
 .minimap svg{width:100%;height:auto;display:block}
@@ -301,6 +303,23 @@ body.m .modal{max-height:82vh}
 .dice.rolling .die{animation:tumble .32s linear infinite}
 .dice.rolling .die:nth-child(2){animation-direction:reverse}
 @keyframes tumble{0%{transform:rotate(0) translateY(0)}25%{transform:rotate(-18deg) translateY(-12%)}50%{transform:rotate(12deg) translateY(4%)}75%{transform:rotate(-8deg) translateY(-6%)}100%{transform:rotate(0) translateY(0)}}
+.cell.corner.hasp{justify-content:flex-start;padding-top:7%}
+.cell.hasp .pr{visibility:hidden}
+.cell.b.hasp .cbody,.cell.l.hasp .cbody,.cell.r.hasp .cbody{justify-content:flex-start}
+.cell.t.hasp .cbody{justify-content:flex-end}
+.cell.hasp .bgic{opacity:.08}
+.pwn.in{width:2.6cqw;min-width:13px}
+.mvw .boardwrap.fit .pwn.in{width:max(10px,2.7cqw)}
+.mvw .boardwrap.fit .pwn.in .pmark{display:none}
+.mvw .boardwrap.fit .cell.hasp .cbody{padding-top:2px}
+.mvw .boardwrap.fit .cell.l.hasp .cbody,.mvw .boardwrap.fit .cell.r.hasp .cbody{justify-content:flex-start}
+.mvw .boardwrap.fit .cell.l.hasp .nm,.mvw .boardwrap.fit .cell.r.hasp .nm{font-size:max(6px,1.7cqw)}
+.quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
+.quitbox .note{font-size:11px;margin:0}
+.cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
+.cjt{font-weight:700;font-size:max(12px,1.5cqw)}
+.cjb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.rollbtn.alt{background:var(--surface);color:var(--ink);border-color:var(--line);box-shadow:0 4px 0 var(--line)}
 .rollbtn{font-size:clamp(14px,2.2cqw,20px);padding:.6em 1.4em;border-radius:12px;box-shadow:0 4px 0 color-mix(in srgb,var(--cobalt) 55%,#000)}
 .rollbtn:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--cobalt) 55%,#000)}
 .cardnote{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;max-width:min(92%,380px);text-align:center;font-size:clamp(11px,1.5cqw,14.5px)}
@@ -435,6 +454,7 @@ const IC = {
  library:'<path d="M4 20V8l8-5 8 5v12"/><path d="M8 20v-8h8v8"/><path d="M8 15h8M12 12v8"/><path d="M2 20h20"/>',
  sign:'<path d="M12 22V3"/><path d="M5 5h12l3 3-3 3H5z"/><path d="M19 13H7l-3 3 3 3h12z"/>',
  train:'<rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 10h14"/><circle cx="9" cy="13.5" r="1"/><circle cx="15" cy="13.5" r="1"/><path d="M8 21l2-4M16 21l-2-4"/>',
+ van:'<path d="M2 16V8a1 1 0 0 1 1-1h11v9M14 10h4l3 3v3h-7"/><circle cx="6.5" cy="17" r="1.8"/><circle cx="17" cy="17" r="1.8"/><path d="M5 10h6"/>',
  lift:'<rect x="6" y="2" width="12" height="20" rx="1"/><path d="M10 9l2-2 2 2M10 15l2 2 2-2"/>',
  food:'<path d="M7 2v20M4 2v6a3 3 0 0 0 6 0V2"/><path d="M17 2c-2 2-3 5-3 9h3v11"/>',
  drop:'<path d="M12 3s7 7.5 7 12a7 7 0 0 1-14 0c0-4.5 7-12 7-12z"/>',
@@ -453,7 +473,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.9';
+const APP_VER='2026-11-12.14';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -500,13 +520,12 @@ function applyMode(){ document.body.classList.toggle('m',MODE==='m'); document.b
 function setMode(m){ MODE=m; try{ localStorage.setItem('mv-mode',m) }catch(e){} applyMode(); if(code&&state) render(); else renderHome() }
 function roomBtns(st){
   if(!st) return '';
-  if(st.host===me.id) return '<button class="btn small danger" id="topclose">Encerrar sala</button>';
-  const mi=myIdx(st); if(mi>=0&&st.status==='playing'&&!st.players[mi].out) return '<button class="btn small danger" id="topleave">Abandonar jogo</button>';
-  return '';
+  const mi=myIdx(st), q=mi>=0&&st.status==='playing'&&!st.players[mi].out?'<button class="btn small danger" id="topleave">🏳️ Falência e sair</button>':'';
+  return q+(st.host===me.id?'<button class="btn small danger" id="topclose">Encerrar sala</button>':'');
 }
 function bindRoomBtns(){
   $('#topclose')&&confirmBtn($('#topclose'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'top:'+code);
-  $('#topleave')&&confirmBtn($('#topleave'),'Confirmar: abandonar?',async()=>{ await act('abandon'); location.hash='' },'leave:'+code);
+  $('#topleave')&&confirmBtn($('#topleave'),'Confirmar falência e sair?',async()=>{ await act('abandon'); location.hash='' },'leave:'+code);
 }
 function modeBtn(){ return `<button class="btn small" id="modebtn" title="${isMob()?'Mudar para a versão de computador':'Mudar para a versão de telemóvel'}">${isMob()?'🖥️ Computador':'📱 Telemóvel'}</button>` }
 function bindMode(){ const b=$('#modebtn'); if(b) b.onclick=()=>setMode(isMob()?'d':'m') }
@@ -528,22 +547,38 @@ let mTab='board', mUnread=0, boardFit=true; try{ boardFit=localStorage.getItem('
 function setTab(t){ mTab=t; if(t==='chat') mUnread=0; render(); scrollTo({top:0}) }
 let pawnN=0;
 function pawnP(p,extra=''){ return p?pawnSVG(p.color,p.name,extra,p.photo):'' }
+function shade(hex,amt){ const n=parseInt(hex.slice(1),16); let r=n>>16,g=n>>8&255,b=n&255;
+  const f=v=>Math.max(0,Math.min(255,Math.round(amt<0?v*(1+amt):v+(255-v)*amt))); return '#'+((1<<24)|(f(r)<<16)|(f(g)<<8)|f(b)).toString(16).slice(1) }
 function pawnSVG(color,name,extra='',photo=null){
   const ini=esc((name||'?').trim().charAt(0).toUpperCase());
-  const ph=okPhoto(photo), cid='ph'+(++pawnN);
-  const head=ph?`<defs><clipPath id="${cid}"><circle cx="12" cy="7.6" r="5.4"/></clipPath></defs>
-   <image href="${photo}" x="6.6" y="2.2" width="10.8" height="10.8" clip-path="url(#${cid})" preserveAspectRatio="xMidYMid slice"/>
+  const ph=okPhoto(photo), n=++pawnN, id=k=>`p${n}${k}`;
+  const lt=shade(color,.35), dk=shade(color,-.45);
+  const head=ph?`<clipPath id="${id('c')}"><circle cx="12" cy="7.6" r="5.4"/></clipPath>
+   <image href="${photo}" x="6.6" y="2.2" width="10.8" height="10.8" clip-path="url(#${id('c')})" preserveAspectRatio="xMidYMid slice"/>
+   <circle cx="12" cy="7.6" r="5.4" fill="url(#${id('hs')})"/>
    <circle cx="12" cy="7.6" r="5.4" fill="none" stroke="var(--pawn-edge)" stroke-width="1"/>`
-   :`<circle cx="12" cy="8" r="4.8" fill="#EBC39B" stroke="var(--pawn-edge)" stroke-width="1"/>
-   <path d="M7.2 7.6Q7.6 2.6 12 2.9Q16.4 2.6 16.8 7.6Q14.4 5.4 12 5.6Q9.6 5.4 7.2 7.6Z" fill="#3A2A1D"/>`;
+   :`<circle cx="12" cy="8" r="4.8" fill="url(#${id('sk')})" stroke="var(--pawn-edge)" stroke-width="1"/>
+   <path d="M7.2 7.6Q7.6 2.6 12 2.9Q16.4 2.6 16.8 7.6Q14.4 5.4 12 5.6Q9.6 5.4 7.2 7.6Z" fill="url(#${id('hr')})"/>
+   <ellipse cx="10.2" cy="5.2" rx="1.6" ry=".8" fill="#FFFFFF" opacity=".35" transform="rotate(-25 10.2 5.2)"/>`;
   return `<svg class="pawn" viewBox="0 0 26 34" ${extra} role="img" aria-label="${esc(name)}"><title>${esc(name)}</title>
-   <ellipse cx="12" cy="31" rx="9" ry="2.6" fill="${color}" stroke="var(--pawn-edge)" stroke-width="1"/>
-   <path d="M4 30.5L7.3 14Q12 11.3 16.7 14L20 30.5Z" fill="#15151A" stroke="var(--pawn-edge)" stroke-width="1"/>
-   <path d="M9.6 13.4L12 19L14.4 13.4Z" fill="#FFFFFF"/>
+   <defs>
+    <linearGradient id="${id('b')}" x1="0" x2="1"><stop offset="0" stop-color="${lt}"/><stop offset=".45" stop-color="${color}"/><stop offset="1" stop-color="${dk}"/></linearGradient>
+    <linearGradient id="${id('k')}" x1="0" x2="1"><stop offset="0" stop-color="#4A4A57"/><stop offset=".35" stop-color="#22222A"/><stop offset="1" stop-color="#060608"/></linearGradient>
+    <radialGradient id="${id('sk')}" cx=".38" cy=".35" r=".75"><stop offset="0" stop-color="#FFE2C6"/><stop offset=".6" stop-color="#EBC39B"/><stop offset="1" stop-color="#B98A5E"/></radialGradient>
+    <linearGradient id="${id('hr')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A4C34"/><stop offset="1" stop-color="#24170E"/></linearGradient>
+    <radialGradient id="${id('hs')}" cx=".38" cy=".32" r=".8"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+    <radialGradient id="${id('bd')}" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="${lt}"/><stop offset="1" stop-color="${dk}"/></radialGradient>
+   </defs>
+   <ellipse cx="12.6" cy="32.4" rx="9.4" ry="1.6" fill="#000" opacity=".22"/>
+   <path d="M3 31V29.6H21V31A9 2.6 0 0 1 3 31Z" fill="${dk}"/>
+   <ellipse cx="12" cy="29.6" rx="9" ry="2.6" fill="url(#${id('b')})" stroke="var(--pawn-edge)" stroke-width=".8"/>
+   <path d="M4.4 29.4L7.3 14Q12 11.3 16.7 14L19.6 29.4Q12 31.6 4.4 29.4Z" fill="url(#${id('k')})" stroke="var(--pawn-edge)" stroke-width=".9"/>
+   <path d="M8.2 16Q7 22 6.4 28.4" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+   <path d="M9.6 13.4L12 19L14.4 13.4Z" fill="#FFFFFF"/><path d="M9.6 13.4L12 19L12 13Z" fill="#E6E9F2"/>
    <path d="M11.3 14.4l.7 2.4.7-2.4z" fill="#15151A"/>
-   <path d="M5.8 22.5Q12 25.6 18.2 22.5" stroke="${color}" stroke-width="2" fill="none"/>
+   <path d="M5.6 22.5Q12 25.8 18.4 22.5" stroke="url(#${id('b')})" stroke-width="2.2" fill="none"/>
    ${head}
-   <circle cx="20.5" cy="5.5" r="5" fill="${color}" stroke="var(--pawn-edge)" stroke-width="1"/>
+   <circle cx="20.5" cy="5.5" r="5" fill="url(#${id('bd')})" stroke="var(--pawn-edge)" stroke-width="1"/>
    <text x="20.5" y="7.9" font-size="7" text-anchor="middle" font-weight="800" fill="#FFFFFF" font-family="Instrument Sans,system-ui,sans-serif">${ini}</text></svg>`;
 }
 
@@ -581,7 +616,7 @@ const SQ = [
  {t:'chance',n:'Sorte',s:'Sorte',ic:'q'},
  P('Sé Nova','Sé Nova','vermelho',220,[18,90,250,700,875,1050],'church'),
  P('Sé Velha','Sé Velha','vermelho',240,[20,100,300,750,925,1100],'church'),
- {t:'rail',n:'Elevador do Mercado',s:'Elevador',p:200,ic:'lift'},
+ {t:'rail',n:'Carrinha da Queima',s:'Carrinha',p:200,ic:'van'},
  P('República dos Fantasmas','Rep. Fantasmas','amarelo',260,[22,110,330,800,975,1150],'house'),
  P('República Ay-o-Linda','Rep. Ay-o-Linda','amarelo',260,[22,110,330,800,975,1150],'house'),
  {t:'util',n:'Águas de Coimbra',s:'Águas',p:150,ic:'drop'},
@@ -597,7 +632,7 @@ const SQ = [
  {t:'tax',n:'Traje Académico',s:'Traje',p:100,ic:'cape'},
  P('Biblioteca Joanina','Joanina','azul',400,[50,200,600,1400,1700,2000],'library'),
 ];
-const SHORT={0:'Partida',1:'Arco',2:'Caixa',3:'BIOQ',4:'Propi­nas',5:'Coim­bra B',6:'Moe­las',7:'Sorte',8:'Pintos',9:'Cabi­do',10:'Prisão',11:'24bar',12:'Canti­nas',13:'NB',14:'RS',15:'Est. Nova',16:'In Club',17:'Caixa',18:'Canção',19:'AAC',20:'Parque',21:'Museu',22:'Sorte',23:'Sé Nova',24:'Sé Velha',25:'Eleva­dor',26:'Fantas­mas',27:'Ay-o-Linda',28:'Águas',29:'Rapo-Taxo',30:'Vai preso',31:'Jardins',32:'Multi­banco',33:'Biblio­teca',34:'NEEM­AAC',35:'Metro',36:'Sorte',37:'Cabra',38:'Traje',39:'Joanina'};
+const SHORT={0:'Partida',1:'Arco',2:'Caixa',3:'BIOQ',4:'Propi­nas',5:'Coim­bra B',6:'Moe­las',7:'Sorte',8:'Pintos',9:'Cabi­do',10:'Prisão',11:'24bar',12:'Canti­nas',13:'NB',14:'RS',15:'Est. Nova',16:'In Club',17:'Caixa',18:'Canção',19:'AAC',20:'Parque',21:'Museu',22:'Sorte',23:'Sé Nova',24:'Sé Velha',25:'Carri­nha',26:'Fantas­mas',27:'Ay-o-Linda',28:'Águas',29:'Rapo-Taxo',30:'Vai preso',31:'Jardins',32:'Multi­banco',33:'Biblio­teca',34:'NEEM­AAC',35:'Metro',36:'Sorte',37:'Cabra',38:'Traje',39:'Joanina'};
 const BUYABLE = t => t==='prop'||t==='rail'||t==='util';
 const COLORS = ['#E4572E','#2E86DE','#17A589','#E0B000','#8E44AD','#EC6FA2','#00B8D9','#A0632B'];
 const MAXP = 8, START_MONEY = 1000, GO_MONEY = 200, JAIL_FEE = 50;
@@ -1188,8 +1223,13 @@ const A = {
   abandon(st){
     if(st.status==='lobby') return A.leave(st);
     const pi=myIdx(st);
-    if(pi>=0&&st.status==='playing'&&!st.players[pi].out) bankrupt(st,pi,`${st.players[pi].name} abandonou o jogo. As propriedades voltaram ao banco.`);
+    if(pi>=0&&st.status==='playing'&&!st.players[pi].out) bankrupt(st,pi,`${st.players[pi].name} declarou falência e saiu do jogo. As propriedades voltaram ao banco.`);
     st.pids=(st.pids||[]).filter(x=>x!==me.id);
+    if(st.host===me.id){
+      const nh=st.players.find(q=>!q.bot&&!q.out&&q.id!==me.id);
+      if(nh){ st.host=nh.id; log(st,`${nh.name} passou a ser o anfitrião.`) }
+      else if(st.status==='playing') endGame(st,'Já não há jogadores humanos em jogo.');
+    }
   },
   autoEnd(st){
     const t=st.turn, p=st.players[t]; if(st.status!=='playing'||st.phase!=='end'||!p||canStillAct(st,t)) return false;
@@ -1390,8 +1430,21 @@ function afterMove(fromRoll){
 function centerBoard(){ if(isMob()&&mTab!=='board'&&state&&myTurn(state)>=0) mTab='board'; const w=$('#boardwrap'); if(w&&w.scrollWidth>w.clientWidth+4) w.scrollTo({left:(w.scrollWidth-w.clientWidth)/2,behavior:'smooth'}) }
 const BC=1.6/12.2, BR=1/12.2, PW=.031, PH=PW*34/26, PE=.008;
 const lineC=k=>(k===1?0:BC+(k-2)*BR)+((k===1||k===11)?BC:BR)/2;
+const INSIDE=new Set([39,0,1,9,10,11,19,20,21,29,30,31]);
 function sqPoint(i,k,n){
   const [r,c,side]=cellPos(i), sp=(k-(n-1)/2)*.024, inw=k*.027;
+  if(INSIDE.has(i)){
+    const spr=(k-(n-1)/2)*Math.min(.021,(BC*.8)/Math.max(n,1));
+    if(i===0) return [1-BC/2+spr,1-.006];
+    if(i===10) return [BC/2+spr,1-.006];
+    if(i===20) return [BC/2+spr,BC-.006];
+    if(i===30) return [1-BC/2+spr,BC-.006];
+    const sb=(k-(n-1)/2)*Math.min(.018,BR*.85/Math.max(n,1));
+    if(side==='b') return [lineC(c)+sb,1-.005];
+    if(side==='t') return [lineC(c)+sb,BC-.006];
+    if(side==='l') return [BC*.4+spr,lineC(r)+BR*.48];
+    return [1-BC*.4+spr,lineC(r)+BR*.48];
+  }
   if(i===0) return [1-BC-PE-PW/2-inw,1-BC-PE];
   if(i===10) return [BC+PE+PW/2+inw,1-BC-PE];
   if(i===20) return [BC+PE+PW/2+inw,BC+PE+PH];
@@ -1410,6 +1463,7 @@ function viewBtn(){ return `<button class="btn small" id="viewbtn" title="Vista 
 function bindView(){ const b=$('#viewbtn'); if(b) b.onclick=()=>{ view=view==='auto'?'2d':view==='2d'?'3d':'auto'; ls.set('mv-view',view); b.textContent=vLabel(); toast('Vista: '+VIEWS[view].replace(/^\S+ /,'')); update3D() } }
 let peek2d=false, peekTurn=null;
 function want3D(){
+  return false; // vista 3D desativada a pedido: o tabuleiro fica sempre em 2D
   const st=state; if(!st||st.status!=='playing'||view==='2d') return false;
   if(peek2d&&peekTurn===st.turn) return false; peek2d=false;
   if(sel!==null||!$('#modal').hidden) return false;
@@ -1461,6 +1515,8 @@ function placeTokens(){
   const groups={};
   state.players.forEach(p=>{ if(!p.out&&disp[p.id]!==undefined) (groups[disp[p.id]]=groups[disp[p.id]]||[]).push(p) });
   const seen=new Set();
+  document.querySelectorAll('.cell.hasp').forEach(c=>{ if(!groups[c.dataset.i]||!INSIDE.has(+c.dataset.i)) c.classList.remove('hasp') });
+  Object.keys(groups).forEach(sq=>{ if(INSIDE.has(+sq)) document.querySelector(`.cell[data-i="${sq}"]`)?.classList.add('hasp') });
   Object.entries(groups).forEach(([sq,list])=>list.forEach((p,k)=>{
     const [x,y]=sqPoint(+sq,k,list.length); seen.add(p.id);
     let el=layer.querySelector(`.pwn[data-id="${p.id}"]`);
@@ -1469,6 +1525,7 @@ function placeTokens(){
     if(el.dataset.sig!==sig){ el.dataset.sig=sig; el.querySelector('svg')?.remove(); el.insertAdjacentHTML('afterbegin',pawnP(p)); el.style.setProperty('--pc',p.color) }
     el.style.left=(x*100)+'%'; el.style.top=(y*100)+'%';
     el.classList.toggle('active',state.status==='playing'&&cur&&cur.id===p.id);
+    el.classList.toggle('in',INSIDE.has(+sq));
     if(hopped.has(p.id)){ const sv=el.querySelector('svg.pawn'); sv.classList.remove('hop'); void sv.offsetWidth; sv.classList.add('hop') }
     let a=el.querySelector('.pwarrow');
     if(target&&target.id===p.id){
@@ -1476,6 +1533,8 @@ function placeTokens(){
       const lbl=mi>=0&&target===state.players[mi]?'TU':esc(p.name);
       if(a.dataset.l!==lbl){ a.dataset.l=lbl; a.innerHTML=`<span>${lbl}</span><i></i>` }
     } else if(a) a.remove();
+    let mk=el.querySelector('.pmark');
+    if(!(target&&target.id===p.id)){ if(!mk){ mk=document.createElement('i'); mk.className='pmark'; el.appendChild(mk) } } else if(mk) mk.remove();
   }));
   layer.querySelectorAll('.pwn').forEach(el=>{ if(!seen.has(el.dataset.id)) el.remove() });
   update3D();
@@ -1746,7 +1805,7 @@ function render(){
   app.innerHTML=`
   <div class="topbar">
     <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>DEMopólio</h1></div>
-    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${roomBtns(st)}${viewBtn()}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
+    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
   </div>
   <div class="game">
     <div class="boardcol">
@@ -1778,6 +1837,7 @@ function bindGame(){
   $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound(); bindMode(); bindRoomBtns(); bindView();
   requestAnimationFrame(()=>requestAnimationFrame(update3D));
   $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
+  app.querySelectorAll('[data-cj]').forEach(b=>b.onclick=()=>{ b.disabled=true; b.dataset.cj==='card'?act('useCard',{k:'jail'}):act('payJail') });
   app.querySelectorAll('[data-endx]').forEach(b=>b.onclick=()=>{ endHidden=code; render() });
   app.querySelectorAll('[data-bid]').forEach(b=>b.onclick=()=>{ b.disabled=true; act('bid',{amt:+b.dataset.bid}) });
   $('#bidform')&&($('#bidform').onsubmit=e=>{ e.preventDefault(); const v=Math.floor(+$('#bidamt').value||0); if(v>0) act('bid',{amt:v}) });
@@ -1815,7 +1875,7 @@ function renderMobile(st,meIdx,snap){
   <div class="mmenu" id="mmenubox" ${pending['top:'+code]>Date.now()||pending['leave:'+code]>Date.now()?'':'hidden'}>${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}</div>
   <section class="mpane ${mTab==='board'?'on':''}" data-pane="board">
     ${cur&&st.status==='playing'?`<div class="mturn">${pawnP(cur)}<span>${meIdx===st.turn?'<b>É a tua vez</b>':'Vez de <b>'+esc(cur.name)+'</b>'}</span>
-      <span class="mtbtns">${viewBtn()}<button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></span></div>`:''}
+      <span class="mtbtns"><button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></span></div>`:''}
     <div class="boardwrap ${boardFit?'fit':''} ${last3d?'b3d':''}" id="boardwrap" style="--ox:${lastOx};--rz:${lastRz}">${boardHTML(st)}</div>
     <div class="panel actions" id="actions"></div>
     <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
@@ -1857,7 +1917,7 @@ function mobilePrimary(st,mi){
   if(st.turn!==mi) return '';
   const p=st.players[mi];
   if(p.money<0) return `<button class="btn primary" data-mprim="go">Estás a dever · resolver</button>`;
-  if(st.phase==='roll'&&!rolling&&!walking&&!inHold()) return `<button class="btn primary" data-mprim="roll">${p.inJail?'Tentar duplos':'Lançar dados'}</button>`;
+  if(st.phase==='roll'&&!rolling&&!walking&&!inHold()) return mTab==='board'?'':`<button class="btn primary" data-mprim="go">É a tua vez · ir para o tabuleiro</button>`;
   if(st.phase==='buy') return `<button class="btn primary" data-mprim="go">Decidir compra · ver</button>`;
   if(st.phase==='end'&&canStillAct(st,mi)) return `<button class="btn primary" data-mprim="end">Terminar vez</button>`;
   return '';
@@ -1913,7 +1973,7 @@ function renderLobby(meIdx){
         <li>Passar pela Partida dá 200 € de mesada.${c.firstLap?' Na primeira volta ninguém compra.':''}</li>
         <li>Cais numa propriedade livre: compras ou vai a leilão entre todos.</li>
         <li>Com a cor completa a renda duplica e podes construir (até 4 casas e um hotel), de forma equilibrada.</li>
-        <li>Transportes (Coimbra-B, Estação Nova, Elevador do Mercado e Metro Mondego): 25/50/100/200 € conforme tenhas 1 a 4. Cantinas e Águas: 4× ou 10× os dados.</li>
+        <li>Transportes (Coimbra-B, Estação Nova, Carrinha da Queima e Metro Mondego): 25/50/100/200 € conforme tenhas 1 a 4. Cantinas e Águas: 4× ou 10× os dados.</li>
         <li>Três duplos seguidos levam-te à Prisão. Para sair: duplos, 50 € ou carta.</li>
         <li>Toca num jogador para negociar propriedades, dinheiro e cartas, ou para lhe doar dinheiro.</li>
         <li>Ganha o último que não falir${c.timeLimit?`, ou quem tiver mais património ao fim de ${lab('timeLimit')}`:''}.</li></ul></details>
@@ -2002,7 +2062,11 @@ function centerRollBtn(st){
   const pi=myTurn(st); if(pi<0||st.phase!=='roll'||rolling||walking||inHold()||showLanding!==null) return '';
   const p=st.players[pi];
   if(p.money<0) return `<div class="note" style="background:var(--surface);padding:4px 10px;border-radius:8px">Resolve o saldo negativo para lançar</div>`;
-  return `<button class="btn primary rollbtn" id="centerRoll">${p.inJail?'Tentar duplos':st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
+  if(p.inJail) return `<div class="cjail"><div class="cjt">🔒 Estás na Prisão · tentativa ${p.jailTurns+1} de 3</div>
+    <div class="cjb"><button class="btn primary rollbtn" id="centerRoll">🎲 Tentar duplos</button>
+    <button class="btn rollbtn alt" data-cj="payJail" ${p.money<JAIL_FEE?'disabled':''}>Pagar ${fmt(JAIL_FEE)} e sair</button>
+    ${inv(p).jail?'<button class="btn rollbtn alt" data-cj="card">Usar carta "Sai da Prisão"</button>':''}</div></div>`;
+  return `<button class="btn primary rollbtn" id="centerRoll">${st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
 }
 function dieHTML(n){
   const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[n]||[];
@@ -2041,12 +2105,8 @@ function renderActions(meIdx){
     if(p.shield) h+=`<p class="note" style="margin:0">Borla ativa: não pagas rendas nesta vez.</p>`;
 
     if(st.phase==='roll'){
-      if(p.inJail){
-        h+=`<p class="note" style="margin:0">Estás na Prisão (tentativa ${p.jailTurns+1} de 3).</p><div class="row">
-          <button class="btn primary" data-a="roll" ${p.money<0||inHold()?'disabled':''}>Tentar duplos</button>
-          <button class="btn" data-a="payJail" ${p.money<JAIL_FEE?'disabled':''}>Pagar ${fmt(JAIL_FEE)}</button>
-          ${inv(p).jail?`<button class="btn" data-use="jail">Usar "Sai da Prisão"</button>`:''}</div>`;
-      } else h+=`<button class="btn primary" data-a="roll" ${p.money<0||inHold()?'disabled':''}>${st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
+      if(p.inJail) h+=`<p class="note" style="margin:0">Estás na Prisão (tentativa ${p.jailTurns+1} de 3). Escolhe no centro do tabuleiro: tentar duplos, pagar ${fmt(JAIL_FEE)}${inv(p).jail?' ou usar a carta':''}.</p>`;
+      else h+=`<p class="note" style="margin:0">${st.dbl?'Saíram duplos! ':''}Lança os dados no centro do tabuleiro.</p>`;
     } else if(st.phase==='buy'){
       const s=SQ[st.pendingBuy];
       h+=`<p style="margin:0">Caíste em <b>${esc(s.n)}</b>, que está à venda por <span class="money">${fmt(s.p)}</span>.</p>
@@ -2059,6 +2119,7 @@ function renderActions(meIdx){
     h+=`<p class="note" style="margin:0">Toca numa propriedade tua para construir, vender ou hipotecar.</p>`;
   }
   if(meIdx>=0&&!st.players[meIdx].out&&st.players[meIdx].money<0) h+=`<button class="btn danger small" data-a="bankrupt">Declarar falência</button>`;
+  if(meIdx>=0&&!st.players[meIdx].out) h+=`<div class="quitbox"><button class="btn small danger" id="quitbtn">🏳️ Tenho de sair: declarar falência</button><span class="note">As tuas propriedades voltam ao banco e o jogo continua sem ti.${st.host===me.id?' O papel de anfitrião passa para outro jogador.':''}</span></div>`;
   if(st.host===me.id) h+=`<details><summary class="note">Anfitrião</summary><p class="note">Se alguém abandonar o jogo, podes retirá-lo (as propriedades voltam ao banco).</p><div class="row">${st.players.map((p,i)=>!p.out&&p.id!==me.id?`<button class="btn small danger" data-kickg="${i}">Retirar ${esc(p.name)}</button>`:'').join('')}<button class="btn small" id="finishbtn">Terminar jogo agora</button><button class="btn small danger" id="delroom">Encerrar sala</button></div><p class="note" style="margin:6px 0 0">Terminar jogo: ganha quem tiver mais património (dinheiro, propriedades e construções).</p></details>`;
   el.innerHTML=h;
   el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{
@@ -2068,6 +2129,7 @@ function renderActions(meIdx){
   el.querySelectorAll('[data-use]').forEach(b=>b.onclick=()=>act('useCard',{k:b.dataset.use}));
   el.querySelectorAll('[data-kickg]').forEach(b=>b.onclick=()=>{ if(b.dataset.sure) act('kick',{idx:+b.dataset.kickg}); else { b.dataset.sure=1; b.textContent='Confirmar?' } });
   bindDebt(meIdx);
+  $('#quitbtn')&&confirmBtn($('#quitbtn'),'Confirmar: falência e sair?',async()=>{ await act('abandon'); location.hash='' },'quit:'+code);
   $('#finishbtn')&&confirmBtn($('#finishbtn'),'Confirmar: terminar jogo?',()=>act('finish'),'finish:'+code);
   $('#reclaimform')&&($('#reclaimform').onsubmit=e=>{ e.preventDefault(); act('reclaim',{rc:$('#rcin').value}) });
   el.querySelectorAll('[data-tacc]').forEach(b=>b.onclick=()=>act('accept',{id:b.dataset.tacc}));
