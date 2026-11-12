@@ -176,9 +176,32 @@ body.m::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-ins
 .mvw .mturn svg{width:24px}
 .mvw .mturn .btn{margin-left:auto}
 .mvw .boardwrap{margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));border-radius:0}
+.sht{display:none}
 .mvw .board{width:max(760px,100%)}
-.mvw .boardwrap.fit .board{width:100%}
-.mvw .boardwrap.fit .board .nm{font-size:clamp(5px,1.35cqw,12px)}
+.mvw .boardwrap.fit{overflow:visible;display:flex;justify-content:center}
+.mvw .boardwrap.fit .board{width:min(100%,calc(100dvh - 190px));min-width:300px;border-width:2px;border-radius:10px;gap:1px}
+.mvw .boardwrap.fit .lng{display:none}
+.mvw .boardwrap.fit .sht{display:inline}
+.mvw .boardwrap.fit .nm{font-size:max(7px,2.15cqw);font-weight:700;line-height:1.05;letter-spacing:-.01em;hyphens:manual;overflow-wrap:normal;word-break:normal}
+.mvw .boardwrap.fit .cell.b .nm,.mvw .boardwrap.fit .cell.t .nm{font-size:max(6.6px,1.95cqw)}
+.mvw .boardwrap.fit .cell.corner .nm{font-size:max(8px,2.6cqw)}
+.mvw .boardwrap.fit .pr,.mvw .boardwrap.fit .cell.corner .sub{display:none}
+.mvw .boardwrap.fit .cbody{justify-content:center;padding:1px}
+.mvw .boardwrap.fit .bgic{opacity:.28;width:58%;transform:translate(-50%,-30%)}
+.mvw .boardwrap.fit .cell.l .bgic,.mvw .boardwrap.fit .cell.r .bgic{width:40%;transform:translate(-50%,-50%)}
+.mvw .boardwrap.fit .cell.l .cbody,.mvw .boardwrap.fit .cell.r .cbody{justify-content:center}
+.mvw .boardwrap.fit .ownflag{width:6px;height:6px;border-width:1px;right:1px;bottom:1px}
+.mvw .boardwrap.fit .center{padding:4%;gap:2.4cqw}
+.mvw .boardwrap.fit .center .logo{font-size:max(18px,6.2cqw)}
+.mvw .boardwrap.fit .center .logo small,.mvw .boardwrap.fit .center .now,.mvw .boardwrap.fit .potnote{display:none}
+.mvw .boardwrap.fit .die{width:max(30px,8cqw)}
+.mvw .boardwrap.fit .cardnote{font-size:max(10.5px,2.6cqw);padding:6px 10px}
+.mvw .boardwrap.fit .evnote{font-size:max(10px,2.5cqw)}
+.mvw .boardwrap.fit .ticker{top:4%;width:92%}
+.mvw .boardwrap.fit .tk{font-size:max(10px,2.6cqw)}
+.mvw .boardwrap.fit .pwn{width:max(13px,4cqw);min-width:0}
+.mvw .boardwrap.fit .pwarrow span{font-size:max(8px,2.3cqw)}
+.mvw #detail{position:fixed;left:8px;right:8px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:28;max-height:58vh;overflow:auto;box-shadow:0 -8px 30px rgba(10,16,34,.25)}
 .mvw .chatlist{max-height:55vh;overflow:auto}
 .mvw .log{max-height:none}
 .mvw .msheet{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:30;padding:0 max(10px,env(safe-area-inset-left,0px));container-type:inline-size;pointer-events:none}
@@ -413,7 +436,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.5';
+const APP_VER='2026-11-12.6';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -484,7 +507,7 @@ function chooseMode(){
     app.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{ MODE=b.dataset.mode; try{ localStorage.setItem('mv-mode',MODE) }catch(e){} applyMode(); res() });
   });
 }
-let mTab='board', mUnread=0, boardFit=false; try{ boardFit=localStorage.getItem('mv-fit')==='1' }catch(e){}
+let mTab='board', mUnread=0, boardFit=true; try{ boardFit=localStorage.getItem('mv-zoom')!=='1' }catch(e){}
 function setTab(t){ mTab=t; if(t==='chat') mUnread=0; render(); scrollTo({top:0}) }
 let pawnN=0;
 function pawnP(p,extra=''){ return p?pawnSVG(p.color,p.name,extra,p.photo):'' }
@@ -557,6 +580,7 @@ const SQ = [
  {t:'tax',n:'Traje Académico',s:'Traje',p:100,ic:'cape'},
  P('Biblioteca Joanina','Joanina','azul',400,[50,200,600,1400,1700,2000],'library'),
 ];
+const SHORT={0:'Partida',1:'Arco',2:'Caixa',3:'BIOQ',4:'Propi­nas',5:'Coim­bra B',6:'Moe­las',7:'Sorte',8:'Pintos',9:'Cabi­do',10:'Prisão',11:'24bar',12:'Canti­nas',13:'NB',14:'RS',15:'Est. Nova',16:'In Club',17:'Caixa',18:'Canção',19:'AAC',20:'Parque',21:'Museu',22:'Sorte',23:'Sé Nova',24:'Sé Velha',25:'Eleva­dor',26:'Fantas­mas',27:'Ay-o-Linda',28:'Águas',29:'Rapo-Taxo',30:'Vai preso',31:'Jardins',32:'Multi­banco',33:'Biblio­teca',34:'NEEM­AAC',35:'Metro',36:'Sorte',37:'Cabra',38:'Traje',39:'Joanina'};
 const BUYABLE = t => t==='prop'||t==='rail'||t==='util';
 const COLORS = ['#E4572E','#2E86DE','#17A589','#E0B000','#8E44AD','#EC6FA2','#00B8D9','#A0632B'];
 const MAXP = 8, START_MONEY = 1000, GO_MONEY = 200, JAIL_FEE = 50;
@@ -1697,7 +1721,7 @@ function bindGame(){
   scheduleAutoEnd();
   if(showLanding!==null&&state.landing&&(myIdx(state)!==state.landing.by||state.turn!==state.landing.by)&&!landTimer)
     landTimer=setTimeout(()=>{ showLanding=null; landTimer=null; render() },6000);
-  app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&(isMob()||innerWidth<1100)) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
+  app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&!isMob()&&innerWidth<1100) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
   $('#delroom')&&confirmBtn($('#delroom'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'del:'+code);
 }
 function copy(t){ navigator.clipboard.writeText(t).then(()=>toast('Copiado!')).catch(()=>toast(t)) }
@@ -1751,7 +1775,7 @@ function renderMobile(st,meIdx,snap){
   app.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ logTab=b.dataset.tab; ls.set('mv-logtab',logTab); render() });
   app.querySelectorAll('[data-mtab]').forEach(b=>b.onclick=()=>setTab(b.dataset.mtab));
   $('#mmenu').onclick=()=>{ const m=$('#mmenubox'); m.hidden=!m.hidden };
-  $('#fitbtn')&&($('#fitbtn').onclick=()=>{ boardFit=!boardFit; ls.set('mv-fit',boardFit?'1':'0'); render(); if(!boardFit) setTimeout(followActive,80) });
+  $('#fitbtn')&&($('#fitbtn').onclick=()=>{ boardFit=!boardFit; ls.set('mv-zoom',boardFit?'0':'1'); render(); if(!boardFit) setTimeout(followActive,80) });
   app.querySelectorAll('[data-mprim]').forEach(b=>b.onclick=()=>{ const a=b.dataset.mprim; if(a==='go'){ setTab('board'); return } if(a==='roll') mTab='board'; b.disabled=true; if(a==='roll'||a==='end') showLanding=null; act(a) });
   bindGame();
 }
@@ -1880,11 +1904,11 @@ function boardHTML(st){
     const [r,c,side]=cellPos(i), pr=st.props?.[i], corner=i%10===0, own=pr?st.players[pr.o]:null;
     let inner=`<div class="bgic">${icon(s.ic)}</div>`;
     if(corner){
-      inner+=`<div class="nm">${esc(s.s)}</div><div class="sub">${CORNER_SUB[i]}</div>`;
+      inner+=`<div class="nm"><span class="lng">${esc(s.s)}</span><span class="sht">${SHORT[i]}</span></div><div class="sub">${CORNER_SUB[i]}</div>`;
     } else {
       let band='';
       if(s.t==='prop'){ band=`<div class="band" style="background:${G[s.g].c}">${pr&&pr.h?`<span class="bld">${pr.h===5?HOTEL:HOUSE.repeat(pr.h)}</span>`:''}</div>` }
-      inner+=band+`<div class="cbody"><div class="nm">${esc(s.s)}</div><div class="pr">${s.p?s.p+' €':''}</div></div>`;
+      inner+=band+`<div class="cbody"><div class="nm"><span class="lng">${esc(s.s)}</span><span class="sht">${SHORT[i]}</span></div><div class="pr">${s.p?s.p+' €':''}</div></div>`;
     }
     if(own) inner+=`<span class="ownflag" style="background:${own.color}" title="${esc(own.name)}"></span>`;
     if(pr&&pr.m) inner+=`<div class="mort"></div>`;
