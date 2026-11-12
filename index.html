@@ -314,6 +314,8 @@ body.m .modal{max-height:82vh}
 .mvw .boardwrap.fit .cell.hasp .cbody{padding-top:2px}
 .mvw .boardwrap.fit .cell.l.hasp .cbody,.mvw .boardwrap.fit .cell.r.hasp .cbody{justify-content:flex-start}
 .mvw .boardwrap.fit .cell.l.hasp .nm,.mvw .boardwrap.fit .cell.r.hasp .nm{font-size:max(6px,1.7cqw)}
+.closedapp{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center;background:#eef3fb;color:#14213d}
+.closedapp>div{max-width:340px;display:flex;flex-direction:column;gap:12px;align-items:center}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -473,7 +475,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.14';
+const APP_VER='2026-11-12.15';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -523,6 +525,14 @@ function roomBtns(st){
   const mi=myIdx(st), q=mi>=0&&st.status==='playing'&&!st.players[mi].out?'<button class="btn small danger" id="topleave">🏳️ Falência e sair</button>':'';
   return q+(st.host===me.id?'<button class="btn small danger" id="topclose">Encerrar sala</button>':'');
 }
+function closeBtn(){ return isMob()?'<button class="btn small" data-closeapp>✕ Fechar aplicação</button>':'' }
+function closeApp(){
+  try{ window.close() }catch(e){}
+  setTimeout(()=>{ if(document.hidden) return;
+    document.body.innerHTML='<div class="closedapp"><div><h2>Podes fechar a aplicação</h2><p>O teu telemóvel não deixa a página fechar-se sozinha. Desliza a app para fora no ecrã de apps recentes.</p><p>Se estavas num jogo, continuas lá: quando voltares, entras na mesma sala.</p><button class="btn primary" onclick="location.reload()">Abrir de novo</button></div></div>';
+  },400);
+}
+document.addEventListener('click',e=>{ if(e.target.closest('[data-closeapp]')) closeApp() });
 function bindRoomBtns(){
   $('#topclose')&&confirmBtn($('#topclose'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'top:'+code);
   $('#topleave')&&confirmBtn($('#topleave'),'Confirmar falência e sair?',async()=>{ await act('abandon'); location.hash='' },'leave:'+code);
@@ -1703,7 +1713,7 @@ function renderHome(){
   app.innerHTML=`
   <section class="hero">
     <div>
-      <div class="row" style="justify-content:space-between"><div class="eyebrow">Edição Coimbra · jogo de tabuleiro online</div>${modeBtn()}</div>
+      <div class="row" style="justify-content:space-between"><div class="eyebrow">Edição Coimbra · jogo de tabuleiro online</div><div class="row">${modeBtn()}${closeBtn()}</div></div>
       <h1><span>DEM</span>opólio</h1>
       <p>Compra a cidade dos estudantes, dos bares e repúblicas ao DEM e à Biblioteca Joanina, constrói casas e hotéis e deixa os teus amigos sem um cêntimo. Cria uma sala, partilha o link e joguem cada um no seu dispositivo, de 2 a ${MAXP} jogadores.</p>
     </div>
@@ -1804,7 +1814,7 @@ function render(){
   app.classList.remove('mvw'); app.classList.add('gv');
   app.innerHTML=`
   <div class="topbar">
-    <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>DEMopólio</h1></div>
+    <div class="row"><button class="btn small" onclick="location.hash=''" title="Voltar ao menu inicial. Continuas no jogo e podes voltar à sala.">← Menu inicial</button><h1>DEMopólio</h1></div>
     <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
   </div>
   <div class="game">
@@ -1872,7 +1882,7 @@ function renderMobile(st,meIdx,snap){
     ${me_?`<span class="mmoney ${me_.money<0?'neg':''}">${fmt(me_.money)}</span>`:''}
     <button class="btn small" id="mmenu" aria-label="Menu">⋯</button>
   </header>
-  <div class="mmenu" id="mmenubox" ${pending['top:'+code]>Date.now()||pending['leave:'+code]>Date.now()?'':'hidden'}>${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}</div>
+  <div class="mmenu" id="mmenubox" ${pending['top:'+code]>Date.now()||pending['leave:'+code]>Date.now()?'':'hidden'}><button class="btn small" onclick="location.hash=''">↩ Voltar ao menu inicial</button>${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}${closeBtn()}</div>
   <section class="mpane ${mTab==='board'?'on':''}" data-pane="board">
     ${cur&&st.status==='playing'?`<div class="mturn">${pawnP(cur)}<span>${meIdx===st.turn?'<b>É a tua vez</b>':'Vez de <b>'+esc(cur.name)+'</b>'}</span>
       <span class="mtbtns"><button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></span></div>`:''}
@@ -1944,7 +1954,7 @@ function renderLobby(meIdx){
     : `<div class="cfgrow"><span>${OPT[k][0]}</span><b>${esc(lab(k))}</b></div>`).join('');
   const bots=st.players.filter(p=>p.bot).length, willFill=c.fillTo?Math.max(0,c.fillTo-st.players.length):0, total=st.players.length+willFill;
   app.innerHTML=`
-  <div class="topbar"><div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>${c.solo?'Jogo contra bots':'Sala de espera'}</h1></div><div class="row">${modeBtn()}${soundBtn()}</div></div>
+  <div class="topbar"><div class="row"><button class="btn small" onclick="location.hash=''">← Menu inicial</button><h1>${c.solo?'Jogo contra bots':'Sala de espera'}</h1></div><div class="row">${modeBtn()}${soundBtn()}${closeBtn()}</div></div>
   <div class="cards">
     <div class="panel">
       ${c.solo?'<div class="eyebrow">Modo single player</div><p class="note" style="margin:0">Jogas sozinho contra bots. Ajusta quantos e a dificuldade e começa.</p>'
