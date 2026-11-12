@@ -413,7 +413,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.4';
+const APP_VER='2026-11-12.5';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -458,6 +458,16 @@ let MODE=null; try{ MODE=localStorage.getItem('mv-mode') }catch(e){}
 const isMob=()=>MODE==='m';
 function applyMode(){ document.body.classList.toggle('m',MODE==='m'); document.body.classList.toggle('d',MODE==='d') }
 function setMode(m){ MODE=m; try{ localStorage.setItem('mv-mode',m) }catch(e){} applyMode(); if(code&&state) render(); else renderHome() }
+function roomBtns(st){
+  if(!st) return '';
+  if(st.host===me.id) return '<button class="btn small danger" id="topclose">Encerrar sala</button>';
+  const mi=myIdx(st); if(mi>=0&&st.status==='playing'&&!st.players[mi].out) return '<button class="btn small danger" id="topleave">Abandonar jogo</button>';
+  return '';
+}
+function bindRoomBtns(){
+  $('#topclose')&&confirmBtn($('#topclose'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'top:'+code);
+  $('#topleave')&&confirmBtn($('#topleave'),'Confirmar: abandonar?',async()=>{ await act('abandon'); location.hash='' },'leave:'+code);
+}
 function modeBtn(){ return `<button class="btn small" id="modebtn" title="${isMob()?'Mudar para a versão de computador':'Mudar para a versão de telemóvel'}">${isMob()?'🖥️ Computador':'📱 Telemóvel'}</button>` }
 function bindMode(){ const b=$('#modebtn'); if(b) b.onclick=()=>setMode(isMob()?'d':'m') }
 function chooseMode(){
@@ -1642,7 +1652,7 @@ function render(){
   app.innerHTML=`
   <div class="topbar">
     <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>DEMopólio</h1></div>
-    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
+    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
   </div>
   <div class="game">
     <div class="boardcol">
@@ -1671,7 +1681,7 @@ function render(){
   bindGame();
 }
 function bindGame(){
-  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound(); bindMode();
+  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound(); bindMode(); bindRoomBtns();
   $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
   app.querySelectorAll('[data-endx]').forEach(b=>b.onclick=()=>{ endHidden=code; render() });
   app.querySelectorAll('[data-bid]').forEach(b=>b.onclick=()=>{ b.disabled=true; act('bid',{amt:+b.dataset.bid}) });
@@ -1707,7 +1717,7 @@ function renderMobile(st,meIdx,snap){
     ${me_?`<span class="mmoney ${me_.money<0?'neg':''}">${fmt(me_.money)}</span>`:''}
     <button class="btn small" id="mmenu" aria-label="Menu">⋯</button>
   </header>
-  <div class="mmenu" id="mmenubox" hidden>${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}</div>
+  <div class="mmenu" id="mmenubox" ${pending['top:'+code]>Date.now()||pending['leave:'+code]>Date.now()?'':'hidden'}>${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}</div>
   <section class="mpane ${mTab==='board'?'on':''}" data-pane="board">
     ${cur&&st.status==='playing'?`<div class="mturn">${pawnP(cur)}<span>${meIdx===st.turn?'<b>É a tua vez</b>':'Vez de <b>'+esc(cur.name)+'</b>'}</span>
       <button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></div>`:''}
