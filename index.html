@@ -480,7 +480,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.18';
+const APP_VER='2026-11-12.19';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -1360,15 +1360,17 @@ async function mutate(fn,arg,room=code,quiet=false,tries=0){
     if(msg&&!quiet) toast(msg);
     if(out&&out.status==='ended'&&pre0!=='ended') recordGame(out);
     if(out&&room===code) applyState(out);
+    return out||(!msg);
   }catch(e){
     const c=e&&e.code;
     // conflito com outro jogador a gravar ao mesmo tempo: tenta outra vez em silêncio
     if(RETRY.has(c)&&tries<3&&navigator.onLine!==false){ await new Promise(r=>setTimeout(r,250+Math.random()*500*(tries+1))); return mutate(fn,arg,room,quiet,tries+1) }
     console.warn('mutate falhou',c,e);
     if(quiet) return;
-    if(c==='permission-denied') toast('Sem permissão para guardar. Confirma as regras do Firestore.');
+    if(c==='permission-denied') toast('Sem permissão para guardar (permission-denied). Confirma as regras do Firestore.');
     else if(navigator.onLine===false||c==='unavailable') toast('Sem ligação à internet. A jogada não foi guardada.');
-    else toast('Não consegui guardar a jogada. Tenta de novo.');
+    else toast(`Não consegui guardar a jogada. Tenta de novo. (erro: ${c||(e&&e.message)||'desconhecido'})`);
+    return false;
   }
 }
 const act=(name,arg)=>mutate(A[name],arg);
@@ -1815,7 +1817,7 @@ function autoJoin(){
   if(autoJoined===code||!state||state.status!=='lobby') return;
   if(state.players.some(p=>p.id===me.id)){ autoJoined=code; return }
   const nick=ls.get('mv-nick'); if(!nick) return;
-  autoJoined=code; act('join',{name:nick});
+  autoJoined=code; act('join',{name:nick}).then(ok=>{ if(!ok) autoJoined=null });
 }
 
 function render(){
