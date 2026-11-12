@@ -319,6 +319,8 @@ body.m .modal{max-height:82vh}
 .mycode{display:block;font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(30,64,175,.08);color:inherit;line-height:1.35}
 .mycode .code{font-size:14px;letter-spacing:.08em}
 .mmenu .mycode{width:100%}
+.linkbox{position:fixed;left:50%;top:30%;transform:translateX(-50%);z-index:999;width:min(92vw,420px);background:#fff;color:#14213d;border-radius:14px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:10px}
+.linkbox p{margin:0;font-weight:600}.linkbox input{width:100%;font-family:var(--f-mono)}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -478,7 +480,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.17';
+const APP_VER='2026-11-12.18';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -1856,7 +1858,7 @@ function render(){
   bindGame();
 }
 function bindGame(){
-  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound(); bindMode(); bindRoomBtns(); bindView();
+  $('#copylink')&&($('#copylink').onclick=shareRoom); bindSound(); bindMode(); bindRoomBtns(); bindView();
   requestAnimationFrame(()=>requestAnimationFrame(update3D));
   $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
   app.querySelectorAll('[data-cj]').forEach(b=>b.onclick=()=>{ b.disabled=true; b.dataset.cj==='card'?act('useCard',{k:'jail'}):act('payJail') });
@@ -1877,7 +1879,19 @@ function bindGame(){
   app.querySelectorAll('.cell[data-i]').forEach(c=>c.onclick=()=>{ sel=+c.dataset.i===sel?null:+c.dataset.i; render(); if(sel!==null&&!isMob()&&innerWidth<1100) $('#detail')?.scrollIntoView({behavior:'smooth',block:'center'}) });
   $('#delroom')&&confirmBtn($('#delroom'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'del:'+code);
 }
-function copy(t){ navigator.clipboard.writeText(t).then(()=>toast('Copiado!')).catch(()=>toast(t)) }
+function copyOld(t){ try{ const a=document.createElement('textarea'); a.value=t; a.setAttribute('readonly',''); a.style.cssText='position:fixed;opacity:0'; document.body.appendChild(a); a.select(); const ok=document.execCommand('copy'); a.remove(); return ok }catch(e){ return false } }
+function copy(t){
+  const done=()=>toast('Copiado: '+t);
+  if(navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(t).then(done).catch(()=>copyOld(t)?done():showLink(t));
+  else copyOld(t)?done():showLink(t);
+}
+function showLink(t){ const d=document.createElement('div'); d.className='linkbox'; d.innerHTML=`<p>Copia este link e envia aos teus amigos:</p><input readonly value="${esc(t)}"><button class="btn small primary">Fechar</button>`; document.body.appendChild(d); const i=d.querySelector('input'); i.focus(); i.select(); d.querySelector('button').onclick=()=>d.remove() }
+function roomLink(){ return location.origin+location.pathname+'#'+code }
+function shareRoom(){
+  const url=roomLink(), text=`Junta-te à minha sala do DEMopólio! Código: ${code}`;
+  if(navigator.share&&isMob()) navigator.share({title:'DEMopólio',text,url}).catch(e=>{ if(e&&e.name!=='AbortError') copy(url) });
+  else copy(url);
+}
 
 function renderMobile(st,meIdx,snap){
   app.classList.remove('gv'); app.classList.add('mvw');
@@ -1972,7 +1986,7 @@ function renderLobby(meIdx){
       ${c.solo?'<div class="eyebrow">Modo single player</div><p class="note" style="margin:0">Jogas sozinho contra bots. Ajusta quantos e a dificuldade e começa.</p>'
       :`<div class="eyebrow">Código da sala</div>
       <div class="row"><span class="code" style="font-size:40px">${esc(code)}</span><button class="btn small" id="copycode">Copiar código</button><button class="btn small primary" id="copylink">Copiar link da sala</button></div>
-      <p class="note" style="margin:0">${c.public?'Sala pública: aparece em "Salas abertas" para toda a gente.':'Sala privada: só entra quem tiver este código ou o link.'} Manda o link aos teus amigos: abrem, escrevem o nome e entram logo.</p>`}
+      <p class="note" style="margin:0">${c.public?'Sala pública: aparece em "Salas abertas" para toda a gente.':'Sala privada: não aparece em "Salas abertas". Os teus amigos só entram com o link ou escrevendo este código em "Código da sala", no menu inicial.'} Manda o link aos teus amigos: abrem, escrevem o nome e entram logo.</p>`}
       <div class="eyebrow">Jogadores (${st.players.length}/${MAXP})${willFill?` · mais ${willFill} bot${willFill>1?'s':''} ao começar`:''}</div>
       <div class="lobbylist">${st.players.map((p,i)=>`<div class="roomitem"><div class="row">${pawnP(p,'style="width:26px"')}<b>${esc(p.name)}</b>${p.bot?'<span class="pill">bot</span>':''}${p.id===st.host?'<span class="pill">anfitrião</span>':''}${p.id===me.id?'<span class="note">(tu)</span>':''}</div>${isHost&&p.bot?`<button class="btn small danger" data-rmbot="${i}">Remover</button>`:isHost&&p.id!==me.id?`<button class="btn small danger" data-kick="${i}">Retirar</button>`:''}</div>`).join('')}</div>
       ${isHost?`<div class="row"><button class="btn small" id="addbot" ${st.players.length>=MAXP?'disabled':''}>+ Adicionar bot</button></div>`:''}
@@ -2003,7 +2017,7 @@ function renderLobby(meIdx){
     ${c.solo?'':`<div class="panel pchat" style="grid-column:1/-1"><h2>Chat</h2><div class="chatlist" id="chatlist" style="max-height:220px"></div>${CHATFORM}</div>`}
   </div>`;
   $('#copycode')&&($('#copycode').onclick=()=>copy(code));
-  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href));
+  $('#copylink')&&($('#copylink').onclick=shareRoom);
   bindSound(); bindPhoto(); bindMode();
   app.querySelectorAll('[data-kick]').forEach(b=>b.onclick=()=>act('kick',{idx:+b.dataset.kick}));
   app.querySelectorAll('[data-rmbot]').forEach(b=>b.onclick=()=>act('removeBot',{idx:+b.dataset.rmbot}));
