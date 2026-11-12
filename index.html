@@ -316,6 +316,9 @@ body.m .modal{max-height:82vh}
 .mvw .boardwrap.fit .cell.l.hasp .nm,.mvw .boardwrap.fit .cell.r.hasp .nm{font-size:max(6px,1.7cqw)}
 .closedapp{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center;background:#eef3fb;color:#14213d}
 .closedapp>div{max-width:340px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.mycode{display:block;font-size:12px;padding:6px 8px;border-radius:8px;background:rgba(30,64,175,.08);color:inherit;line-height:1.35}
+.mycode .code{font-size:14px;letter-spacing:.08em}
+.mmenu .mycode{width:100%}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -475,7 +478,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.15';
+const APP_VER='2026-11-12.17';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -525,6 +528,7 @@ function roomBtns(st){
   const mi=myIdx(st), q=mi>=0&&st.status==='playing'&&!st.players[mi].out?'<button class="btn small danger" id="topleave">🏳️ Falência e sair</button>':'';
   return q+(st.host===me.id?'<button class="btn small danger" id="topclose">Encerrar sala</button>':'');
 }
+function myCode(st){ const p=st&&st.players[myIdx(st)]; return p&&p.rc&&!p.out?`<span class="mycode" title="Abre o link da sala noutro dispositivo e escreve este código para continuares a jogar lá">🔑 Código para jogares noutro dispositivo: <b class="code">${p.rc}</b></span>`:'' }
 function closeBtn(){ return isMob()?'<button class="btn small" data-closeapp>✕ Fechar aplicação</button>':'' }
 function closeApp(){
   try{ window.close() }catch(e){}
@@ -1334,7 +1338,8 @@ function route(){
   resetAnim();
   if(/^[A-Z]{5}$/.test(h)){ code=h; openRoom() } else { code=null; state=null; listRooms(); renderHome() }
 }
-async function mutate(fn,arg,room=code){
+const RETRY=new Set(['aborted','failed-precondition','unavailable','deadline-exceeded','resource-exhausted','internal']);
+async function mutate(fn,arg,room=code,quiet=false,tries=0){
   if(!room||!db) return;
   const ref=db.doc('rooms/'+room); let msg=null, out=null, pre0=null;
   try{
@@ -1350,11 +1355,18 @@ async function mutate(fn,arg,room=code){
       st.rev=(st.rev||0)+1; st.updatedAt=Date.now();
       tx.set(ref,st); out=st;
     });
-    if(msg) toast(msg);
+    if(msg&&!quiet) toast(msg);
     if(out&&out.status==='ended'&&pre0!=='ended') recordGame(out);
     if(out&&room===code) applyState(out);
   }catch(e){
-    toast(e&&e.code==='permission-denied'?'Sem permissão para guardar. Confirma as regras do Firestore.':'Não consegui guardar a jogada. Tenta de novo.');
+    const c=e&&e.code;
+    // conflito com outro jogador a gravar ao mesmo tempo: tenta outra vez em silêncio
+    if(RETRY.has(c)&&tries<3&&navigator.onLine!==false){ await new Promise(r=>setTimeout(r,250+Math.random()*500*(tries+1))); return mutate(fn,arg,room,quiet,tries+1) }
+    console.warn('mutate falhou',c,e);
+    if(quiet) return;
+    if(c==='permission-denied') toast('Sem permissão para guardar. Confirma as regras do Firestore.');
+    else if(navigator.onLine===false||c==='unavailable') toast('Sem ligação à internet. A jogada não foi guardada.');
+    else toast('Não consegui guardar a jogada. Tenta de novo.');
   }
 }
 const act=(name,arg)=>mutate(A[name],arg);
@@ -1632,7 +1644,7 @@ function scheduleAutoEnd(){
   const key=`${st.turn}-${st.rollId}-${mine}`; if(key===autoEndKey) return;
   clearTimeout(autoEndTimer); autoEndKey=key;
   const wait=mine?Math.max(2500,holdUntil-Date.now()+400):21000;
-  autoEndTimer=setTimeout(()=>{ autoEndKey=null; if(state&&state.phase==='end') act('autoEnd') },wait);
+  autoEndTimer=setTimeout(()=>{ autoEndKey=null; if(state&&state.phase==='end') mutate(A.autoEnd,{},code,true) },mine?wait:wait+lag(st));
 }
 const SFX={on:ls.get('mv-sound')!=='0',ctx:null};
 function audio(){ if(!SFX.ctx){ try{ SFX.ctx=new (window.AudioContext||window.webkitAudioContext)() }catch(e){} } if(SFX.ctx&&SFX.ctx.state==='suspended') SFX.ctx.resume(); return SFX.ctx }
@@ -1825,7 +1837,7 @@ function render(){
     <div class="side">
       <div class="col">
         <div class="panel actions" id="actions"></div>
-        <div class="panel pplayers"><div class="phead"><h2>Jogadores</h2>${meIdx>=0&&st.players[meIdx].rc?`<span class="note" title="Usa este código para voltar ao jogo noutro dispositivo">o teu código: <b class="code">${st.players[meIdx].rc}</b></span>`:''}</div><div class="players scroll compact" id="players"></div><p class="note" style="margin:0;font-size:12px">Toca num jogador para negociar ou doar.</p></div>
+        <div class="panel pplayers"><div class="phead"><h2>Jogadores</h2></div><div class="players scroll compact" id="players"></div>${myCode(st)}<p class="note" style="margin:0;font-size:12px">Toca num jogador para negociar ou doar.</p></div>
         ${panelC('chat','Chat','pchat grow',`<div class="chatlist scroll" id="chatlist"></div>${CHATFORM}`)}
       </div>
       <div class="col">
@@ -1882,7 +1894,7 @@ function renderMobile(st,meIdx,snap){
     ${me_?`<span class="mmoney ${me_.money<0?'neg':''}">${fmt(me_.money)}</span>`:''}
     <button class="btn small" id="mmenu" aria-label="Menu">⋯</button>
   </header>
-  <div class="mmenu" id="mmenubox" ${pending['top:'+code]>Date.now()||pending['leave:'+code]>Date.now()?'':'hidden'}><button class="btn small" onclick="location.hash=''">↩ Voltar ao menu inicial</button>${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}${closeBtn()}</div>
+  <div class="mmenu" id="mmenubox" ${pending['top:'+code]>Date.now()||pending['leave:'+code]>Date.now()?'':'hidden'}>${myCode(st)}<button class="btn small" onclick="location.hash=''">↩ Voltar ao menu inicial</button>${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}${closeBtn()}</div>
   <section class="mpane ${mTab==='board'?'on':''}" data-pane="board">
     ${cur&&st.status==='playing'?`<div class="mturn">${pawnP(cur)}<span>${meIdx===st.turn?'<b>É a tua vez</b>':'Vez de <b>'+esc(cur.name)+'</b>'}</span>
       <span class="mtbtns"><button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></span></div>`:''}
@@ -1891,7 +1903,7 @@ function renderMobile(st,meIdx,snap){
     <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
   </section>
   <section class="mpane ${mTab==='players'?'on':''}" data-pane="players">
-    <div class="panel pplayers"><div class="phead"><h2>Jogadores</h2>${me_&&me_.rc?`<span class="note">o teu código: <b class="code">${me_.rc}</b></span>`:''}</div><div class="players compact" id="players"></div><p class="note" style="margin:0;font-size:12px">Toca num jogador para negociar ou doar.</p></div>
+    <div class="panel pplayers"><div class="phead"><h2>Jogadores</h2></div><div class="players compact" id="players"></div>${myCode(st)}<p class="note" style="margin:0;font-size:12px">Toca num jogador para negociar ou doar.</p></div>
   </section>
   <section class="mpane ${mTab==='chat'?'on':''}" data-pane="chat">
     <div class="panel pchat"><h2>Chat</h2><div class="chatlist" id="chatlist"></div>${CHATFORM}</div>
@@ -1964,7 +1976,7 @@ function renderLobby(meIdx){
       <div class="eyebrow">Jogadores (${st.players.length}/${MAXP})${willFill?` · mais ${willFill} bot${willFill>1?'s':''} ao começar`:''}</div>
       <div class="lobbylist">${st.players.map((p,i)=>`<div class="roomitem"><div class="row">${pawnP(p,'style="width:26px"')}<b>${esc(p.name)}</b>${p.bot?'<span class="pill">bot</span>':''}${p.id===st.host?'<span class="pill">anfitrião</span>':''}${p.id===me.id?'<span class="note">(tu)</span>':''}</div>${isHost&&p.bot?`<button class="btn small danger" data-rmbot="${i}">Remover</button>`:isHost&&p.id!==me.id?`<button class="btn small danger" data-kick="${i}">Retirar</button>`:''}</div>`).join('')}</div>
       ${isHost?`<div class="row"><button class="btn small" id="addbot" ${st.players.length>=MAXP?'disabled':''}>+ Adicionar bot</button></div>`:''}
-      ${meIdx>=0?`<div class="eyebrow">A tua foto no peão</div>${photoCtl(st.players[meIdx])}`:''}
+      ${meIdx>=0?`<div class="eyebrow">A tua foto no peão</div>${photoCtl(st.players[meIdx])}${myCode(st)}`:''}
     </div>
     <div class="panel">
       ${meIdx<0?`
@@ -2328,7 +2340,9 @@ function openTrade(meIdx,to,pre){
 }
 
 let trig={}, botBusy=false, botNext=0;
-function fire(name){ const now=Date.now(); if(trig[name]&&now-trig[name]<2500) return; trig[name]=now; act(name) }
+function fire(name){ const now=Date.now(); if(trig[name]&&now-trig[name]<4000) return; trig[name]=now; mutate(A[name],{},code,true) }
+// quem dispara os eventos automáticos: o anfitrião logo; os outros só se o anfitrião não o fizer
+const lag=st=>st.host===me.id?0:4000+((st.players.findIndex(p=>p.id===me.id)+1)*700);
 function clock(ms){ ms=Math.max(0,ms); const m=Math.floor(ms/60000), s=Math.floor(ms/1000)%60; return `⏱ ${m}:${String(s).padStart(2,'0')}` }
 setInterval(()=>{
   const st=state; if(!st||!code||st.status!=='playing') return;
@@ -2336,10 +2350,11 @@ setInterval(()=>{
   const gt=$('#gametimer'); if(gt&&st.endsAt){ gt.textContent=clock(st.endsAt-now); gt.classList.toggle('low',st.endsAt-now<5*60000) }
   const tt=$('#turntimer'); if(tt&&c.turnTime){ const left=Math.max(0,Math.ceil(((st.turnAt||0)+turnLimit(st,st.players[st.turn])-now)/1000)); tt.textContent=left+' s'; tt.classList.toggle('low',left<=10) }
   const at=$('#auctimer'); if(at&&st.auction) at.textContent=Math.max(0,Math.ceil((st.auction.endsAt-now)/1000));
-  if(st.endsAt&&now>=st.endsAt) fire('timeUp');
-  if(st.phase==='auction'&&st.auction&&now>=st.auction.endsAt+300) fire('auctionEnd');
+  if(document.hidden) return;
+  if(st.endsAt&&now>=st.endsAt+lag(st)) fire('timeUp');
+  if(st.phase==='auction'&&st.auction&&now>=st.auction.endsAt+300+lag(st)) fire('auctionEnd');
   const cur=st.players[st.turn];
-  if(c.turnTime&&cur&&!cur.bot&&['roll','buy','end'].includes(st.phase)&&now>=(st.turnAt||0)+turnLimit(st,cur)+(cur.id===me.id?0:1500)) fire('timeout');
+  if(c.turnTime&&cur&&!cur.bot&&['roll','buy','end'].includes(st.phase)&&now>=(st.turnAt||0)+turnLimit(st,cur)+(cur.id===me.id?0:1500+lag(st))) fire('timeout');
   // bots: o anfitrião controla-os; se o anfitrião sair, qualquer jogador assume ao fim de 12 s
   const hasBots=st.players.some(p=>p.bot&&!p.out); if(!hasBots||botBusy||now<botNext) return;
   if(st.host!==me.id&&now-(st.updatedAt||0)<12000) return;
@@ -2347,7 +2362,7 @@ setInterval(()=>{
   const needs=(st.phase==='auction')||(st.trades||[]).some(t=>st.players[t.to]?.bot)||(cur&&cur.bot);
   if(!needs) return;
   botBusy=true;
-  mutate(A.botStep).finally(()=>{ botBusy=false; botNext=Date.now()+(st.phase==='auction'?700+Math.random()*1300:900) });
+  mutate(A.botStep,{},code,true).finally(()=>{ botBusy=false; botNext=Date.now()+(st.phase==='auction'?700+Math.random()*1300:900) });
 },500);
 
 boot();
