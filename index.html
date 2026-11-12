@@ -248,13 +248,30 @@ body.m .modal{max-height:82vh}
 .players.compact .pm .note{font-size:11px}
 .btn.arming{background:var(--danger);border-color:var(--danger);color:#fff}
 .pawnlayer{position:absolute;inset:0;pointer-events:none;z-index:5}
-.pwn{position:absolute;width:3.1cqw;min-width:15px;transform:translate(-50%,-100%);transition:left .3s ease-in-out,top .3s ease-in-out}
+.pwn{position:absolute;width:3.1cqw;min-width:15px;transform:translate(-50%,-100%);transform-origin:50% 100%;transition:left .3s ease-in-out,top .3s ease-in-out,transform .7s cubic-bezier(.3,.7,.3,1)}
 .pwn .pawn{width:100%;margin:0}
 .pwn.active .pawn{filter:drop-shadow(0 0 .5cqw var(--pc)) drop-shadow(0 2px 2px rgba(0,0,0,.35))}
-.pwarrow{position:absolute;transform:translate(-50%,-100%);transition:left .3s ease-in-out,top .3s ease-in-out;display:flex;flex-direction:column;align-items:center;animation:bob 1s ease-in-out infinite}
+.pwarrow{position:absolute;left:50%;bottom:100%;margin-bottom:2px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;animation:bob 1s ease-in-out infinite;pointer-events:none}
 .pwarrow span{background:var(--pc);color:#fff;font-family:var(--f-body);font-weight:800;font-size:max(9px,1.25cqw);letter-spacing:.06em;padding:.2em .55em;border-radius:6px;border:1.5px solid var(--pawn-edge);white-space:nowrap}
 .pwarrow i{width:0;height:0;border-left:max(5px,.7cqw) solid transparent;border-right:max(5px,.7cqw) solid transparent;border-top:max(7px,1cqw) solid var(--pc);margin-top:-1px}
-@keyframes bob{0%,100%{margin-top:0}50%{margin-top:-.8cqw}}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateZ(1px)}50%{transform:translateX(-50%) translateY(-.8cqw) translateZ(1px)}}
+.boardwrap{--rx:0deg;--rz:0deg;--ox:50%;perspective:1500px;perspective-origin:50% 10%;position:relative}
+.minimap{position:absolute;top:8px;right:8px;z-index:12;width:clamp(96px,24%,190px);padding:5px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--surface) 92%,transparent);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:3px;align-items:stretch;animation:pop .25s ease-out}
+.minimap svg{width:100%;height:auto;display:block}
+.minimap span{font-size:11px;font-weight:700;color:var(--cobalt);text-align:center}
+.minimap:hover{border-color:var(--cobalt)}
+.back3d{position:absolute;top:8px;right:8px;z-index:12;box-shadow:var(--shadow)}
+.mvw .minimap{width:30%;top:4px;right:4px}
+.board{transform-origin:var(--ox) 60%;transition:transform .8s cubic-bezier(.3,.7,.3,1),box-shadow .8s}
+.boardwrap.b3d{--rx:40deg}
+.boardwrap.b3d .board{transform:rotateX(var(--rx)) rotateZ(var(--rz)) scale(.9);transform-style:preserve-3d;overflow:visible;box-shadow:0 40px 50px -20px rgba(10,16,34,.45)}
+.boardwrap.b3d .pawnlayer,.boardwrap.b3d .pwn{transform-style:preserve-3d}
+.boardwrap.b3d .pwn{transform:translate(-50%,-100%) rotateZ(calc(-1 * var(--rz))) rotateX(calc(-1 * var(--rx))) scale(1.45)}
+.mvw .boardwrap.b3d{--rx:34deg}
+.mvw .mtbtns{display:flex;gap:6px;margin-left:auto;flex:none}
+.mvw .mtbtns .btn{white-space:nowrap}
+.mvw .mturn .mtbtns .btn{margin-left:0}
+@media (prefers-reduced-motion:reduce){.board,.pwn{transition:none}}
 .landing{position:absolute;inset:9%;z-index:6;background:color-mix(in srgb,var(--surface) 97%,transparent);border:2px solid var(--line);border-radius:2.4cqw;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.3cqw;padding:3cqw 3.4cqw;text-align:center;animation:pop .25s ease-out;overflow:auto}
 @keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
 .landing .lx{position:absolute;top:1.2cqw;right:1.2cqw;border:0;background:var(--tile);color:var(--ink);width:max(28px,3.4cqw);height:max(28px,3.4cqw);border-radius:50%;font-size:max(16px,2cqw);line-height:1}
@@ -436,7 +453,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.6';
+const APP_VER='2026-11-12.9';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -1327,7 +1344,7 @@ function rollDice(final,cb){
   let t=0;
   diceTimer=setInterval(()=>{ dispDice=[roll6(),roll6()]; drawDice(); if((t+=70)>=(reduce?140:840)){ clearInterval(diceTimer); dispDice=final; rolling=false; drawDice(); render(); cb() } },70);
 }
-function drawDice(){ const el=$('#dice'); if(!el) return; el.className='dice'+(rolling?' rolling':''); el.innerHTML=dieHTML(dispDice[0])+dieHTML(dispDice[1]) }
+function drawDice(){ const el=$('#dice'); if(!el) return; el.className='dice'+(rolling?' rolling':''); el.innerHTML=dieHTML(dispDice[0])+dieHTML(dispDice[1]); update3D() }
 function startWalk(fromRoll){
   if(!state||!state.players) return;
   clearInterval(walkTimer);
@@ -1384,6 +1401,58 @@ function sqPoint(i,k,n){
   if(side==='l') return [BC+PE+PW/2+inw,lineC(r)+PH/2];
   return [1-BC-PE-PW/2-inw,lineC(r)+PH/2];
 }
+/* ---------- vista 3D ---------- */
+let view=ls.get('mv-view')||'auto', last3d=false, lastOx='50%', lastRz='0deg';
+const VIEWS={auto:'🧊 3D automático','2d':'▦ Sempre 2D','3d':'🧊 Sempre 3D'};
+const VSHORT={auto:'🧊 Auto','2d':'▦ 2D','3d':'🧊 3D'};
+const vLabel=()=>(isMob()?VSHORT:VIEWS)[view];
+function viewBtn(){ return `<button class="btn small" id="viewbtn" title="Vista do tabuleiro: 3D automático, sempre 2D ou sempre 3D">${vLabel()}</button>` }
+function bindView(){ const b=$('#viewbtn'); if(b) b.onclick=()=>{ view=view==='auto'?'2d':view==='2d'?'3d':'auto'; ls.set('mv-view',view); b.textContent=vLabel(); toast('Vista: '+VIEWS[view].replace(/^\S+ /,'')); update3D() } }
+let peek2d=false, peekTurn=null;
+function want3D(){
+  const st=state; if(!st||st.status!=='playing'||view==='2d') return false;
+  if(peek2d&&peekTurn===st.turn) return false; peek2d=false;
+  if(sel!==null||!$('#modal').hidden) return false;
+  if(view==='3d') return !(showLanding!==null&&myTurn(st)>=0);
+  if(st.phase==='auction'||showLanding!==null) return false;
+  if(myTurn(st)<0) return true;
+  if(rolling||walking) return true;
+  return st.phase==='roll';
+}
+function update3D(){
+  const w=$('#boardwrap'); if(!w||!state) return;
+  const on=want3D();
+  if(on){ const p=state.players[state.turn]; if(p){ const sq=disp[p.id]??p.pos; const [x]=sqPoint(sq,0,1);
+    lastOx=(x*100).toFixed(1)+'%'; lastRz=((x-.5)*-14).toFixed(1)+'deg' } }
+  w.style.setProperty('--ox',lastOx); w.style.setProperty('--rz',lastRz);
+  w.classList.toggle('b3d',on); last3d=on;
+  let mm=$('#minimap'), back=$('#back3d');
+  if(on){
+    if(!mm){ mm=document.createElement('button'); mm.id='minimap'; mm.className='minimap'; mm.title='Ver o tabuleiro todo em 2D'; mm.setAttribute('aria-label','Ver o tabuleiro todo em 2D'); w.appendChild(mm);
+      mm.onclick=()=>{ peek2d=true; peekTurn=state.turn; update3D() } }
+    mm.innerHTML=miniSVG(state)+'<span>Ver em 2D</span>';
+  } else mm&&mm.remove();
+  const showBack=peek2d&&state.status==='playing'&&view!=='2d';
+  if(showBack&&!back){ back=document.createElement('button'); back.id='back3d'; back.className='btn small back3d'; back.textContent='🧊 Voltar ao 3D'; w.appendChild(back); back.onclick=()=>{ peek2d=false; update3D() } }
+  if(!showBack&&back) back.remove();
+}
+function miniSVG(st){
+  const C=16, N=10, at=k=>k===1?0:k===11?C+9*N:C+(k-2)*N, sz=k=>(k===1||k===11)?C:N;
+  let h='<svg viewBox="0 0 122 122" aria-hidden="true"><rect x="0" y="0" width="122" height="122" rx="4" fill="var(--line)"/><rect x="16.5" y="16.5" width="89" height="89" fill="var(--surface)"/>';
+  const occ={};
+  SQ.forEach((s,i)=>{
+    const [r,c,side]=cellPos(i), x=at(c), y=at(r), w=sz(c), hh=sz(r), pr=st.props?.[i], own=pr?st.players[pr.o]:null;
+    h+=`<rect x="${x+.5}" y="${y+.5}" width="${w-1}" height="${hh-1}" fill="${own?own.color:'var(--tile)'}" fill-opacity="${own?(pr.m?.25:.55):1}"/>`;
+    if(s.t==='prop'){ const g=G[s.g].c, b=3;
+      const [bx,by,bw,bh]= side==='b'?[x+.5,y+.5,w-1,b]: side==='t'?[x+.5,y+hh-.5-b,w-1,b]: side==='l'?[x+w-.5-b,y+.5,b,hh-1]:[x+.5,y+.5,b,hh-1];
+      h+=`<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="${g}"/>` }
+    if(pr&&pr.h) h+=`<text x="${x+w/2}" y="${y+hh/2+2.6}" font-size="7" text-anchor="middle" font-weight="800" fill="${pr.h===5?'#D2382E':'#1A7A44'}">${pr.h===5?'H':pr.h}</text>`;
+  });
+  st.players.forEach(p=>{ if(p.out) return; const sq=disp[p.id]??p.pos; if(sq===undefined) return; const k=occ[sq]=(occ[sq]||0)+1;
+    const [r,c]=cellPos(sq), x=at(c)+sz(c)/2, y=at(r)+sz(r)/2, dx=((k-1)%3-1)*3.4, dy=Math.floor((k-1)/3)*3.4;
+    h+=`<circle cx="${x+dx}" cy="${y+dy}" r="2.4" fill="${p.color}" stroke="#fff" stroke-width=".8"/>` });
+  return h+'</svg>';
+}
 function placeTokens(){
   if(!state) return;
   const layer=$('#pawnlayer'); if(!layer) return;
@@ -1397,18 +1466,19 @@ function placeTokens(){
     let el=layer.querySelector(`.pwn[data-id="${p.id}"]`);
     const sig=(p.photo||'').length+'|'+p.color+'|'+p.name;
     if(!el){ el=document.createElement('div'); el.className='pwn'; el.dataset.id=p.id; layer.appendChild(el) }
-    if(el.dataset.sig!==sig){ el.dataset.sig=sig; el.innerHTML=pawnP(p); el.style.setProperty('--pc',p.color) }
+    if(el.dataset.sig!==sig){ el.dataset.sig=sig; el.querySelector('svg')?.remove(); el.insertAdjacentHTML('afterbegin',pawnP(p)); el.style.setProperty('--pc',p.color) }
     el.style.left=(x*100)+'%'; el.style.top=(y*100)+'%';
     el.classList.toggle('active',state.status==='playing'&&cur&&cur.id===p.id);
-    if(hopped.has(p.id)){ const sv=el.querySelector('svg'); sv.classList.remove('hop'); void sv.offsetWidth; sv.classList.add('hop') }
+    if(hopped.has(p.id)){ const sv=el.querySelector('svg.pawn'); sv.classList.remove('hop'); void sv.offsetWidth; sv.classList.add('hop') }
+    let a=el.querySelector('.pwarrow');
     if(target&&target.id===p.id){
-      let a=layer.querySelector('.pwarrow');
-      if(!a){ a=document.createElement('div'); a.className='pwarrow'; layer.appendChild(a) }
-      a.style.setProperty('--pc',p.color); a.innerHTML=`<span>${mi>=0&&target===state.players[mi]?'TU':esc(p.name)}</span><i></i>`;
-      a.style.left=(x*100)+'%'; a.style.top=((y-PH-.006)*100)+'%';
-    }
+      if(!a){ a=document.createElement('div'); a.className='pwarrow'; el.appendChild(a) }
+      const lbl=mi>=0&&target===state.players[mi]?'TU':esc(p.name);
+      if(a.dataset.l!==lbl){ a.dataset.l=lbl; a.innerHTML=`<span>${lbl}</span><i></i>` }
+    } else if(a) a.remove();
   }));
   layer.querySelectorAll('.pwn').forEach(el=>{ if(!seen.has(el.dataset.id)) el.remove() });
+  update3D();
 }
 function auctionHTML(st){
   const a=st.auction; if(st.phase!=='auction'||!a||st.status!=='playing') return '';
@@ -1676,11 +1746,11 @@ function render(){
   app.innerHTML=`
   <div class="topbar">
     <div class="row"><button class="btn small" onclick="location.hash=''">← Salas</button><h1>DEMopólio</h1></div>
-    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
+    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${roomBtns(st)}${viewBtn()}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
   </div>
   <div class="game">
     <div class="boardcol">
-      <div class="boardwrap" id="boardwrap">${boardHTML(st)}</div>
+      <div class="boardwrap ${last3d?'b3d':''}" id="boardwrap" style="--ox:${lastOx};--rz:${lastRz}">${boardHTML(st)}</div>
       <p class="note swipe">Desliza o tabuleiro para os lados para veres todas as casas. Toca numa casa para ver os detalhes.</p>
     </div>
     <div class="side">
@@ -1705,7 +1775,8 @@ function render(){
   bindGame();
 }
 function bindGame(){
-  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound(); bindMode(); bindRoomBtns();
+  $('#copylink')&&($('#copylink').onclick=()=>copy(location.href)); bindSound(); bindMode(); bindRoomBtns(); bindView();
+  requestAnimationFrame(()=>requestAnimationFrame(update3D));
   $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
   app.querySelectorAll('[data-endx]').forEach(b=>b.onclick=()=>{ endHidden=code; render() });
   app.querySelectorAll('[data-bid]').forEach(b=>b.onclick=()=>{ b.disabled=true; act('bid',{amt:+b.dataset.bid}) });
@@ -1744,8 +1815,8 @@ function renderMobile(st,meIdx,snap){
   <div class="mmenu" id="mmenubox" ${pending['top:'+code]>Date.now()||pending['leave:'+code]>Date.now()?'':'hidden'}>${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':'<button class="btn small" id="copylink">Copiar link da sala</button>'}</div>
   <section class="mpane ${mTab==='board'?'on':''}" data-pane="board">
     ${cur&&st.status==='playing'?`<div class="mturn">${pawnP(cur)}<span>${meIdx===st.turn?'<b>É a tua vez</b>':'Vez de <b>'+esc(cur.name)+'</b>'}</span>
-      <button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></div>`:''}
-    <div class="boardwrap ${boardFit?'fit':''}" id="boardwrap">${boardHTML(st)}</div>
+      <span class="mtbtns">${viewBtn()}<button class="btn small" id="fitbtn">${boardFit?'🔍 Ampliar':'🗺️ Ver tudo'}</button></span></div>`:''}
+    <div class="boardwrap ${boardFit?'fit':''} ${last3d?'b3d':''}" id="boardwrap" style="--ox:${lastOx};--rz:${lastRz}">${boardHTML(st)}</div>
     <div class="panel actions" id="actions"></div>
     <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
   </section>
@@ -2131,7 +2202,7 @@ function renderDetail(meIdx){
 }
 
 /* ---------- JOGADOR: NEGOCIAR / DOAR ---------- */
-function closeModal(){ $('#modal').hidden=true }
+function closeModal(){ $('#modal').hidden=true; update3D() }
 function openPlayer(meIdx,i){
   const st=state, p=st.players[i], m=$('#modal');
   const owned=Object.keys(st.props||{}).map(Number).filter(k=>st.props[k].o===i).sort((a,b)=>a-b);
