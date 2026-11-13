@@ -395,6 +395,12 @@ body.m .modal{max-height:82vh}
 .dealto .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pc);margin-right:5px}
 .pball{flex:none;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--pc) 55%,#fff),var(--pc) 60%,color-mix(in srgb,var(--pc) 75%,#000));box-shadow:0 0 0 2px var(--surface),0 0 0 3px color-mix(in srgb,var(--pc) 60%,transparent);place-self:center}
 .pl.out .pball{filter:grayscale(1);opacity:.5}
+.buildbtn{width:100%;justify-content:center;gap:8px;background:#16a34a;color:#fff;border-color:#15803d;font-weight:800;font-size:15px;padding:10px 14px;box-shadow:0 3px 0 #15803d}
+.buildbtn:hover{background:#15803d}
+.buildbtn svg{width:20px;height:auto}
+.buildbtn span{opacity:.85;font-family:var(--f-mono)}
+.mortbtn{background:#fff4e0;color:#9a5b00;border-color:#f0b44c}
+.mortbtn.arming{background:#c2410c;color:#fff;border-color:#9a3412}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -559,7 +565,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.16';
+const APP_VER='2026-11-13.17';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -2524,8 +2530,11 @@ function renderDetail(meIdx){
   if(pr){
     h+=`<p style="margin:0">Dono: <b>${esc(pname(st,pr.o))}</b>${pr.h?` · ${pr.h===5?'hotel':pr.h+' casa(s)'}`:''}${pr.m?' · <span class="neg">hipotecada</span>':''}</p>`;
     if(pr.o===meIdx && st.turn===meIdx && st.status==='playing'){
-      h+=`<div class="row">${s.t==='prop'?`<button class="btn small" data-p="build">${pr.h===4?'Construir hotel':'Construir casa'} (${fmt(G[s.g].hc)})</button>${pr.h?`<button class="btn small" data-p="sell">Vender construção</button>`:''}`:''}
-        ${pr.m?`<button class="btn small" data-p="unmortgage">Pagar hipoteca (${fmt(Math.ceil(s.p*.55))})</button>`:`<button class="btn small" data-p="mortgage">Hipotecar (+${fmt(s.p/2)})</button>`}</div>`;
+      const canBuild=s.t==='prop'&&ownsGroup(st,meIdx,s.g)&&groupOf(s.g).every(j=>!st.props[j].m)&&pr.h<5;
+      if(canBuild) h+=`<button class="btn buildbtn" data-p="build">${pr.h===4?HOTEL+' Construir hotel':HOUSE+' Construir casa'} <span>${fmt(G[s.g].hc)}</span></button>`;
+      else if(s.t==='prop'&&!ownsGroup(st,meIdx,s.g)) h+=`<p class="note" style="margin:0">Para construir precisas de ter a cor toda.</p>`;
+      h+=`<div class="row">${s.t==='prop'&&pr.h?`<button class="btn small" data-p="sell">Vender construção (+${fmt(G[s.g].hc/2)})</button>`:''}
+        ${pr.m?`<button class="btn small" data-p="unmortgage">Pagar hipoteca (${fmt(Math.ceil(s.p*.55))})</button>`:(pr.h?'':`<button class="btn small mortbtn" id="mortbtn">Hipotecar (+${fmt(s.p/2)})</button>`)}</div>`;
     }
     if(st.status==='playing'&&meIdx>=0&&!st.players[meIdx].out){
       const ok=tradeable(st,sel), why=ok?'':'<p class="note" style="margin:0">Para negociar, vende primeiro as casas desta cor.</p>';
@@ -2540,6 +2549,7 @@ function renderDetail(meIdx){
   h+=`<button class="btn small" id="closedet">Fechar</button>`;
   el.innerHTML=h;
   el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>act(b.dataset.p,{i:sel}));
+  const mb=$('#mortbtn'); if(mb){ const i=sel; confirmBtn(mb,`Tens a certeza? Hipotecar ${SQ[i].s}`,()=>act('mortgage',{i}),'mort:'+i) }
   el.querySelectorAll('[data-dealget]').forEach(b=>b.onclick=()=>openTrade(meIdx,+b.dataset.dealget,{get:[sel]}));
   el.querySelectorAll('[data-dealgive]').forEach(b=>b.onclick=()=>openTrade(meIdx,+b.dataset.dealgive,{give:[sel]}));
   $('#closedet').onclick=()=>{ sel=null; render() };
