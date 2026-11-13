@@ -321,6 +321,9 @@ body.m .modal{max-height:82vh}
 .mmenu .mycode{width:100%}
 .linkbox{position:fixed;left:50%;top:30%;transform:translateX(-50%);z-index:999;width:min(92vw,420px);background:#fff;color:#14213d;border-radius:14px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:10px}
 .linkbox p{margin:0;font-weight:600}.linkbox input{width:100%;font-family:var(--f-mono)}
+.joinbar{margin:0 0 14px;padding:14px 16px;border-radius:14px;background:#fff6d6;color:#3a2c00;border:2px solid #f0c419;display:flex;flex-direction:column;gap:10px}
+.joinbar .row{flex-wrap:nowrap}.joinbar input{flex:1;min-width:0}
+.joinerr{margin:0;color:#b42318;font-weight:600;font-size:13px}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -480,7 +483,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.19';
+const APP_VER='2026-11-12.20';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -1812,12 +1815,36 @@ function openRoom(){
     applyState(structuredClone(s.data())); autoJoin();
   },()=>{ clearTimeout(timer); app.innerHTML=`<div class="banner warn">Perdi a ligação à sala. Recarrega a página.</div>` });
 }
-let autoJoined=null;
+let autoJoined=null, joining=false, joinErr='';
+async function joinRoom(name){
+  if(joining) return; joining=true; joinErr=''; if(state) render();
+  const room=code; let ok=false;
+  try{ ok=await mutate(A.join,{name},room,true) }catch(e){}
+  const inRoom=()=>state&&state.players.some(p=>p.id===me.id);
+  if(!ok&&!inRoom()&&db&&room===code){
+    // plano B: junta-te sem transação
+    try{
+      const snap=await db.doc('rooms/'+room).get(); const st=snap.data();
+      if(!st) joinErr='Esta sala já não existe.';
+      else if(st.status!=='lobby') joinErr='O jogo desta sala já começou.';
+      else if((st.players||[]).length>=MAXP) joinErr=`A sala está cheia (máx. ${MAXP}).`;
+      else if(!(st.players||[]).some(p=>p.id===me.id)){
+        const used=(st.players||[]).map(p=>p.color);
+        const pl={id:me.id,name:name.slice(0,18),color:COLORS.find(c=>!used.includes(c)),rc:rcode(),...(okPhoto(myPhoto())?{photo:myPhoto()}:{})};
+        const FV=firebase.firestore.FieldValue;
+        await db.doc('rooms/'+room).update({players:FV.arrayUnion(pl),pids:FV.arrayUnion(me.id),log:[`${name} entrou na sala.`,...(st.log||[])].slice(0,60),updatedAt:Date.now()});
+      }
+    }catch(e){ joinErr=`Não consegui entrar na sala (erro: ${e&&e.code||e&&e.message||'desconhecido'}). Tira uma captura a isto e envia ao anfitrião.` }
+  }
+  joining=false;
+  setTimeout(()=>{ if(code===room&&state&&!inRoom()&&!joinErr){ joinErr='Carregaste em Entrar mas a sala não te recebeu. Recarrega a página e tenta outra vez.' } if(state&&code===room) render() },2500);
+  if(state) render();
+}
 function autoJoin(){
   if(autoJoined===code||!state||state.status!=='lobby') return;
   if(state.players.some(p=>p.id===me.id)){ autoJoined=code; return }
   const nick=ls.get('mv-nick'); if(!nick) return;
-  autoJoined=code; act('join',{name:nick}).then(ok=>{ if(!ok) autoJoined=null });
+  autoJoined=code; joinRoom(nick);
 }
 
 function render(){
@@ -1962,8 +1989,9 @@ function mobilePrimary(st,mi){
 }
 function renderLobby(meIdx){
   const cs=chatSnap();
+  const typed=$('#nick')?.value, typedFocus=document.activeElement&&document.activeElement.id==='nick';
   app.classList.remove('gv','mvw');
-  const st=state, isHost=st.host===me.id, nick=ls.get('mv-nick')||'', c=cfg(st);
+  const st=state, isHost=st.host===me.id, nick=typed??(ls.get('mv-nick')||''), c=cfg(st);
   const OPT={
     ...(c.solo?{}:{public:['Visibilidade da sala',[[true,'Pública (aparece nas salas abertas)'],[false,'Privada (só com código)']]]}),
     start:['Dinheiro inicial',[[750,'750 €'],[1000,'1000 €'],[1500,'1500 €'],[2000,'2000 €']]],
@@ -1983,6 +2011,10 @@ function renderLobby(meIdx){
   const bots=st.players.filter(p=>p.bot).length, willFill=c.fillTo?Math.max(0,c.fillTo-st.players.length):0, total=st.players.length+willFill;
   app.innerHTML=`
   <div class="topbar"><div class="row"><button class="btn small" onclick="location.hash=''">← Menu inicial</button><h1>${c.solo?'Jogo contra bots':'Sala de espera'}</h1></div><div class="row">${modeBtn()}${soundBtn()}${closeBtn()}</div></div>
+  ${meIdx<0&&!c.solo?`<div class="joinbar">
+    <div><b>Ainda não estás nesta sala.</b> Escreve o teu nome e carrega em Entrar para te juntares a ${esc(st.players.find(p=>p.id===st.host)?.name||'o anfitrião')}.</div>
+    <div class="row"><input id="nick" maxlength="18" placeholder="O teu nome" value="${esc(nick)}" autocomplete="nickname"><button class="btn primary" id="joinroom" ${joining?'disabled':''}>${joining?'A entrar…':'Entrar na sala'}</button></div>
+    ${joinErr?`<p class="joinerr">${esc(joinErr)}</p>`:''}</div>`:''}
   <div class="cards">
     <div class="panel">
       ${c.solo?'<div class="eyebrow">Modo single player</div><p class="note" style="margin:0">Jogas sozinho contra bots. Ajusta quantos e a dificuldade e começa.</p>'
@@ -1996,9 +2028,8 @@ function renderLobby(meIdx){
     </div>
     <div class="panel">
       ${meIdx<0?`
-        <h2>Entrar nesta sala</h2>
-        <input id="nick" maxlength="18" placeholder="O teu nome" value="${esc(nick)}">
-        <button class="btn primary" id="joinroom">Entrar</button>`
+        <h2>Como funciona</h2>
+        <p class="note" style="margin:0">Depois de entrares, o jogo começa quando o anfitrião carregar em Começar.</p>`
       : isHost ? `
         <h2>Definições do jogo</h2>
         <div class="cfg">${settings}</div>
@@ -2025,7 +2056,9 @@ function renderLobby(meIdx){
   app.querySelectorAll('[data-rmbot]').forEach(b=>b.onclick=()=>act('removeBot',{idx:+b.dataset.rmbot}));
   app.querySelectorAll('[data-cfg]').forEach(sel=>sel.onchange=()=>{ const k=sel.dataset.cfg, raw=sel.value; const v=raw==='true'?true:raw==='false'?false:isNaN(+raw)?raw:+raw; act('setCfg',{[k]:v}) });
   $('#addbot')&&($('#addbot').onclick=()=>act('addBot'));
-  $('#joinroom')&&($('#joinroom').onclick=()=>{ const n=$('#nick').value.trim(); if(!n) return toast('Escreve o teu nome.'); ls.set('mv-nick',n); act('join',{name:n}) });
+  $('#joinroom')&&($('#joinroom').onclick=()=>{ const n=$('#nick').value.trim(); if(!n){ toast('Escreve o teu nome.'); $('#nick').focus(); return } ls.set('mv-nick',n); joinRoom(n) });
+  $('#nick')&&($('#nick').onkeydown=e=>{ if(e.key==='Enter') $('#joinroom')?.click() });
+  if(typedFocus&&$('#nick')){ const i=$('#nick'); i.focus(); try{ i.setSelectionRange(i.value.length,i.value.length) }catch(e){} }
   $('#startbtn')&&($('#startbtn').onclick=()=>act('start'));
   $('#leavebtn')&&($('#leavebtn').onclick=async()=>{ await act('leave'); location.hash='' });
   $('#delroom')&&confirmBtn($('#delroom'),'Confirmar: encerrar para todos?',()=>closeRoom(code),'del:'+code);
