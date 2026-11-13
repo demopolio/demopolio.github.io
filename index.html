@@ -384,6 +384,12 @@ body.m .modal{max-height:82vh}
 .tk.still,.landing.still{animation:none!important}
 .cell.owned{background:color-mix(in srgb,var(--oc) 17%,var(--surface))}
 .cell.owned .nm{color:color-mix(in srgb,var(--oc) 62%,#0b1020);font-weight:800}
+.gtwrap{position:relative;display:inline-flex}
+.gtimer.host{cursor:pointer;display:inline-flex;align-items:center;gap:4px;font:inherit}
+.gtimer.host:hover{filter:brightness(1.05);outline:2px solid var(--cobalt)}
+.gtplus{font-weight:800;opacity:.75}
+.tmenu{position:absolute;top:calc(100% + 6px);right:0;z-index:60;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-width:150px}
+.tmenu .note{margin:0;font-size:12px}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -548,7 +554,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.13';
+const APP_VER='2026-11-13.14';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -602,6 +608,18 @@ function myCode(st){ const p=st&&st.players[myIdx(st)]; return p&&p.rc&&!p.out?`
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const STANDALONE=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
 // o iPhone não deixa nenhuma página fechar-se; só mostramos o botão no Android com a app instalada
+let timeMenu=false;
+function timerHTML(st){
+  if(st.status!=='playing'||!st.endsAt) return '';
+  const t=`<span id="gametimer">${clock(st.endsAt-Date.now())}</span>`;
+  if(st.host!==me.id) return `<span class="gtimer">${t}</span>`;
+  return `<span class="gtwrap"><button class="gtimer host" id="gtbtn" title="Acrescentar tempo de jogo" aria-expanded="${timeMenu}">${t}<span class="gtplus">＋</span></button>${timeMenu?`<span class="tmenu" role="menu"><span class="note">Acrescentar tempo</span>${[5,10,15,30].map(m=>`<button class="btn small" data-addt="${m}">+${m} min</button>`).join('')}</span>`:''}</span>`;
+}
+function bindTimer(){
+  const b=$('#gtbtn'); if(b) b.onclick=e=>{ e.stopPropagation(); timeMenu=!timeMenu; render() };
+  app.querySelectorAll('[data-addt]').forEach(x=>x.onclick=e=>{ e.stopPropagation(); timeMenu=false; render(); act('addTime',{min:+x.dataset.addt}) });
+}
+document.addEventListener('click',e=>{ if(timeMenu&&!e.target.closest('.gtwrap')){ timeMenu=false; if(state) render() } });
 function closeBtn(){ return isMob()&&!IOS&&STANDALONE?'<button class="btn small" data-closeapp>✕ Fechar aplicação</button>':'' }
 function closeApp(){
   try{ window.close() }catch(e){}
@@ -1393,6 +1411,13 @@ const A = {
     log(st,`${o.name} aceitou o negócio com ${f.name}.`);
     st.trades=list.filter(x=>x!==t).filter(x=>{ const b=validTrade(st,x); if(b){ histTrade(st,x,'anulada',b) } if(b) log(st,`Uma proposta de ${pname(st,x.from)} a ${pname(st,x.to)} foi anulada: ${b}`); return !b });
   },
+  addTime(st,{min}){
+    if(st.host!==me.id) return 'Só o anfitrião pode acrescentar tempo.';
+    if(st.status!=='playing'||!st.endsAt) return false;
+    const m=[5,10,15,30].includes(+min)?+min:5;
+    st.endsAt=Math.max(st.endsAt,Date.now())+m*60000; st.cfg={...cfg(st),timeLimit:(cfg(st).timeLimit||0)+m};
+    log(st,`O anfitrião acrescentou ${m} minutos ao tempo de jogo.`); note(st,`+${m} minutos de jogo`);
+  },
   reject(st,{id}){
     const pi=myIdx(st), list=st.trades||[], t=list.find(x=>x.id===id); if(!t||(t.to!==pi&&t.from!==pi)) return false;
     log(st,t.from===pi?`${pname(st,pi)} cancelou uma proposta a ${pname(st,t.to)}.`:`${pname(st,pi)} recusou a proposta de ${pname(st,t.from)}.`);
@@ -2007,7 +2032,7 @@ function render(){
   app.innerHTML=`
   <div class="topbar">
     <div class="row"><button class="btn small" onclick="location.hash=''" title="Voltar ao menu inicial. Continuas no jogo e podes voltar à sala.">← Menu inicial</button><h1>DEMopólio</h1></div>
-    <div class="row">${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
+    <div class="row">${timerHTML(st)}${roomBtns(st)}${modeBtn()}${soundBtn()}${cfg(st).solo?'':`<span class="eyebrow">Sala</span><span class="code" style="font-size:18px">${esc(code)}</span><button class="btn small" id="copylink">Copiar link</button>`}</div>
   </div>
   <div class="game">
     <div class="boardcol">
@@ -2035,7 +2060,7 @@ function render(){
   bindGame();
 }
 function bindGame(){
-  $('#copylink')&&($('#copylink').onclick=shareRoom); bindSound(); bindMode(); bindRoomBtns(); bindView();
+  $('#copylink')&&($('#copylink').onclick=shareRoom); bindSound(); bindMode(); bindRoomBtns(); bindView(); bindTimer();
   requestAnimationFrame(()=>requestAnimationFrame(update3D));
   $('#centerRoll')&&($('#centerRoll').onclick=e=>{ e.currentTarget.disabled=true; act('roll') });
   app.querySelectorAll('[data-cj]').forEach(b=>b.onclick=()=>{ b.disabled=true; b.dataset.cj==='card'?act('useCard',{k:'jail'}):act('payJail') });
@@ -2081,7 +2106,7 @@ function renderMobile(st,meIdx,snap){
   <header class="mhead">
     <button class="btn small" onclick="location.hash=''" aria-label="Voltar às salas">←</button>
     <div class="mhinfo"><b>DEMopólio</b>${cfg(st).solo?'':`<span class="code">${esc(code)}</span>`}</div>
-    ${st.status==='playing'&&st.endsAt?`<span class="gtimer" id="gametimer">${clock(st.endsAt-Date.now())}</span>`:''}
+    ${timerHTML(st)}
     ${me_?`<span class="mmoney ${me_.money<0?'neg':''}">${fmt(me_.money)}</span>`:''}
     <button class="btn small" id="mmenu" aria-label="Menu">⋯</button>
   </header>
@@ -2566,7 +2591,7 @@ function clock(ms){ ms=Math.max(0,ms); const m=Math.floor(ms/60000), s=Math.floo
 setInterval(()=>{
   const st=state; if(!st||!code||st.status!=='playing') return;
   const now=Date.now(), c=cfg(st);
-  const gt=$('#gametimer'); if(gt&&st.endsAt){ gt.textContent=clock(st.endsAt-now); gt.classList.toggle('low',st.endsAt-now<5*60000) }
+  const gt=$('#gametimer'); if(gt&&st.endsAt){ gt.textContent=clock(st.endsAt-now); gt.closest('.gtimer')?.classList.toggle('low',st.endsAt-now<5*60000) }
   const tt=$('#turntimer'); if(tt&&c.turnTime){ const left=Math.max(0,Math.ceil(((st.turnAt||0)+turnLimit(st,st.players[st.turn])-now)/1000)); tt.textContent=left+' s'; tt.classList.toggle('low',left<=10) }
   const at=$('#auctimer'); if(at&&st.auction) at.textContent=Math.max(0,Math.ceil((st.auction.endsAt-now)/1000));
   if(document.hidden) return;
