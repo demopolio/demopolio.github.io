@@ -114,9 +114,9 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .chatform input{flex:1;min-width:0;padding:8px 10px}
 .chatnt{cursor:pointer}
 .ticker{position:absolute;top:10%;left:50%;transform:translateX(-50%);width:84%;display:flex;flex-direction:column;align-items:center;gap:.5cqw;z-index:4;pointer-events:none}
-.tk{display:flex;align-items:center;gap:.7cqw;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:.35cqw 1.2cqw .35cqw .5cqw;font-size:max(11px,1.3cqw);box-shadow:0 2px 8px rgba(15,28,68,.12);animation:slidein .25s ease-out}
+.tk{display:flex;align-items:center;gap:.7cqw;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:.55cqw 1.5cqw .55cqw .7cqw;font-size:max(12.5px,1.65cqw);box-shadow:0 2px 8px rgba(15,28,68,.12);animation:slidein .25s ease-out}
 .tk span:not(.amt){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.tk svg{width:max(13px,1.7cqw);flex:none}
+.tk svg{width:max(15px,2.1cqw);flex:none}
 .tk .amt{font-family:var(--f-mono);font-weight:700;white-space:nowrap;margin-left:.4cqw}
 .tk.gain .amt{color:var(--ok)}.tk.loss .amt{color:var(--danger)}
 .tk.land{border-color:var(--cobalt)}
@@ -198,7 +198,7 @@ body.m::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-ins
 .mvw .boardwrap.fit .cardnote{font-size:max(10.5px,2.6cqw);padding:6px 10px}
 .mvw .boardwrap.fit .evnote{font-size:max(10px,2.5cqw)}
 .mvw .boardwrap.fit .ticker{top:4%;width:92%}
-.mvw .boardwrap.fit .tk{font-size:max(10px,2.6cqw)}
+.mvw .boardwrap.fit .tk{font-size:max(11.5px,3cqw)}
 .mvw .boardwrap.fit .pwn{width:max(13px,4cqw);min-width:0}
 .mvw .boardwrap.fit .pwarrow span{font-size:max(8px,2.3cqw)}
 .mvw #detail{position:fixed;left:8px;right:8px;bottom:calc(70px + env(safe-area-inset-bottom,0px));z-index:28;max-height:58vh;overflow:auto;box-shadow:0 -8px 30px rgba(10,16,34,.25)}
@@ -332,6 +332,17 @@ body.m .modal{max-height:82vh}
 .joinbar{margin:0 0 14px;padding:14px 16px;border-radius:14px;background:#fff6d6;color:#3a2c00;border:2px solid #f0c419;display:flex;flex-direction:column;gap:10px}
 .joinbar .row{flex-wrap:nowrap}.joinbar input{flex:1;min-width:0}
 .joinerr{margin:0;color:#b42318;font-weight:600;font-size:13px}
+.actions .turn.sm{font-size:15px;gap:8px;align-items:center;flex-wrap:nowrap}
+.actions .turn.sm>:first-child{flex:none;width:22px;max-width:22px}
+.actions .turn.sm svg{width:22px}
+.actions .turn.sm>span{flex:1;min-width:0}
+.turn.sm .note{font-weight:500;font-size:13px}
+.trhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:4px;padding-top:8px;border-top:1px solid var(--line)}
+.trhead h2{margin:0;font-size:16px}.trhead .note{font-size:12.5px}
+.pl.me{background:color-mix(in srgb,var(--pc) 16%,transparent);border-color:color-mix(in srgb,var(--pc) 60%,transparent);box-shadow:inset 4px 0 0 var(--pc)}
+.pl.me .who{font-weight:800}
+.pl.me.cur{border-color:var(--cobalt)}
+.metag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;padding:1px 5px;border-radius:5px;background:var(--pc);color:#fff;vertical-align:1px}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -496,7 +507,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.4';
+const APP_VER='2026-11-13.6';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -957,8 +968,8 @@ function validTrade(st,t){
   if(!f||!o||f.out||o.out) return 'Um dos jogadores já não está em jogo.';
   if(!t.give.every(i=>st.props[i]&&st.props[i].o===t.from&&tradeable(st,i))) return `As propriedades de ${f.name} mudaram.`;
   if(!t.get.every(i=>st.props[i]&&st.props[i].o===t.to&&tradeable(st,i))) return `As propriedades de ${o.name} mudaram.`;
-  if(f.money<t.gm) return `${f.name} já não tem esse dinheiro.`;
-  if(o.money<t.tm) return `${o.name} já não tem esse dinheiro.`;
+  if(t.gm>0&&f.money<t.gm) return `${f.name} já não tem esse dinheiro.`;
+  if(t.tm>0&&o.money<t.tm) return `${o.name} já não tem esse dinheiro.`;
   if(SKEYS.some(k=>(inv(f)[k]||0)<t.gc[k])) return `${f.name} já não tem essas cartas.`;
   if(SKEYS.some(k=>(inv(o)[k]||0)<t.tc[k])) return `${o.name} já não tem essas cartas.`;
   return null;
@@ -1637,7 +1648,7 @@ function landingHTML(st){
   } else {
     act=`<div class="lhint">${{buy:`${esc(by.name)} está a decidir se compra.`,end:`${esc(by.name)} está a gerir as propriedades.`,roll:`${esc(by.name)} vai lançar outra vez.`}[st.phase]||''}</div>`;
   }
-  return `<div class="landing" role="dialog" aria-label="Resultado da jogada"><button class="lx" data-la="close" aria-label="Fechar">×</button>
+  return `<div class="landing" role="dialog" aria-label="Resultado da jogada">
     <div class="lwho">${mine?'Calhaste em':esc(by.name)+' calhou em'} · saiu ${L.d[0]} + ${L.d[1]}</div>
     <div class="lsq"><span class="lband" style="background:${col}"></span>${icon(s.ic)}<b>${esc(s.n)}</b></div>
     ${L.notes.length?`<ul>${L.notes.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
@@ -1688,7 +1699,7 @@ function sfx(k){
 function soundBtn(){ return `<button class="btn small" id="sndbtn" aria-label="${SFX.on?'Desligar som':'Ligar som'}" title="${SFX.on?'Desligar som':'Ligar som'}">${SFX.on?'🔊':'🔇'}</button>` }
 function bindSound(){ const b=$('#sndbtn'); if(b) b.onclick=()=>{ SFX.on=!SFX.on; ls.set('mv-sound',SFX.on?'1':'0'); if(SFX.on){ audio(); setTimeout(()=>sfx('coin'),50) } b.textContent=SFX.on?'🔊':'🔇' } }
 let tick=[];
-function pushTick(html,cls=''){ tick=[...tick,{html,cls,until:Date.now()+7000}].slice(-3); drawTicker(); setTimeout(drawTicker,7100) }
+function pushTick(html,cls=''){ if(tick.some(t=>t.html===html&&t.until>Date.now())) return; tick=[...tick,{html,cls,until:Date.now()+10000}].slice(-2); drawTicker(); setTimeout(drawTicker,10100) }
 function tickerHTML(){ tick=tick.filter(t=>t.until>Date.now()); return tick.map(t=>`<div class="tk ${t.cls}">${t.html}</div>`).join('') }
 function drawTicker(){ const el=$('#ticker'); if(el) el.innerHTML=tickerHTML() }
 function flushNotes(){
@@ -2172,8 +2183,9 @@ function renderActions(meIdx){
   let h='';
   if(st.status==='ended'){ el.innerHTML=`<div class="turn">${esc(pname(st,st.winner))} ganhou!</div><p class="note" style="margin:0">Vê a classificação e as estatísticas no centro do tabuleiro. Volta às salas para começar outro jogo.</p>${st.host===me.id?'<button class="btn small danger" id="delroom">Encerrar sala</button>':''}`; return }
   if(meIdx>=0&&!st.players[meIdx].out&&st.players[meIdx].money<0&&st.status==='playing') h+=debtBox(st,meIdx);
+  let tr='';
   (st.trades||[]).filter(t=>t.to===meIdx||t.from===meIdx).sort((a,b)=>(a.to===meIdx?0:1)-(b.to===meIdx?0:1)).forEach(t=>{
-    h+=`<div class="banner"><div class="eyebrow">${t.to===meIdx?'Proposta de '+esc(pname(st,t.from)):'A tua proposta a '+esc(pname(st,t.to))}</div>
+    tr+=`<div class="banner"><div class="eyebrow">${t.to===meIdx?'Proposta de '+esc(pname(st,t.from)):'A tua proposta a '+esc(pname(st,t.to))}</div>
       <p style="margin:6px 0">${tradeSummary(st,t)}</p>
       <div class="row">${t.to===meIdx?`<button class="btn primary small" data-tacc="${t.id}">Aceitar</button><button class="btn small" data-tcnt="${t.id}">Contraproposta</button><button class="btn small" data-trej="${t.id}">Recusar</button>`:`<span class="note">À espera de resposta.</span><button class="btn small" data-trej="${t.id}">Cancelar</button>`}</div></div>`;
   });
@@ -2181,9 +2193,9 @@ function renderActions(meIdx){
     <form class="row" id="reclaimform"><input id="rcin" maxlength="4" placeholder="ABCD" style="width:90px;text-transform:uppercase;font-family:var(--f-mono)"><button class="btn small primary" type="submit">Voltar ao jogo</button></form></div>`;
   if(st.phase==='auction') h+=`<div class="banner"><b>Leilão a decorrer</b> de ${esc(SQ[st.auction?.i]?.n||'')}. Licita no centro do tabuleiro.</div>`;
   const tt=cfg(st).turnTime;
-  h+=`<div class="turn">${pawnP(cur)} ${mine?'É a tua vez':'Vez de '+esc(cur.name)}${cur.bot?' <span class="pill">bot</span>':''}${tt&&!cur.bot&&['roll','buy','end'].includes(st.phase)?`<span class="ttimer" id="turntimer">${Math.max(0,Math.ceil(((st.turnAt||0)+turnLimit(st,cur)-Date.now())/1000))} s</span>`:''}</div>`;
+  const what={roll:'a lançar os dados',buy:`a decidir se compra ${esc(SQ[st.pendingBuy]?.s||'')}`,end:'a gerir propriedades'}[st.phase]||'';
+  h+=`<div class="turn sm">${pawnP(cur)} <span>${mine?'<b>É a tua vez</b>':'<b>'+esc(cur.name)+'</b>'+(cur.bot?' <span class="pill">bot</span>':'')+(what?' · <span class="note">'+what+'</span>':'')}</span>${tt&&!cur.bot&&['roll','buy','end'].includes(st.phase)?`<span class="ttimer" id="turntimer">${Math.max(0,Math.ceil(((st.turnAt||0)+turnLimit(st,cur)-Date.now())/1000))} s</span>`:''}</div>`;
   if(!mine){
-    h+=`<p class="note" style="margin:0">${{roll:'A lançar os dados…',buy:`A decidir se compra ${esc(SQ[st.pendingBuy]?.n||'')}.`,end:'A gerir propriedades antes de passar a vez.'}[st.phase]||''}</p>`;
     if(meIdx<0) h+=`<p class="note" style="margin:0">Estás a assistir.</p>`;
   } else {
     const p=st.players[meIdx];
@@ -2202,10 +2214,9 @@ function renderActions(meIdx){
     } else if(st.phase==='end'){
       h+=`<div class="row"><button class="btn primary" data-a="end" ${p.money<0?'disabled':''}>Terminar vez</button>${inv(p).extra&&!p.inJail?`<button class="btn" data-use="extra">Usar "Mais uma rodada"</button>`:''}</div>`;
     }
-    h+=`<p class="note" style="margin:0">Toca numa propriedade tua para construir, vender ou hipotecar.</p>`;
   }
+  if(meIdx>=0&&st.status==='playing') h+=`<div class="trhead"><h2>Propostas</h2>${tr?'':'<span class="note">Nenhuma aberta. Toca num jogador para negociar ou doar.</span>'}</div>${tr}`;
   if(meIdx>=0&&!st.players[meIdx].out&&st.players[meIdx].money<0) h+=`<button class="btn danger small" data-a="bankrupt">Declarar falência</button>`;
-  if(meIdx>=0&&!st.players[meIdx].out) h+=`<div class="quitbox"><button class="btn small danger" id="quitbtn">🏳️ Tenho de sair: declarar falência</button><span class="note">As tuas propriedades voltam ao banco e o jogo continua sem ti.${st.host===me.id?' O papel de anfitrião passa para outro jogador.':''}</span></div>`;
   if(st.host===me.id) h+=`<details><summary class="note">Anfitrião</summary><p class="note">Se alguém abandonar o jogo, podes retirá-lo (as propriedades voltam ao banco).</p><div class="row">${st.players.map((p,i)=>!p.out&&p.id!==me.id?`<button class="btn small danger" data-kickg="${i}">Retirar ${esc(p.name)}</button>`:'').join('')}<button class="btn small" id="finishbtn">Terminar jogo agora</button><button class="btn small danger" id="delroom">Encerrar sala</button></div><p class="note" style="margin:6px 0 0">Terminar jogo: ganha quem tiver mais património (dinheiro, propriedades e construções).</p></details>`;
   el.innerHTML=h;
   el.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{
@@ -2248,9 +2259,9 @@ function worth(st,i){ let w=st.players[i].money; Object.entries(st.props||{}).fo
 function cardCount(p){ return SKEYS.reduce((n,k)=>n+(inv(p)[k]||0),0) }
 function renderPlayers(meIdx){
   const el=$('#players'); if(!el||!state) return; const st=state;
-  el.innerHTML=st.players.map((p,i)=>`<button class="pl ${i===st.turn&&st.status==='playing'?'cur':''} ${p.out?'out':''}" data-pl="${i}">
+  el.innerHTML=st.players.map((p,i)=>`<button class="pl ${i===st.turn&&st.status==='playing'?'cur':''} ${p.out?'out':''} ${i===meIdx?'me':''}" data-pl="${i}" style="--pc:${p.color}">
     ${pawnP(p)}
-    <div class="who">${esc(p.name)}${i===meIdx?' <small>(tu)</small>':''}<small class="sub">${p.out?'falido':`${p.inJail?'na Prisão · ':''}${esc(SQ[p.pos]?.s||'')}${cardCount(p)?` · ${cardCount(p)} carta${cardCount(p)>1?'s':''}`:''}${cfg(st).firstLap&&(p.laps||0)<1?' · 1.ª volta':''}${p.bot?' · bot':''}`}</small></div>
+    <div class="who">${i===meIdx?'<span class="metag">TU</span> ':''}${esc(p.name)}<small class="sub">${p.out?'falido':`${p.inJail?'na Prisão · ':''}${esc(SQ[p.pos]?.s||'')}${cardCount(p)?` · ${cardCount(p)} carta${cardCount(p)>1?'s':''}`:''}${cfg(st).firstLap&&(p.laps||0)<1?' · 1.ª volta':''}${p.bot?' · bot':''}`}</small></div>
     <div class="pm"><div class="money" title="Património total">${fmt(worth(st,i))}</div><div class="brk" title="propriedades ; dinheiro">prop. <b>${fmt(worth(st,i)-p.money)}</b> · dinh. <b class="${p.money<0?'neg':''}">${fmt(p.money)}</b></div></div></button>`).join('');
   el.classList.toggle('many',st.players.length>=6);
   el.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>openPlayer(meIdx,+b.dataset.pl));
@@ -2397,8 +2408,8 @@ function openTrade(meIdx,to,pre){
     const v=n=>[...m.querySelectorAll(`input[name=${n}]:checked`)].map(x=>+x.value);
     const rc=n=>{ const r={}; SKEYS.forEach(k=>{ const e=$(`#${n}-${k}`); r[k]=e?Math.max(0,Math.floor(+e.value||0)):0 }); return r };
     const t={to,give:v('give'),get:v('get'),gm:Math.max(0,Math.floor(+$('#tgm').value||0)),tm:Math.max(0,Math.floor(+$('#ttm').value||0)),gc:rc('gc'),tc:rc('tc')};
-    if(t.gm>st.players[meIdx].money) return toast('Não tens esse dinheiro.');
-    if(t.tm>o.money) return toast(`${o.name} não tem esse dinheiro.`);
+    if(t.gm>0&&t.gm>st.players[meIdx].money) return toast(st.players[meIdx].money<0?'Estás a dever: não podes dar dinheiro, só pedir.':'Não tens esse dinheiro.');
+    if(t.tm>0&&t.tm>o.money) return toast(`${o.name} não tem esse dinheiro.`);
     closeModal(); if(pre.counter) t.id=pre.counter; act(pre.counter?'counter':'propose',t);
   };
 }
