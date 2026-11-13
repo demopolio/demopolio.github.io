@@ -393,6 +393,8 @@ body.m .modal{max-height:82vh}
 .dealto{display:flex;flex-direction:column;gap:6px}
 .dealto .row{flex-wrap:wrap;gap:6px}
 .dealto .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pc);margin-right:5px}
+.pball{flex:none;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--pc) 55%,#fff),var(--pc) 60%,color-mix(in srgb,var(--pc) 75%,#000));box-shadow:0 0 0 2px var(--surface),0 0 0 3px color-mix(in srgb,var(--pc) 60%,transparent);place-self:center}
+.pl.out .pball{filter:grayscale(1);opacity:.5}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -557,7 +559,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.15';
+const APP_VER='2026-11-13.16';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -2426,7 +2428,7 @@ function cardCount(p){ return SKEYS.reduce((n,k)=>n+(inv(p)[k]||0),0) }
 function renderPlayers(meIdx){
   const el=$('#players'); if(!el||!state) return; const st=state;
   el.innerHTML=st.players.map((p,i)=>`<button class="pl ${i===st.turn&&st.status==='playing'?'cur':''} ${p.out?'out':''} ${i===meIdx?'me':''}" data-pl="${i}" style="--pc:${p.color}">
-    ${pawnP(p)}
+    <span class="pball" style="--pc:${p.color}" aria-hidden="true"></span>
     <div class="who">${i===meIdx?'<span class="metag">TU</span> ':''}${esc(p.name)}<small class="sub">${p.out?'falido':`${p.inJail?'na Prisão · ':''}${esc(SQ[p.pos]?.s||'')}${cardCount(p)?` · ${cardCount(p)} carta${cardCount(p)>1?'s':''}`:''}${cfg(st).firstLap&&(p.laps||0)<1?' · 1.ª volta':''}${p.bot?' · bot':''}`}</small></div>
     <div class="pm"><div class="money" title="Património total">${fmt(worth(st,i))}</div><div class="brk" title="propriedades ; dinheiro">prop. <b>${fmt(worth(st,i)-p.money)}</b> · dinh. <b class="${p.money<0?'neg':''}">${fmt(p.money)}</b></div></div></button>`).join('');
   el.classList.toggle('many',st.players.length>=6);
