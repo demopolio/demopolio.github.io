@@ -365,6 +365,7 @@ body.m .modal{max-height:82vh}
 .tleave.no{animation:tlv 2.4s ease-in forwards,shake .4s ease .5s}
 @keyframes shake{0%,100%{translate:0}20%{translate:-6px}40%{translate:6px}60%{translate:-4px}80%{translate:4px}}
 @media (prefers-reduced-motion:reduce){.tleave,.tleave .stamp{animation-duration:.01s!important}}
+.tk.still,.landing.still{animation:none!important}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -529,7 +530,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.9';
+const APP_VER='2026-11-13.10';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -1528,7 +1529,7 @@ function startWalk(fromRoll){
     if(k>=max){ clearInterval(walkTimer); walking=false; hopped=new Set(); placeTokens(); afterMove(fromRoll) }
   },step);
 }
-let showLanding=null, holdUntil=0, landTimer=null;
+let showLanding=null, holdUntil=0, landTimer=null, landAnim={k:null,t:0};
 const inHold=()=>Date.now()<holdUntil;
 function afterMove(fromRoll){
   flushNotes();
@@ -1710,7 +1711,8 @@ function landingHTML(st){
   } else {
     act=`<div class="lhint">${{buy:`${esc(by.name)} está a decidir se compra.`,end:`${esc(by.name)} está a gerir as propriedades.`,roll:`${esc(by.name)} vai lançar outra vez.`}[st.phase]||''}</div>`;
   }
-  return `<div class="landing" role="dialog" aria-label="Resultado da jogada">
+  const lk=L.n+':'+(L.i??''); if(landAnim.k!==lk) landAnim={k:lk,t:Date.now()}; const lel=Date.now()-landAnim.t;
+  return `<div class="landing ${lel<500?'':'still'}" style="animation-delay:-${lel}ms" role="dialog" aria-label="Resultado da jogada">
     <div class="lwho">${mine?'Calhaste em':esc(by.name)+' calhou em'} · saiu ${L.d[0]} + ${L.d[1]}</div>
     <div class="lsq"><span class="lband" style="background:${col}"></span>${icon(s.ic)}<b>${esc(s.n)}</b></div>
     ${L.notes.length?`<ul>${L.notes.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}
@@ -1761,8 +1763,9 @@ function sfx(k){
 function soundBtn(){ return `<button class="btn small" id="sndbtn" aria-label="${SFX.on?'Desligar som':'Ligar som'}" title="${SFX.on?'Desligar som':'Ligar som'}">${SFX.on?'🔊':'🔇'}</button>` }
 function bindSound(){ const b=$('#sndbtn'); if(b) b.onclick=()=>{ SFX.on=!SFX.on; ls.set('mv-sound',SFX.on?'1':'0'); if(SFX.on){ audio(); setTimeout(()=>sfx('coin'),50) } b.textContent=SFX.on?'🔊':'🔇' } }
 let tick=[];
-function pushTick(html,cls=''){ if(tick.some(t=>t.html===html&&t.until>Date.now())) return; tick=[...tick,{html,cls,until:Date.now()+10000}].slice(-2); drawTicker(); setTimeout(drawTicker,10100) }
-function tickerHTML(){ tick=tick.filter(t=>t.until>Date.now()); return tick.map(t=>`<div class="tk ${t.cls}">${t.html}</div>`).join('') }
+function pushTick(html,cls=''){ if(tick.some(t=>t.html===html&&t.until>Date.now()-8000)) return; tick=[...tick,{html,cls,until:Date.now()+10000}].slice(-2); drawTicker(); setTimeout(drawTicker,10100) }
+function tickerHTML(){ tick=tick.filter(t=>t.until>Date.now()); const now=Date.now();
+  return tick.map(t=>{ if(!t.shown) t.shown=now; const el=now-t.shown; return `<div class="tk ${t.cls} ${el<400?'':'still'}" style="animation-delay:-${el}ms">${t.html}</div>` }).join('') }
 function drawTicker(){ const el=$('#ticker'); if(el) el.innerHTML=tickerHTML() }
 function flushNotes(){
   if(rolling||walking||!state) return;
