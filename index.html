@@ -194,7 +194,7 @@ body.m::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-ins
 .mvw .boardwrap.fit .center{padding:4%;gap:2.4cqw}
 .mvw .boardwrap.fit .center .logo{font-size:max(18px,6.2cqw)}
 .mvw .boardwrap.fit .center .logo small,.mvw .boardwrap.fit .center .now,.mvw .boardwrap.fit .potnote{display:none}
-.mvw .boardwrap.fit .die{width:max(30px,8cqw)}
+.mvw .boardwrap.fit .die{--s:max(32px,8.4cqw)}
 .mvw .boardwrap.fit .cardnote{font-size:max(10.5px,2.6cqw);padding:6px 10px}
 .mvw .boardwrap.fit .evnote{font-size:max(10px,2.5cqw)}
 .mvw .boardwrap.fit .ticker{top:4%;width:92%}
@@ -305,11 +305,27 @@ body.m .modal{max-height:82vh}
 .center .now{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 6px;font-weight:700;font-size:clamp(11px,1.6cqw,15px)}
 .center .now svg{width:clamp(16px,2.6cqw,26px)}
 .dice{display:flex;gap:clamp(8px,1.6cqw,16px)}
-.die{width:clamp(36px,7cqw,66px);aspect-ratio:1;background:var(--surface);border:2px solid var(--ink);border-radius:22%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:14%;box-shadow:0 3px 0 var(--ink)}
-.die i{width:70%;aspect-ratio:1;border-radius:50%;background:var(--ink);place-self:center;visibility:hidden}
-.die i.on{visibility:visible}
-.dice.rolling .die{animation:tumble .32s linear infinite}
-.dice.rolling .die:nth-child(2){animation-direction:reverse}
+.die{--s:clamp(38px,7.2cqw,70px);width:var(--s);height:var(--s);position:relative;perspective:calc(var(--s)*6)}
+.die::after{content:"";position:absolute;left:8%;right:8%;bottom:-16%;height:18%;border-radius:50%;background:radial-gradient(closest-side,rgba(10,20,50,.38),transparent);transition:transform .3s}
+.dcube{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1.05s cubic-bezier(.16,.72,.22,1.02)}
+.dcube.dstill{transition:none}
+.dcube .dface{position:absolute;inset:0;border-radius:16%;background:linear-gradient(150deg,#ffffff 0%,#f3f5fa 55%,#dfe4ee 100%);box-shadow:inset 0 0 0 1.5px rgba(20,33,61,.18),inset -3px -4px 8px rgba(20,33,61,.12),inset 3px 3px 6px rgba(255,255,255,.9);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:15%;backface-visibility:hidden}
+.dcube .dface i{width:68%;aspect-ratio:1;border-radius:50%;place-self:center;visibility:hidden;background:radial-gradient(circle at 35% 30%,#3c4a6e,#0f1a33 70%);box-shadow:inset 0 1px 1.5px rgba(0,0,0,.55),0 1px 0 rgba(255,255,255,.8)}
+.dcube .dface i.on{visibility:visible}
+.dcube .dface.dv1 i.on{width:84%;background:radial-gradient(circle at 35% 30%,#ff6b5a,#b3160a 70%)}
+.dcube .dv1{transform:translateZ(calc(var(--s)/2))}
+.dcube .dv6{transform:rotateY(180deg) translateZ(calc(var(--s)/2))}
+.dcube .dv3{transform:rotateY(90deg) translateZ(calc(var(--s)/2))}
+.dcube .dv4{transform:rotateY(-90deg) translateZ(calc(var(--s)/2))}
+.dcube .dv2{transform:rotateX(90deg) translateZ(calc(var(--s)/2))}
+.dcube .dv5{transform:rotateX(-90deg) translateZ(calc(var(--s)/2))}
+.dice.rolling .die{animation:dthrow 1.05s cubic-bezier(.3,.1,.3,1)}
+.dice.rolling .die:nth-child(2){animation-delay:.06s}
+.dice.rolling .die::after{animation:dshadow 1.05s cubic-bezier(.3,.1,.3,1)}
+@keyframes dthrow{0%{transform:translateY(0)}22%{transform:translateY(-55%) translateX(-6%)}45%{transform:translateY(0) translateX(4%)}60%{transform:translateY(-18%)}75%{transform:translateY(0)}86%{transform:translateY(-5%)}100%{transform:none}}
+@keyframes dshadow{0%,100%{transform:scale(1);opacity:1}22%{transform:scale(.55);opacity:.5}45%{transform:scale(1)}60%{transform:scale(.8)}75%{transform:scale(1)}}
+.dice.landed .die{animation:dland .35s ease-out}
+@keyframes dland{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
 @keyframes tumble{0%{transform:rotate(0) translateY(0)}25%{transform:rotate(-18deg) translateY(-12%)}50%{transform:rotate(12deg) translateY(4%)}75%{transform:rotate(-8deg) translateY(-6%)}100%{transform:rotate(0) translateY(0)}}
 .cell.corner.hasp{justify-content:flex-start;padding-top:7%}
 .cell.hasp .pr{visibility:hidden}
@@ -366,6 +382,8 @@ body.m .modal{max-height:82vh}
 @keyframes shake{0%,100%{translate:0}20%{translate:-6px}40%{translate:6px}60%{translate:-4px}80%{translate:4px}}
 @media (prefers-reduced-motion:reduce){.tleave,.tleave .stamp{animation-duration:.01s!important}}
 .tk.still,.landing.still{animation:none!important}
+.cell.owned{background:color-mix(in srgb,var(--oc) 17%,var(--surface))}
+.cell.owned .nm{color:color-mix(in srgb,var(--oc) 62%,#0b1020);font-weight:800}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -376,7 +394,7 @@ body.m .modal{max-height:82vh}
 .rollbtn:active{transform:translateY(2px);box-shadow:0 2px 0 color-mix(in srgb,var(--cobalt) 55%,#000)}
 .cardnote{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;max-width:min(92%,380px);text-align:center;font-size:clamp(11px,1.5cqw,14.5px)}
 .cardnote b{display:block;font-family:var(--f-display);color:var(--gold);font-size:.85em;letter-spacing:.08em;text-transform:uppercase}
-@media (prefers-reduced-motion:reduce){.dice.rolling .die,.pawn.hop{animation:none}}
+@media (prefers-reduced-motion:reduce){.dice.rolling .die,.dice.rolling .die::after,.pawn.hop{animation:none}.dcube{transition:none}}
 
 .side{display:flex;flex-direction:column;gap:14px;min-width:0}
 .actions .turn{font-family:var(--f-display);font-size:20px;font-weight:700;display:flex;align-items:center;gap:8px}
@@ -530,7 +548,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.10';
+const APP_VER='2026-11-13.13';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -1466,7 +1484,7 @@ function trackLeaving(prev,ns){
   (prev.trades||[]).filter(t=>!now.includes(t.id)&&(t.from===mi||t.to===mi)).forEach(t=>{
     const h=(ns.tradelog||[]).find(e=>e.id===t.id); const res=h?h.res:'cancelada';
     leaving=[...leaving.filter(x=>x.t.id!==t.id),{t,res,until:Date.now()+2400}];
-    if(res==='aceite') sfx('coin');
+    sfx(res==='aceite'?'accept':res==='contraproposta'?'counter':'reject');
     setTimeout(()=>{ leaving=leaving.filter(x=>x.until>Date.now()); if(state) render() },2500);
   });
 }
@@ -1489,6 +1507,16 @@ function applyState(ns){
   if(turnChanged&&myTurn(ns)>=0) setTimeout(()=>sfx('turn'),rolled?3500:200);
   if(prev&&prev.auction&&ns.auction&&ns.auction.bid!==prev.auction.bid&&ns.auction.by!==myIdx(ns)) sfx('bid');
   if(prev&&prev.status==='playing'&&ns.status==='ended') sfx('win');
+  if(prev&&prev.code===ns.code&&ns.status==='playing'){
+    const mi=myIdx(ns), had=new Set((prev.trades||[]).map(t=>t.id));
+    if(mi>=0&&(ns.trades||[]).some(t=>!had.has(t.id)&&t.to===mi)) setTimeout(()=>sfx('offer'),150);
+    const traded=(prev.trades||[]).some(t=>!(ns.trades||[]).some(x=>x.id===t.id));
+    let bought=false, built=false;
+    if(mi>=0) Object.keys(ns.props||{}).forEach(i=>{ const a=prev.props?.[i], b=ns.props[i]; if(b.o!==mi) return; if(!a||a.o!==mi) bought=true; else if((b.h||0)>(a.h||0)) built=true });
+    if(bought&&!traded) setTimeout(()=>sfx('buy'),60);
+    if(built) sfx('build');
+    if(ns.card&&ns.card.by===mi&&(!prev.card||prev.card.x!==ns.card.x)) setTimeout(()=>sfx('card'),2600);
+  }
   if(ns.event&&ns.status==='playing'&&(!prev||!prev.event||prev.event.n!==ns.event.n)){ const E=EVENTS[ns.event.k]; pushTick(`<span>${E.ic} <b>${esc(E.n)}</b> · ${esc(E.d)}</span>`,'land'); toast(`${E.ic} ${E.n}! ${E.d}`); sfx('turn') }
   if(ns.phase==='auction'&&prev&&prev.phase!=='auction') setTimeout(()=>{ centerBoard(); if(!isMob()&&innerWidth<1100) $('.landing.auction')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}) },150);
   if(ns.status==='ended'&&prev&&prev.status!=='ended') setTimeout(()=>{ centerBoard(); if(!isMob()&&innerWidth<1100) $('.endscreen')?.scrollIntoView({behavior:'smooth',block:'center',inline:'center'}) },150);
@@ -1498,12 +1526,21 @@ function applyState(ns){
   if(rolled){ showLanding=null; clearTimeout(landTimer); landTimer=null; rollDice(ns.dice,()=>startWalk(true)) } else if(!rolling&&!walking) startWalk(false);
 }
 function rollDice(final,cb){
-  clearInterval(diceTimer); rolling=true; drawDice(); sfx('dice');
+  clearInterval(diceTimer); clearTimeout(diceTimer); sfx('dice');
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let t=0;
-  diceTimer=setInterval(()=>{ dispDice=[roll6(),roll6()]; drawDice(); if((t+=70)>=(reduce?140:840)){ clearInterval(diceTimer); dispDice=final; rolling=false; drawDice(); render(); cb() } },70);
+  const el=$('#dice');
+  dispDice=final;
+  if(reduce||!el){ dieRot=[null,null]; drawDice(); diceTimer=setTimeout(()=>{ render(); cb() },reduce?150:0); return }
+  rolling=true;
+  // parte da posição atual e gira até à face final
+  drawDice();
+  spinTo(0,final[0]); spinTo(1,final[1]);
+  el.className='dice rolling';
+  void el.offsetWidth;
+  el.querySelectorAll('.dcube').forEach((c,k)=>{ const r=dieRot[k]; c.classList.remove('dstill'); c.style.transform=`rotateX(${r.x}deg) rotateY(${r.y}deg) rotateZ(${r.z}deg)` });
+  diceTimer=setTimeout(()=>{ rolling=false; const d=$('#dice'); if(d){ d.className='dice landed' } render(); cb() },1120);
 }
-function drawDice(){ const el=$('#dice'); if(!el) return; el.className='dice'+(rolling?' rolling':''); el.innerHTML=dieHTML(dispDice[0])+dieHTML(dispDice[1]); update3D() }
+function drawDice(){ const el=$('#dice'); if(!el) return; el.className='dice'+(rolling?' rolling':''); el.innerHTML=dieHTML(dispDice[0],0)+dieHTML(dispDice[1],1); update3D() }
 function startWalk(fromRoll){
   if(!state||!state.players) return;
   clearInterval(walkTimer);
@@ -1525,6 +1562,7 @@ function startWalk(fromRoll){
   walkTimer=setInterval(()=>{
     hopped=new Set();
     ids.forEach(id=>{ if(k<paths[id].length){ disp[id]=paths[id][k]; hopped.add(id) } });
+    if(hopped.size) sfx('step');
     placeTokens(); k++;
     if(k>=max){ clearInterval(walkTimer); walking=false; hopped=new Set(); placeTokens(); afterMove(fromRoll) }
   },step);
@@ -1750,15 +1788,34 @@ addEventListener('pointerdown',()=>{ if(SFX.on) audio() },{passive:true});
 function tone(f1,f2,dur,type='sine',vol=.12,delay=0){ const c=SFX.ctx; if(!c) return; const t=c.currentTime+delay, o=c.createOscillator(), g=c.createGain();
   o.type=type; o.frequency.setValueAtTime(f1,t); if(f2) o.frequency.exponentialRampToValueAtTime(f2,t+dur);
   g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+dur); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+dur+.02) }
+function noise(dur,vol=.06,delay=0,freq=2000,ftype='bandpass',q=1.2,f2=null){ const c=SFX.ctx; if(!c) return; const t=c.currentTime+delay;
+  if(!SFX.nb){ const n=c.sampleRate; SFX.nb=c.createBuffer(1,n,n); const d=SFX.nb.getChannelData(0); for(let i=0;i<n;i++) d[i]=Math.random()*2-1 }
+  const src=c.createBufferSource(), f=c.createBiquadFilter(), g=c.createGain(); src.buffer=SFX.nb; f.type=ftype; f.frequency.setValueAtTime(freq,t); if(f2) f.frequency.exponentialRampToValueAtTime(f2,t+dur); f.Q.value=q;
+  g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+dur); src.connect(f); f.connect(g); g.connect(c.destination); src.start(t,Math.random()*.5); src.stop(t+dur+.02) }
+let stepN=0, lastSfx={};
 function sfx(k){
   if(!SFX.on||!SFX.ctx||SFX.ctx.state!=='running') return;
-  if(k==='dice') for(let i=0;i<6;i++) tone(180+Math.random()*260,90,.05,'triangle',.08,i*.11);
-  if(k==='coin'){ tone(988,null,.08,'square',.05); tone(1319,null,.18,'square',.05,.08) }
-  if(k==='loss'){ tone(440,220,.25,'sawtooth',.05) }
-  if(k==='jail'){ tone(130,90,.45,'square',.06) }
-  if(k==='turn'){ tone(660,null,.12,'sine',.1); tone(990,null,.22,'sine',.1,.12) }
-  if(k==='bid'){ tone(1200,null,.05,'square',.04) }
-  if(k==='win'){ [523,659,784,1047].forEach((f,i)=>tone(f,null,.25,'triangle',.1,i*.14)) }
+  const now=performance.now(); if(lastSfx[k]&&now-lastSfx[k]<(k==='step'?60:120)) return; lastSfx[k]=now;
+  switch(k){
+    case 'dice': // chocalhar no copo e dois toques ao cair
+      for(let i=0;i<9;i++) noise(.035,.09,i*.07+Math.random()*.03,2200+Math.random()*1800,'bandpass',4);
+      [.62,.8,.93].forEach((d,i)=>{ tone(170-i*20,70,.09,'sine',.18-i*.05,d); noise(.05,.08-i*.02,d,700,'lowpass',.7) }); break;
+    case 'step': { const f=(stepN++%2)?470:400; tone(f,f*.7,.06,'sine',.07); noise(.025,.025,0,3200,'highpass',.7); break }
+    case 'coin': tone(988,null,.08,'square',.045); tone(1319,null,.22,'square',.045,.08); tone(2637,null,.12,'sine',.02,.1); break;
+    case 'loss': noise(.22,.05,0,2400,'bandpass',1.5,500); tone(520,260,.22,'triangle',.07,.02); break;
+    case 'buy': noise(.06,.07,0,5000,'highpass',.8); tone(1568,null,.09,'square',.04,.04); tone(2093,null,.28,'square',.04,.12); tone(392,null,.18,'triangle',.08,0); break;
+    case 'build': [0,.16,.32].forEach(d=>{ tone(210,110,.08,'square',.06,d); noise(.06,.1,d,900,'lowpass',.8) }); break;
+    case 'card': [0,.05,.1].forEach((d,i)=>noise(.07,.05,d,1500+i*900,'bandpass',.9,4000)); break;
+    case 'accept': [523,659,784,1047].forEach((f,i)=>tone(f,null,.22,'triangle',.09,i*.075)); tone(2093,null,.3,'sine',.03,.3); break;
+    case 'reject': tone(330,300,.12,'square',.05); tone(233,200,.22,'square',.05,.13); break;
+    case 'counter': tone(660,null,.1,'sine',.09); tone(784,null,.16,'sine',.09,.11); break;
+    case 'offer': tone(1175,null,.12,'sine',.08); tone(1568,null,.25,'sine',.08,.13); break;
+    case 'mesada': [784,988,1175,1568,1976].forEach((f,i)=>tone(f,null,.12,'square',.03,i*.06)); break;
+    case 'jail': tone(130,90,.45,'square',.06); noise(.3,.05,.05,600,'lowpass',.7); break;
+    case 'turn': tone(660,null,.12,'sine',.1); tone(990,null,.22,'sine',.1,.12); break;
+    case 'bid': tone(1200,null,.05,'square',.04); break;
+    case 'win': [523,659,784,1047].forEach((f,i)=>tone(f,null,.25,'triangle',.1,i*.14)); [1319,1568].forEach((f,i)=>tone(f,null,.4,'sine',.05,.6+i*.1)); break;
+  }
 }
 function soundBtn(){ return `<button class="btn small" id="sndbtn" aria-label="${SFX.on?'Desligar som':'Ligar som'}" title="${SFX.on?'Desligar som':'Ligar som'}">${SFX.on?'🔊':'🔇'}</button>` }
 function bindSound(){ const b=$('#sndbtn'); if(b) b.onclick=()=>{ SFX.on=!SFX.on; ls.set('mv-sound',SFX.on?'1':'0'); if(SFX.on){ audio(); setTimeout(()=>sfx('coin'),50) } b.textContent=SFX.on?'🔊':'🔇' } }
@@ -1777,7 +1834,7 @@ function flushNotes(){
     else if(e.a===null){ txt=`${e.b===mi?'Recebeste':pname(state,e.b)+' recebeu'} do banco · ${e.w}` }
     else if(e.b===null){ txt=`${e.a===mi?'Pagaste':pname(state,e.a)+' pagou'} ao banco · ${e.w}` }
     else { txt= e.b===mi ? `${pname(state,e.a)} pagou-te · ${e.w}` : `${e.a===mi?'Pagaste':pname(state,e.a)+' pagou'} a ${who(e.b)} · ${e.w}` }
-    if(e.a===mi){ cls='loss'; sfx('loss') } else if(e.b===mi){ cls='gain'; sfx('coin') }
+    if(e.a===mi){ cls='loss'; sfx('loss') } else if(e.b===mi){ cls='gain'; sfx(e.go?'mesada':'coin') }
     const pl=e.a!==null?state.players[e.a]:state.players[e.b];
     pushTick(`${pl?pawnP(pl):''}<span>${esc(txt)}</span><span class="amt">${e.a===mi?'−':e.b===mi?'+':''}${fmt(e.v)}</span>`,cls);
   });
@@ -2205,12 +2262,12 @@ function boardHTML(st){
     }
     if(own) inner+=`<span class="ownflag" style="background:${own.color}" title="${esc(own.name)}"></span>`;
     if(pr&&pr.m) inner+=`<div class="mort"></div>`;
-    const ownStyle=own?`box-shadow:inset 0 0 0 3px ${own.color};`:'';
-    h+=`<button class="cell ${corner?'corner':side} ${sel===i?'sel':''}" style="grid-row:${r};grid-column:${c};${ownStyle}" data-i="${i}" aria-label="${esc(s.n)}">${inner}</button>`;
+    const ownStyle=own?`box-shadow:inset 0 0 0 3px ${own.color};--oc:${own.color};`:'';
+    h+=`<button class="cell ${corner?'corner':side} ${sel===i?'sel':''} ${own?'owned':''}" style="grid-row:${r};grid-column:${c};${ownStyle}" data-i="${i}" aria-label="${esc(s.n)}">${inner}</button>`;
   });
   const cur=st.players[st.turn];
   h+=`<div class="center">${SKYLINE}<div class="ticker" id="ticker" aria-live="polite">${tickerHTML()}</div><div class="logo">DEMopólio<small>edição Coimbra</small></div>
-    <div class="dice${rolling?' rolling':''}" id="dice">${dieHTML(dispDice[0])}${dieHTML(dispDice[1])}</div>
+    <div class="dice${rolling?' rolling':''}" id="dice">${dieHTML(dispDice[0],0)}${dieHTML(dispDice[1],1)}</div>
     ${centerRollBtn(st)}
     ${st.status==='playing'&&cur?`<div class="now">${pawnP(cur)}Vez de ${esc(cur.name)}</div>`:''}
     ${st.card?`<div class="cardnote"><b>${esc(st.card.deck)}</b>${esc(st.card.x)}</div>`:''}
@@ -2230,9 +2287,21 @@ function centerRollBtn(st){
     ${inv(p).jail?'<button class="btn rollbtn alt" data-cj="card">Usar carta "Sai da Prisão"</button>':''}</div></div>`;
   return `<button class="btn primary rollbtn" id="centerRoll">${st.dbl?'Duplos! Lançar outra vez':'Lançar dados'}</button>`;
 }
-function dieHTML(n){
-  const on={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]}[n]||[];
-  return `<div class="die" aria-label="${n}">${[...Array(9)].map((_,k)=>`<i class="${on.includes(k)?'on':''}"></i>`).join('')}</div>`;
+const PIPS={1:[4],2:[0,8],3:[0,4,8],4:[0,2,6,8],5:[0,2,4,6,8],6:[0,2,3,5,6,8]};
+const FACEROT={1:[0,0],6:[0,180],3:[0,-90],4:[0,90],2:[-90,0],5:[90,0]};
+let dieRot=[null,null];
+function faceRot(k,n){ const [fx,fy]=FACEROT[n]||[0,0]; const r=dieRot[k]; if(!r) return dieRot[k]={x:fx-12,y:fy+18,z:0}; return r }
+function dieHTML(n,k=0){
+  const r=dieRot[k]&&dieRot[k].n===n?dieRot[k]:(dieRot[k]={n,x:(FACEROT[n]||[0,0])[0]-12,y:(FACEROT[n]||[0,0])[1]+18,z:0});
+  const face=v=>`<div class="dface dv${v}">${[...Array(9)].map((_,j)=>`<i class="${PIPS[v].includes(j)?'on':''}"></i>`).join('')}</div>`;
+  return `<div class="die" aria-label="${n}"><div class="dcube dstill" style="transform:rotateX(${r.x}deg) rotateY(${r.y}deg) rotateZ(${r.z}deg)">${[1,2,3,4,5,6].map(face).join('')}</div></div>`;
+}
+// novo destino: o mesmo valor final mas com voltas inteiras extra, para girar e cair na face certa
+function spinTo(k,n){
+  const prev=dieRot[k]||{x:0,y:0,z:0}, [fx,fy]=FACEROT[n]||[0,0];
+  const turns=(a,b)=>Math.ceil((a+360*(2+Math.floor(Math.random()*2))-b)/360)*360+b;
+  const tx=fx-12, ty=fy+18;
+  dieRot[k]={n,x:turns(prev.x,tx),y:turns(prev.y,ty),z:prev.z+(Math.random()<.5?-360:360)};
 }
 function tradeSummary(st,t){
   const part=(props,money,cards)=>{
