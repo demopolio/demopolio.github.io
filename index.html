@@ -144,7 +144,7 @@ input,select{font:inherit;color:var(--ink);background:var(--tile);border:1px sol
 .endscreen .rank svg{width:100%}
 .endscreen .hls{display:grid;grid-template-columns:1fr 1fr;gap:.8cqw;width:min(100%,52cqw);text-align:left;font-size:max(11px,1.4cqw)}
 .endscreen .hls>div{background:var(--tile);border-radius:1cqw;padding:.6cqw 1cqw}
-.pl .brk{grid-column:2 / -1;font-size:11.5px;color:var(--muted);margin-top:-2px}
+.pl .brk{font-size:11px;color:var(--muted);white-space:nowrap;margin-top:1px}
 .pl .brk b{font-family:var(--f-mono);font-weight:700;color:var(--ink)}
 .pl .brk b.neg{color:var(--danger)}
 .modepick{max-width:760px;margin:6vh auto 0;display:flex;flex-direction:column;gap:12px;text-align:center;align-items:center}
@@ -246,6 +246,14 @@ body.m .modal{max-height:82vh}
 .players.compact .pm{text-align:right;line-height:1.15}
 .players.compact .money{font-size:13.5px}
 .players.compact .pm .note{font-size:11px}
+.players.compact{display:flex;flex-direction:column;gap:2px}
+.players.compact.many .pl{padding:2px 8px}
+.players.compact.many .who,.players.compact.many .pm{line-height:1.1}
+.players.compact.many .money{font-size:12.5px}
+.players.compact.many{gap:0}
+.players.compact.many .who{font-size:13px}
+.players.compact.many .who .sub{font-size:11px}
+.players.compact.many .pl svg{width:19px}
 .btn.arming{background:var(--danger);border-color:var(--danger);color:#fff}
 .pawnlayer{position:absolute;inset:0;pointer-events:none;z-index:5}
 .pwn{position:absolute;width:3.1cqw;min-width:15px;transform:translate(-50%,-100%);transform-origin:50% 100%;transition:left .3s ease-in-out,top .3s ease-in-out,transform .7s cubic-bezier(.3,.7,.3,1)}
@@ -408,11 +416,16 @@ body.m .modal{max-height:82vh}
   .gv .col{display:flex;flex-direction:column;gap:12px;min-height:0;min-width:0}
   .gv .col>.panel{flex:0 1 auto;min-height:0;padding:14px;gap:10px;overflow:auto}
   .gv .panel h2{font-size:17px}
-  .gv #actions{flex:0 1 auto;max-height:52%;min-height:120px;overflow:auto}
+  .gv #actions{flex:0 4 auto;max-height:36%;min-height:110px;overflow:auto}
   .gv .col>.grow{flex:1 1 0;min-height:130px;overflow:hidden}
   .gv .col>.panel.collapsed{flex:none;min-height:0}
-  .gv .pplayers{flex:0 1 auto;max-height:34%;min-height:150px;display:flex;flex-direction:column}
+  .gv .pplayers{flex:0 1 auto;max-height:62%;min-height:150px;display:flex;flex-direction:column}
+  .gv .col>.panel.actions{flex:0 4 auto;min-height:110px}
+  .gv .col>.pprops.grow{flex:1 1 0;min-height:76px}
+  .gv .pplayers .mycode{padding:4px 8px;font-size:11.5px}
   .gv .pchat{min-height:210px}
+  .gv .col>.pprops.grow{min-height:120px;display:flex;flex-direction:column;overflow:auto}
+  .gv .pprops #myprops{max-height:none}
   .gv .plog{min-height:140px}
   .gv .pcards{flex:0 1 auto;max-height:34%}
   .gv .chatlist{max-height:none}
@@ -483,7 +496,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-12.20';
+const APP_VER='2026-11-13.4';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -534,7 +547,10 @@ function roomBtns(st){
   return q+(st.host===me.id?'<button class="btn small danger" id="topclose">Encerrar sala</button>':'');
 }
 function myCode(st){ const p=st&&st.players[myIdx(st)]; return p&&p.rc&&!p.out?`<span class="mycode" title="Abre o link da sala noutro dispositivo e escreve este código para continuares a jogar lá">🔑 Código para jogares noutro dispositivo: <b class="code">${p.rc}</b></span>`:'' }
-function closeBtn(){ return isMob()?'<button class="btn small" data-closeapp>✕ Fechar aplicação</button>':'' }
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const STANDALONE=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+// o iPhone não deixa nenhuma página fechar-se; só mostramos o botão no Android com a app instalada
+function closeBtn(){ return isMob()&&!IOS&&STANDALONE?'<button class="btn small" data-closeapp>✕ Fechar aplicação</button>':'' }
 function closeApp(){
   try{ window.close() }catch(e){}
   setTimeout(()=>{ if(document.hidden) return;
@@ -1868,16 +1884,15 @@ function render(){
     <div class="side">
       <div class="col">
         <div class="panel actions" id="actions"></div>
-        <div class="panel pplayers"><div class="phead"><h2>Jogadores</h2></div><div class="players scroll compact" id="players"></div>${myCode(st)}<p class="note" style="margin:0;font-size:12px">Toca num jogador para negociar ou doar.</p></div>
-        ${panelC('chat','Chat','pchat grow',`<div class="chatlist scroll" id="chatlist"></div>${CHATFORM}`)}
+        <div class="panel pplayers"><div class="phead"><h2>Jogadores</h2><span class="note" style="font-size:12px">toca num jogador para negociar ou doar</span></div><div class="players scroll compact" id="players"></div>${myCode(st)}</div>
+        ${meIdx>=0?`<div class="panel pprops grow"><h2>As tuas propriedades</h2><div class="chips scroll" id="myprops"></div></div>`:''}
       </div>
       <div class="col">
         <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
-        ${meIdx>=0?`${panelC('cards','As tuas cartas especiais','pcards','<div id="mycards" class="players scroll"></div>')}
-        <div class="panel pprops"><h2>As tuas propriedades</h2><div class="chips scroll" id="myprops"></div></div>`:''}
+        ${meIdx>=0?panelC('cards','As tuas cartas especiais','pcards','<div id="mycards" class="players scroll"></div>'):''}
         ${panelC('log','Registo','plog grow',`<div class="log scroll" id="logbox"></div>`,`<div class="tabs" role="tablist">
           <button data-tab="all" class="${logTab==='all'?'on':''}">Todos</button>${meIdx>=0?`<button data-tab="me" class="${logTab==='me'?'on':''}">O meu</button>`:''}<button data-tab="cards" class="${logTab==='cards'?'on':''}">Cartas</button></div>`)}
-
+        ${panelC('chat','Chat','pchat grow',`<div class="chatlist scroll" id="chatlist"></div>${CHATFORM}`)}
       </div>
     </div>
   </div>`;
@@ -2236,8 +2251,8 @@ function renderPlayers(meIdx){
   el.innerHTML=st.players.map((p,i)=>`<button class="pl ${i===st.turn&&st.status==='playing'?'cur':''} ${p.out?'out':''}" data-pl="${i}">
     ${pawnP(p)}
     <div class="who">${esc(p.name)}${i===meIdx?' <small>(tu)</small>':''}<small class="sub">${p.out?'falido':`${p.inJail?'na Prisão · ':''}${esc(SQ[p.pos]?.s||'')}${cardCount(p)?` · ${cardCount(p)} carta${cardCount(p)>1?'s':''}`:''}${cfg(st).firstLap&&(p.laps||0)<1?' · 1.ª volta':''}${p.bot?' · bot':''}`}</small></div>
-    <div class="pm"><div class="money" title="Património total">${fmt(worth(st,i))}</div></div>
-    <div class="brk">propriedades: <b>${fmt(worth(st,i)-p.money)}</b> ; dinheiro: <b class="${p.money<0?'neg':''}">${fmt(p.money)}</b></div></button>`).join('');
+    <div class="pm"><div class="money" title="Património total">${fmt(worth(st,i))}</div><div class="brk" title="propriedades ; dinheiro">prop. <b>${fmt(worth(st,i)-p.money)}</b> · dinh. <b class="${p.money<0?'neg':''}">${fmt(p.money)}</b></div></div></button>`).join('');
+  el.classList.toggle('many',st.players.length>=6);
   el.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>openPlayer(meIdx,+b.dataset.pl));
 }
 let logTab=ls.get('mv-logtab')||'all';
