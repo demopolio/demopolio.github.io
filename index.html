@@ -343,6 +343,13 @@ body.m .modal{max-height:82vh}
 .pl.me .who{font-weight:800}
 .pl.me.cur{border-color:var(--cobalt)}
 .metag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.06em;padding:1px 5px;border-radius:5px;background:var(--pc);color:#fff;vertical-align:1px}
+.th{padding:8px 0;border-bottom:1px dashed var(--line);display:flex;flex-direction:column;gap:3px;font-size:13px}
+.th.mine{background:var(--cobalt-soft);margin:0 -6px;padding:8px 6px;border-radius:8px}
+.thtop{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.thtop .note{margin-left:auto;font-size:11.5px}
+.thbody{line-height:1.35}
+.log .th>div{border:0!important;padding:0!important;margin:0}
+.thres{font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:1px 6px;border-radius:5px;background:var(--tile)}
+.thres.ok{background:#d9f5e3;color:#11683a}.thres.no{background:#fde2e1;color:#a3261e}.thres.mid{background:#fff1c7;color:#7a5200}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -507,7 +514,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.6';
+const APP_VER='2026-11-13.7';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -935,6 +942,7 @@ function bankrupt(st,pi,why){
   const p=st.players[pi]; p.out=true; p.money=0; p.inv={jail:0,borla:0,extra:0}; p.shield=false;
   Object.keys(st.props).forEach(k=>{ if(st.props[k].o===pi) delete st.props[k] });
   log(st,why||`${p.name} declarou falência. As propriedades voltaram ao banco.`); plog(st,pi,'Saíste do jogo. As tuas propriedades voltaram ao banco.');
+  (st.trades||[]).filter(t=>t.from===pi||t.to===pi).forEach(t=>histTrade(st,t,'anulada',`${st.players[pi].name} saiu do jogo`));
   st.trades=(st.trades||[]).filter(t=>t.from!==pi&&t.to!==pi);
   const a=alive(st);
   if(a.length<=1){ endGame(st,'Só resta um jogador em jogo.'); return }
@@ -973,6 +981,9 @@ function validTrade(st,t){
   if(SKEYS.some(k=>(inv(f)[k]||0)<t.gc[k])) return `${f.name} já não tem essas cartas.`;
   if(SKEYS.some(k=>(inv(o)[k]||0)<t.tc[k])) return `${o.name} já não tem essas cartas.`;
   return null;
+}
+function histTrade(st,t,res,why){
+  st.tradelog=[{at:Date.now(),from:t.from,to:t.to,h:tradeSummary(st,t),res,why:why||''},...(st.tradelog||[])].slice(0,40);
 }
 function emptyTrade(t){ return !t.give.length&&!t.get.length&&!t.gm&&!t.tm&&SKEYS.every(k=>!t.gc[k]&&!t.tc[k]) }
 
@@ -1310,12 +1321,13 @@ const A = {
     const tr={at:Date.now(),id:Math.random().toString(36).slice(2,9),from:pi,to:old.from,give:t.give,get:t.get,gm:t.gm,tm:t.tm,gc:cleanCards(t.gc),tc:cleanCards(t.tc)};
     if(emptyTrade(tr)) return 'A contraproposta está vazia.';
     const bad=validTrade(st,tr); if(bad) return bad;
-    list.splice(k,1,tr); st.trades=list; log(st,`${pname(st,pi)} fez uma contraproposta a ${pname(st,old.from)}.`);
+    histTrade(st,old,'contraproposta'); list.splice(k,1,tr); st.trades=list; log(st,`${pname(st,pi)} fez uma contraproposta a ${pname(st,old.from)}.`);
   },
   accept(st,{id}){
     const pi=myIdx(st), list=st.trades||[], t=list.find(x=>x.id===id); if(!t||t.to!==pi) return 'Esta proposta já não está ativa.';
-    const bad=validTrade(st,t); if(bad){ st.trades=list.filter(x=>x!==t); log(st,'A proposta foi anulada: '+bad); return }
+    const bad=validTrade(st,t); if(bad){ histTrade(st,t,'anulada',bad); st.trades=list.filter(x=>x!==t); log(st,'A proposta foi anulada: '+bad); return }
     const f=st.players[t.from], o=st.players[t.to];
+    histTrade(st,t,'aceite');
     t.give.forEach(i=>st.props[i].o=t.to); t.get.forEach(i=>st.props[i].o=t.from);
     if(t.gm) pay(st,t.from,t.to,t.gm,'negócio'); if(t.tm) pay(st,t.to,t.from,t.tm,'negócio');
     SKEYS.forEach(k=>{ inv(f)[k]+=t.tc[k]-t.gc[k]; inv(o)[k]+=t.gc[k]-t.tc[k] });
@@ -1323,11 +1335,12 @@ const A = {
     plog(st,t.from,`Negócio com ${o.name}: deste ${lst(t.give,t.gc)}, recebeste ${lst(t.get,t.tc)}`);
     plog(st,t.to,`Negócio com ${f.name}: deste ${lst(t.get,t.tc)}, recebeste ${lst(t.give,t.gc)}`);
     log(st,`${o.name} aceitou o negócio com ${f.name}.`);
-    st.trades=list.filter(x=>x!==t).filter(x=>{ const b=validTrade(st,x); if(b) log(st,`Uma proposta de ${pname(st,x.from)} a ${pname(st,x.to)} foi anulada: ${b}`); return !b });
+    st.trades=list.filter(x=>x!==t).filter(x=>{ const b=validTrade(st,x); if(b){ histTrade(st,x,'anulada',b) } if(b) log(st,`Uma proposta de ${pname(st,x.from)} a ${pname(st,x.to)} foi anulada: ${b}`); return !b });
   },
   reject(st,{id}){
     const pi=myIdx(st), list=st.trades||[], t=list.find(x=>x.id===id); if(!t||(t.to!==pi&&t.from!==pi)) return false;
     log(st,t.from===pi?`${pname(st,pi)} cancelou uma proposta a ${pname(st,t.to)}.`:`${pname(st,pi)} recusou a proposta de ${pname(st,t.from)}.`);
+    histTrade(st,t,t.from===pi?'cancelada':'recusada');
     st.trades=list.filter(x=>x!==t);
   },
 };
@@ -1902,7 +1915,7 @@ function render(){
         <div class="panel detail" id="detail" ${sel===null?'hidden':''}></div>
         ${meIdx>=0?panelC('cards','As tuas cartas especiais','pcards','<div id="mycards" class="players scroll"></div>'):''}
         ${panelC('log','Registo','plog grow',`<div class="log scroll" id="logbox"></div>`,`<div class="tabs" role="tablist">
-          <button data-tab="all" class="${logTab==='all'?'on':''}">Todos</button>${meIdx>=0?`<button data-tab="me" class="${logTab==='me'?'on':''}">O meu</button>`:''}<button data-tab="cards" class="${logTab==='cards'?'on':''}">Cartas</button></div>`)}
+          <button data-tab="all" class="${logTab==='all'?'on':''}">Todos</button>${meIdx>=0?`<button data-tab="me" class="${logTab==='me'?'on':''}">O meu</button>`:''}<button data-tab="cards" class="${logTab==='cards'?'on':''}">Cartas</button><button data-tab="trades" class="${logTab==='trades'?'on':''}">Propostas</button></div>`)}
         ${panelC('chat','Chat','pchat grow',`<div class="chatlist scroll" id="chatlist"></div>${CHATFORM}`)}
       </div>
     </div>
@@ -1983,7 +1996,7 @@ function renderMobile(st,meIdx,snap){
   </section>
   <section class="mpane ${mTab==='log'?'on':''}" data-pane="log">
     <div class="panel plog"><div class="phead"><h2>Registo</h2><div class="tabs" role="tablist">
-      <button data-tab="all" class="${logTab==='all'?'on':''}">Todos</button>${meIdx>=0?`<button data-tab="me" class="${logTab==='me'?'on':''}">O meu</button>`:''}<button data-tab="cards" class="${logTab==='cards'?'on':''}">Cartas</button></div></div>
+      <button data-tab="all" class="${logTab==='all'?'on':''}">Todos</button>${meIdx>=0?`<button data-tab="me" class="${logTab==='me'?'on':''}">O meu</button>`:''}<button data-tab="cards" class="${logTab==='cards'?'on':''}">Cartas</button><button data-tab="trades" class="${logTab==='trades'?'on':''}">Propostas</button></div></div>
       <div class="log" id="logbox"></div></div>
   </section>
   <div class="msheet">${sheet}</div>
@@ -2276,6 +2289,12 @@ function renderLog(meIdx){
   } else if(logTab==='cards'){
     const a=st.cardlog||[];
     el.innerHTML=a.length?a.map(e=>`<div class="cd"><b>${esc(e.deck)}</b>${esc(pname(st,e.by))}: ${esc(e.x)}</div>`).join(''):'<span class="note">Ainda ninguém tirou cartas de Sorte ou Caixa Comum.</span>';
+  } else if(logTab==='trades'){
+    const a=st.tradelog||[], RES={aceite:['Aceite','ok'],recusada:['Recusada','no'],cancelada:['Cancelada','no'],anulada:['Anulada','no'],contraproposta:['Contraproposta','mid']};
+    const hh=d=>{ const x=new Date(d); return String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0') };
+    el.innerHTML=a.length?a.map(e=>{ const r=RES[e.res]||[e.res,'mid'], mine=meIdx>=0&&(e.from===meIdx||e.to===meIdx);
+      return `<div class="th ${mine?'mine':''}"><div class="thtop"><b>${esc(pname(st,e.from))} → ${esc(pname(st,e.to))}</b><span class="thres ${r[1]}">${r[0]}</span><span class="note">${hh(e.at)}</span></div><div class="thbody">${e.h}</div>${e.why?`<div class="note">${esc(e.why)}</div>`:''}</div>` }).join('')
+      :'<span class="note">Ainda não houve propostas terminadas. Aqui aparecem as aceites, recusadas, canceladas e as que tiveram contraproposta.</span>';
   } else el.innerHTML=(st.log||[]).map(l=>`<div>${esc(l)}</div>`).join('');
 }
 function myPhoto(){ return ls.get('mv-photo') }
