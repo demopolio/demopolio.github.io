@@ -390,6 +390,9 @@ body.m .modal{max-height:82vh}
 .gtplus{font-weight:800;opacity:.75}
 .tmenu{position:absolute;top:calc(100% + 6px);right:0;z-index:60;display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-width:150px}
 .tmenu .note{margin:0;font-size:12px}
+.dealto{display:flex;flex-direction:column;gap:6px}
+.dealto .row{flex-wrap:wrap;gap:6px}
+.dealto .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pc);margin-right:5px}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -554,7 +557,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.14';
+const APP_VER='2026-11-13.15';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -2522,10 +2525,21 @@ function renderDetail(meIdx){
       h+=`<div class="row">${s.t==='prop'?`<button class="btn small" data-p="build">${pr.h===4?'Construir hotel':'Construir casa'} (${fmt(G[s.g].hc)})</button>${pr.h?`<button class="btn small" data-p="sell">Vender construção</button>`:''}`:''}
         ${pr.m?`<button class="btn small" data-p="unmortgage">Pagar hipoteca (${fmt(Math.ceil(s.p*.55))})</button>`:`<button class="btn small" data-p="mortgage">Hipotecar (+${fmt(s.p/2)})</button>`}</div>`;
     }
+    if(st.status==='playing'&&meIdx>=0&&!st.players[meIdx].out){
+      const ok=tradeable(st,sel), why=ok?'':'<p class="note" style="margin:0">Para negociar, vende primeiro as casas desta cor.</p>';
+      if(pr.o!==meIdx&&!st.players[pr.o].out){
+        h+=ok?`<button class="btn primary small" data-dealget="${pr.o}">🤝 Propor negócio a ${esc(pname(st,pr.o))} por esta propriedade</button>`:why;
+      } else if(pr.o===meIdx){
+        const others=st.players.map((q,k)=>k).filter(k=>k!==meIdx&&!st.players[k].out);
+        h+=ok?`<div class="dealto"><span class="eyebrow">Oferecer ou vender a</span><div class="row">${others.map(k=>`<button class="btn small" data-dealgive="${k}" style="--pc:${st.players[k].color}"><span class="dot"></span>${esc(st.players[k].name)}</button>`).join('')}</div></div>`:why;
+      }
+    }
   } else if(BUYABLE(s.t)) h+=`<p class="note" style="margin:0">À venda.</p>`;
   h+=`<button class="btn small" id="closedet">Fechar</button>`;
   el.innerHTML=h;
   el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>act(b.dataset.p,{i:sel}));
+  el.querySelectorAll('[data-dealget]').forEach(b=>b.onclick=()=>openTrade(meIdx,+b.dataset.dealget,{get:[sel]}));
+  el.querySelectorAll('[data-dealgive]').forEach(b=>b.onclick=()=>openTrade(meIdx,+b.dataset.dealgive,{give:[sel]}));
   $('#closedet').onclick=()=>{ sel=null; render() };
 }
 
