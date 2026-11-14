@@ -399,8 +399,9 @@ body.m .modal{max-height:82vh}
 .buildbtn:hover{background:#15803d}
 .buildbtn svg{width:20px;height:auto}
 .buildbtn span{opacity:.85;font-family:var(--f-mono)}
-.mortbtn{background:#fff4e0;color:#9a5b00;border-color:#f0b44c}
-.mortbtn.arming{background:#c2410c;color:#fff;border-color:#9a3412}
+.mortbtn{width:100%;justify-content:center;background:#f59e0b;color:#2b1700;border:2px solid #b45309;font-weight:800;font-size:14px;padding:9px 14px;box-shadow:0 3px 0 #b45309}
+.mortbtn:hover{background:#fbbf24}
+.mortbtn.arming{background:#c2410c;color:#fff;border-color:#7c2d12;box-shadow:0 3px 0 #7c2d12}
 .quitbox{display:flex;flex-direction:column;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15)}
 .quitbox .note{font-size:11px;margin:0}
 .cjail{display:flex;flex-direction:column;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:2px solid var(--line);border-radius:14px;padding:10px 12px;max-width:94%}
@@ -565,7 +566,7 @@ const HOUSE=`<svg class="h" viewBox="0 0 10 10"><path d="M1 5.2L5 1.5l4 3.7V9.3H
 const HOTEL=`<svg class="hotel" viewBox="0 0 18 11"><rect x="1" y="2.5" width="16" height="8" rx=".8" fill="#D2382E" stroke="var(--pawn-edge)" stroke-width=".8"/><path d="M1 3.5L3 .8h12l2 2.7" fill="#9E241C" stroke="var(--pawn-edge)" stroke-width=".6"/><path d="M3.5 5h2M8 5h2M12.5 5h2M3.5 7.5h2M12.5 7.5h2" stroke="#FFE8A3" stroke-width="1.2"/><rect x="8" y="7" width="2" height="3.5" fill="#FFE8A3"/></svg>`;
 const PHOTO_RE=/^data:image\/jpeg;base64,[A-Za-z0-9+\/=]+$/;
 const okPhoto=u=>typeof u==='string'&&u.length<24000&&PHOTO_RE.test(u);
-const APP_VER='2026-11-13.17';
+const APP_VER='2026-11-14.1';
 let newVer=false;
 async function checkVersion(){
   if(newVer||location.protocol==='file:') return;
@@ -2534,7 +2535,7 @@ function renderDetail(meIdx){
       if(canBuild) h+=`<button class="btn buildbtn" data-p="build">${pr.h===4?HOTEL+' Construir hotel':HOUSE+' Construir casa'} <span>${fmt(G[s.g].hc)}</span></button>`;
       else if(s.t==='prop'&&!ownsGroup(st,meIdx,s.g)) h+=`<p class="note" style="margin:0">Para construir precisas de ter a cor toda.</p>`;
       h+=`<div class="row">${s.t==='prop'&&pr.h?`<button class="btn small" data-p="sell">Vender construção (+${fmt(G[s.g].hc/2)})</button>`:''}
-        ${pr.m?`<button class="btn small" data-p="unmortgage">Pagar hipoteca (${fmt(Math.ceil(s.p*.55))})</button>`:(pr.h?'':`<button class="btn small mortbtn" id="mortbtn">Hipotecar (+${fmt(s.p/2)})</button>`)}</div>`;
+        ${pr.m?`<button class="btn small" data-p="unmortgage">Pagar hipoteca (${fmt(Math.ceil(s.p*.55))})</button>`:(pr.h?'':`<button class="btn mortbtn" id="mortbtn">🏦 Hipotecar · recebes ${fmt(s.p/2)}</button>`)}</div>`;
     }
     if(st.status==='playing'&&meIdx>=0&&!st.players[meIdx].out){
       const ok=tradeable(st,sel), why=ok?'':'<p class="note" style="margin:0">Para negociar, vende primeiro as casas desta cor.</p>';
